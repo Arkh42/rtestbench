@@ -1,3 +1,7 @@
+# Hidden file to prepare commit messages before executing the comit
+.commit_message.txt
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
