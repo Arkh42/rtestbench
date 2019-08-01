@@ -6,7 +6,7 @@ import visa
 import logging
 
 logging.basicConfig(
-    filename='rtestbench.log', filemode='w'
+    filename='rtestbench.log', filemode='w',
     level=logging.DEBUG,
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
@@ -17,7 +17,7 @@ import pandas as pd
 
 
 
-class RTestBench(verbose=True):
+class RTestBench():
 
     """Manager for Remote Test Bench.
     """
@@ -44,7 +44,7 @@ class RTestBench(verbose=True):
     # Constructor and destructor
     ###
     
-    def __init__(self):
+    def __init__(self, verbose=True):
 
         """Initialize the visa ressource manager.
 
@@ -74,12 +74,12 @@ class RTestBench(verbose=True):
         logging.debug('Closing the VISA resource manager...done')
 
     
-    # Ressources management
+    # Resources management
     ###
 
-    def detect_ressources(self):
-        pass
+    def detect_resources(self):
+        return self.__visa_rm.list_resources()
     
 
-    def attach_ressource(self):
+    def attach_resource(self):
         pass
