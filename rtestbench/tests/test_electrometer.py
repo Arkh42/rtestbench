@@ -13,13 +13,15 @@ class ElectrometerTest(unittest.TestCase):
     """
 
 
+    def setUp(self):
+        self.default_electrometer = electrometer.Electrometer()
+    
+    
     def test_default_init(self):
-        default_electrometer = electrometer.Electrometer()
+        self.assertEqual(self.default_electrometer._family, 'electrometer')
 
-        self.assertEqual(default_electrometer._family, 'electrometer')
+        self.assertIsNone(self.default_electrometer._brand)
+        self.assertIsNone(self.default_electrometer._model)
+        self.assertIsNone(self.default_electrometer._serial_num)
 
-        self.assertIsNone(default_electrometer._brand)
-        self.assertIsNone(default_electrometer._model)
-        self.assertIsNone(default_electrometer._serial_num)
-
-        self.assertIsNone(default_electrometer._visa_resource)
+        self.assertIsNone(self.default_electrometer._visa_resource)
