@@ -5,8 +5,6 @@ import visa
 # Logger
 from . import _logger
 
-logger = _logger.config(logger_name='rtestbench')
-
 # Scientific computations
 import numpy as np
 import pandas as pd
@@ -54,20 +52,22 @@ class RTestBench():
 
         self._verbose = verbose
 
+        self.logger = _logger.config(logger_name='rtestbench')
+
         if self._verbose:
             print(self.say_welcome())
         
         try:
-            logger.debug('Calling the VISA resource manager...')
+            self.logger.debug('Calling the VISA resource manager...')
             self.__visa_rm = visa.ResourceManager()
             self.__visa_rm
-            logger.debug('Calling the VISA resource manager...done')
+            self.logger.debug('Calling the VISA resource manager...done')
         except OSError as error_msg:
-            logger.critical(error_msg)
+            self.logger.critical(error_msg)
             raise OSError("CRITICAL error: R-testbench cannot continue working.")
         else:
             if self._verbose:
-                logger.info(self.say_ready())
+                self.logger.info(self.say_ready())
     
 
     def __del__(self):
