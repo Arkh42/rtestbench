@@ -19,3 +19,6 @@ To use **R-testbench**, you simply need to import the *rtestbench* Python packag
 ```python
 import rtestbench
 ```
+
+Tutorial scripts are available [here](./rtestbench/tutorials/).
+This is a user-friendly way to start with the toolkit.

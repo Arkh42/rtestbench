@@ -28,6 +28,8 @@ CATEGORY: message
 ```
 If the commit message is multiline, then it must be written as
 ```
+Summary (main purpose of the commit)
+
 CATEGORY 1:
 - message 1
 - message 2

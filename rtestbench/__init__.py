@@ -3,13 +3,9 @@
 import visa
 
 # Logger
-import logging
+from . import _logger
 
-logging.basicConfig(
-    filename='rtestbench.log', filemode='w',
-    level=logging.DEBUG,
-    format='%(asctime)s - %(levelname)s - %(message)s'
-)
+logger = _logger.config(logger_name='rtestbench')
 
 # Scientific computations
 import numpy as np
@@ -27,18 +23,20 @@ class RTestBench():
     ###
 
     def say_welcome(self):
-        msg = '\n------------------------'
-        msg += ' Welcome to R-testbench'
-        msg += '------------------------\n\n'
+        msg = '\n<------------------------'
+        msg += '   Welcome to R-testbench   '
+        msg += '------------------------>\n\n'
         return msg
 
     def say_goodbye(self):
-        return '\n\nBye!\n'
+        msg = '\n\n<------------------------'
+        msg += '            Bye!            '
+        msg += '------------------------>\n'
+        return msg
+        # return '\n\nBye!\n'
 
     def say_ready(self):
-        msg = 'R-testbench is ready for use\n'
-        msg += '----------------------------\n'
-        msg += '----------------------------\n\n'
+        return 'R-testbench is ready for use\n'
     
 
     # Constructor and destructor
@@ -57,21 +55,25 @@ class RTestBench():
             print(self.say_welcome())
         
         try:
-            logging.debug('Calling the VISA resource manager...')
+            logger.debug('Calling the VISA resource manager...')
             self.__visa_rm = visa.ResourceManager()
-            logging.debug('Calling the VISA resource manager...done')
+            self.__visa_rm
+            logger.debug('Calling the VISA resource manager...done')
         except OSError as error_msg:
-            logging.critical(error_msg)
+            logger.critical(error_msg)
             raise OSError("CRITICAL error: R-testbench cannot continue working.")
         else:
             if self._verbose:
-                print(self.say_ready())
+                logger.info(self.say_ready())
     
 
     def __del__(self):
-        logging.debug('Closing the VISA resource manager...')
+        # logger.debug('Closing the VISA resource manager...')
         self.__visa_rm.close()
-        logging.debug('Closing the VISA resource manager...done')
+        # logger.debug('Closing the VISA resource manager...done')
+
+        if self._verbose:
+            print(self.say_goodbye())
 
     
     # Resources management
@@ -79,6 +81,14 @@ class RTestBench():
 
     def detect_resources(self):
         return self.__visa_rm.list_resources()
+    
+    def print_available_resources(self):
+        available_resources = self.detect_resources()
+
+        if available_resources:
+            print('Available resources:', available_resources)
+        else:
+            print('No available resources')
     
 
     def attach_resource(self):
