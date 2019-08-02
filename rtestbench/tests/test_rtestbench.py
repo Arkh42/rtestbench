@@ -9,7 +9,7 @@ import rtestbench
 
 class RTestBenchTest(unittest.TestCase):
 
-    """Test case for the RTestBench class
+    """Test case for the RTestBench class.
     """
 
 

@@ -11,6 +11,9 @@ logger = _logger.config(logger_name='rtestbench')
 import numpy as np
 import pandas as pd
 
+# R-testbench packages
+import tools
+
 
 
 class RTestBench():
