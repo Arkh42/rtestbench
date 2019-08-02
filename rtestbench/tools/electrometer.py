@@ -1,5 +1,5 @@
 
-from rtestbench.tool import Tool
+from rtestbench.tools.tool import Tool
 
 
 class Electrometer(Tool):
@@ -10,4 +10,6 @@ class Electrometer(Tool):
     """
 
 
-    pass
+    def __init__(self, brand=None, model=None, serial_num=None):
+
+        Tool.__init__(self, family='electrometer', brand=brand, model=model, serial_num=serial_num)
