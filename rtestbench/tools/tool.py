@@ -2,6 +2,9 @@
 # VISA protocol
 import visa
 
+# Scientific computations
+import numpy
+
 # Logger
 import logging
 
@@ -11,6 +14,9 @@ class Tool:
     """Generic class that defines the features common to all electronic tools.
     """
 
+
+    # Initialization & properties
+    ###
 
     def __init__(self, family=None, brand=None, model=None, serial_num=None):
 
@@ -32,13 +38,58 @@ class Tool:
         )
 
         self._visa_resource = None
+        self._data_container = numpy.ndarray
 
-        self.logger.debug("A(n) {} tool is created.".format(self._id))
+        self._available_transfer_formats = {'text':None, 'bin':None}
+        self._transfer_format = None
+
+        self.logger.debug("A(n) {} tool has been created.".format(self._id))
     
 
+    @property
+    def data_container(self):
+        """Get data container type."""
+
+        return self._data_container
+    
+    @data_container.setter
+    def data_container(self, class_name):
+        """Set data_container. Valid types are (list, tuple, numpy.ndarray).
+        """
+
+        if class_name in (list, tuple, numpy.ndarray):
+            self._data_container = class_name
+        else:
+            raise ValueError("Invalid data container type.")
+    
+
+    @property
+    def transfer_format(self):
+        """Get data transfer format."""
+
+        return self._transfer_format
+    
+
+    @transfer_format.setter
+    def transfer_format(self, data_format):
+        """Set data transfer format."""
+
+        if data_format in self._available_transfer_formats.keys():
+            if self._available_transfer_formats[data_format] is None:
+                raise NotImplementedError('The {0} format is available but not implemented for the {1} tool.'.format(data_format, self._id))
+            else:
+                self._transfer_format = data_format
+        else:
+            raise ValueError('The {0} format is not available for the {1} tool.'.format(data_format, self._id))
+
+    
+    
     def __str__(self):
         return "The tool is a(n) {}.".format(self._id)
     
+
+    # VISA resource management
+    ###
 
     def attach_visa_resource(self, visa_resource):
         if self._visa_resource is None:
@@ -63,3 +114,36 @@ class Tool:
             ))
             self._visa_resource.close()
             self._visa_resource = None
+    
+
+    # Sending commands
+    ###
+
+    def send(self, command):
+        if self._visa_resource is None:
+            raise UnboundLocalError("No VISA resource corresponding to the tool.")
+        else:
+            try:
+                self._visa_resource.write(command)
+            except visa.VisaIOError as error:
+                print('VisaIOError:', error.args)
+                raise RuntimeError("Cannot send the command: {}".format(command))
+    
+    def query(self, request):
+        if self._visa_resource is None:
+            raise UnboundLocalError("No VISA resource corresponding to the tool.")
+        elif self.transfer_format is None: # TODO getter and setter -> decorators?
+            raise UnboundLocalError("No data format is selected for the tool.")
+        # elif 
+        else:
+            try:
+                if self.transfer_format == 'text':
+                    return self._visa_resource.query_ascii_values(request, container=self._data_container)
+                else:
+                    raise RuntimeError("Unsupported data format")
+            except RuntimeError:
+                raise
+            except visa.VisaIOError as err:
+                self.logger.error('VisaIOError:', err.args)
+                raise RuntimeError("Cannot query the values!")
+            
