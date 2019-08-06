@@ -4,6 +4,8 @@ import unittest
 
 # Module Under Test
 import rtestbench.tools.tool as tool
+
+import logging
 import visa
 import numpy
 
@@ -17,6 +19,7 @@ class ToolTest(unittest.TestCase):
 
     def setUp(self):
         self.default_tool = tool.Tool()
+        logging.disable(logging.CRITICAL)
     
 
     # Useful methods
@@ -133,3 +136,26 @@ class ToolTest(unittest.TestCase):
         self.attach_simulated_device()
         with self.assertRaises(UnboundLocalError):
             self.default_tool.query('request')
+        
+        # Unsupported data formats
+        self.default_tool._available_transfer_formats.update({'toto': 'toto'})
+        self.default_tool.transfer_format = 'toto'
+        with self.assertRaises(RuntimeError):
+            self.default_tool.query('request')
+
+        # Valid data formats
+        self.default_tool._available_transfer_formats.update({'text': 'ascii'})
+        self.default_tool.transfer_format = 'text'
+        self.default_tool.query('request')
+    
+
+    # TEST - Locks
+    ###
+
+    def test_lock_system(self):
+        with self.assertRaises(NotImplementedError):
+            self.default_tool.lock_system()
+    
+    def test_unlock_system(self):
+        with self.assertRaises(NotImplementedError):
+            self.default_tool.unlock_system()

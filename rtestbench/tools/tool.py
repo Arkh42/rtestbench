@@ -40,7 +40,9 @@ class Tool:
         self._visa_resource = None
         self._data_container = numpy.ndarray
 
-        self._available_transfer_formats = {'text':None, 'bin':None}
+        self._available_transfer_formats = {
+            'text':None, 'bin':None, 'bin32': None, 'bin64': None
+        }
         self._transfer_format = None
 
         self.logger.debug("A(n) {} tool has been created.".format(self._id))
@@ -126,24 +128,37 @@ class Tool:
             try:
                 self._visa_resource.write(command)
             except visa.VisaIOError as error:
-                print('VisaIOError:', error.args)
+                self.logger.error('VisaIOError:', error.args)
                 raise RuntimeError("Cannot send the command: {}".format(command))
     
     def query(self, request):
         if self._visa_resource is None:
             raise UnboundLocalError("No VISA resource corresponding to the tool.")
-        elif self.transfer_format is None: # TODO getter and setter -> decorators?
+        elif self.transfer_format is None:
             raise UnboundLocalError("No data format is selected for the tool.")
-        # elif 
         else:
             try:
-                if self.transfer_format == 'text':
-                    return self._visa_resource.query_ascii_values(request, container=self._data_container)
+                if self.transfer_format is 'text':
+                    return self._visa_resource.query_ascii_values(request, container=self.data_container)
+                elif self.transfer_format in ('bin', 'bin32'):
+                    return self._visa_resource.query_binary_values(request, datatype='f', container=self.data_container)
+                elif self.transfer_format is 'bin64':
+                    return self._visa_resource.query_binary_values(request, datatype='d', container=self.data_container)
                 else:
                     raise RuntimeError("Unsupported data format")
-            except RuntimeError:
-                raise
+            except RuntimeError as err:
+                self.logger.error(err)
+                raise RuntimeError("Cannot query the values!")
             except visa.VisaIOError as err:
                 self.logger.error('VisaIOError:', err.args)
                 raise RuntimeError("Cannot query the values!")
-            
+    
+
+    # Locks
+    ###
+
+    def lock_system(self):
+        raise NotImplementedError('Function not implemented by the Tool class. Must be implemented by daughter classes.')
+    
+    def unlock_system(self):
+        raise NotImplementedError('Function not implemented by the Tool class. Must be implemented by daughter classes.')
