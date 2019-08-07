@@ -154,9 +154,13 @@ class Tool:
                 raise RuntimeError("Cannot query the values!")
     
 
-    # Locks
+    # High-level abstract interface (common to all tools)
     ###
 
+    def config_data_transfer_format(self, data_format):
+        raise NotImplementedError('Function not implemented by the Tool class. Must be implemented by daughter classes.')
+
+    
     def lock_system(self):
         raise NotImplementedError('Function not implemented by the Tool class. Must be implemented by daughter classes.')
     

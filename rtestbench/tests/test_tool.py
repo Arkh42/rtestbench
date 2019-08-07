@@ -149,13 +149,15 @@ class ToolTest(unittest.TestCase):
         self.default_tool.query('request')
     
 
-    # TEST - Locks
+    # TEST - High-level abstract interface
     ###
 
-    def test_lock_system(self):
+    def test_abstract_interface(self):
         with self.assertRaises(NotImplementedError):
+
+            # Data transfer format
+            self.default_tool.config_data_transfer_format('text')
+
+            # Locks
             self.default_tool.lock_system()
-    
-    def test_unlock_system(self):
-        with self.assertRaises(NotImplementedError):
             self.default_tool.unlock_system()
