@@ -22,3 +22,16 @@ import rtestbench
 
 Tutorial scripts are available [here](./rtestbench/tutorials/).
 This is a user-friendly way to start with the toolkit.
+
+
+
+Current status
+--------------
+
+
+Until now, **R-testbench** has been developed to control the Keysight B2985A Electrometer.
+However, I built the whole software architecture so that it can be extended to any instrument from any manufacturer.
+
+If you would like to contribute to the project,
+please read the [contribution guidelines](https://github.com/Arkh42/rtestbench/blob/master/CONTRIBUTING.md).
+You can also contact me by [email](mailto:aquenon@hotmail.be).
