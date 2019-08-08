@@ -9,8 +9,9 @@ def construct_tool(visa_rm, addr):
     try:
         visa_resource = connect_tool(visa_rm, addr)
         tool_full_id = identify_tool(visa_resource)
-        brand, model, serial_num = parse_tool_id(tool_id)
+        brand, model, serial_num = parse_tool_id(tool_full_id)
         new_tool = find_and_build_tool(brand, model, serial_num)
+        new_tool.attach_visa_resource(visa_resource)
     except (RuntimeError, ValueError):
         raise
     else:
@@ -34,7 +35,7 @@ def identify_tool(visa_device):
     except:
         raise RuntimeError("Impossible to determine ID of device {}".format(visa_device))
     else:
-        return id_n
+        return full_id
 
 def parse_tool_id(full_id):
     info = full_id.split(",")
