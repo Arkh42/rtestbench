@@ -10,15 +10,33 @@ import sys
 rtb = rtestbench.RTestBench()
 
 # Step 2 - attach your resource (instrument) to the test bench
-instr = None
-ADDR_INSTR = 'USB0::0x0957::0x9318::MY54321248::0::INSTR'
-# ADDR_INSTR = 'no::instrument' # uncomment to go inside the else
+instr_1 = None
+instr_2 = None
 
+ADDR_INSTR = 'USB0::0x0957::0x9318::MY54321248::0::INSTR'
+# ADDR_INSTR = 'no::instrument' # uncomment to go inside the else/except
+
+
+    # 1st solution
 if ADDR_INSTR in rtb.detect_resources():
-    instr = rtb.attach_resource(ADDR_INSTR)
+    instr_1 = rtb.attach_resource(ADDR_INSTR)
 else:
-    rtb.log_warning('It seems that there is no instrument @ {}'.format(ADDR_INSTR))
-    sys.exit('Cannot continue without an instrument.\n')
+    rtb.log_warning('It seems that there is no instrument @ {}\n'.format(ADDR_INSTR))
+
+    # 2nd solution
+try:
+    instr_2 = rtb.attach_resource(ADDR_INSTR)
+except ValueError as error_msg:
+    rtb.log_warning(error_msg)
+
+if instr_1 is None and instr_2 is None:
+    sys.exit('Cannot continue without an instrument... Abort!')
+
+instr = None
+if instr_2 is not None:
+    instr = instr_2
+else:
+    instr = instr_1
     
 
 # Step 3 - set the format of data transfer

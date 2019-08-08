@@ -5,6 +5,8 @@ import unittest
 # Package Under Test
 import rtestbench
 
+import logging
+import visa
 
 
 class RTestBenchTest(unittest.TestCase):
@@ -15,6 +17,7 @@ class RTestBenchTest(unittest.TestCase):
 
     def setUp(self):
         self.rtb = rtestbench.RTestBench(verbose=False)
+        logging.disable(logging.CRITICAL)
 
 
     def test_say_welcome(self):
@@ -33,6 +36,12 @@ class RTestBenchTest(unittest.TestCase):
     def test_detect_resources(self):
         detected_resources = self.rtb.detect_resources()
         self.assertIsInstance(detected_resources, tuple)
+    
+    def test_attach_resource(self):
+        # Simulated resource: not implemented
+        rm = visa.ResourceManager('@sim')
+        with self.assertRaises(ValueError):
+            self.rtb.attach_resource('ASRL1::INSTR')
 
 
 

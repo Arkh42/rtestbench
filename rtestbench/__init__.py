@@ -107,6 +107,7 @@ class RTestBench():
             new_resource = tool_factory.construct_tool(self.__visa_rm, addr)
         except (RuntimeError, ValueError) as error_msg:
             self.logger.error(error_msg)
+            raise ValueError('Impossible to attach resource to R-testbench')
         else:
             self.logger.info('New resource attached to R-testbench: {}'.format(new_resource))
             self.__attached_resources.append(new_resource)

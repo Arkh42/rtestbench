@@ -25,12 +25,6 @@ class ToolTest(unittest.TestCase):
     # Useful methods
     ###
 
-    def attach_fake_valid_visa_Resource(self):
-        rm = visa.ResourceManager()
-        fake_visa_resource = visa.Resource(rm, resource_name='Fake_resource')
-        fake_visa_resource.session = 0
-        self.default_tool.attach_visa_resource(fake_visa_resource)
-    
     def attach_simulated_device(self):
         rm = visa.ResourceManager('@sim')
         sim_visa_resource = rm.open_resource('ASRL1::INSTR')
@@ -98,18 +92,20 @@ class ToolTest(unittest.TestCase):
         fake_visa_resource = visa.Resource(rm, 'Fake_resource')
         with self.assertRaises(RuntimeError):
             self.default_tool.attach_visa_resource(fake_visa_resource)
+        rm.close()
         
-        # pass a (fake) visa resource object with a (fake) valid session
-        fake_visa_resource.session = 0
-        self.default_tool.attach_visa_resource(fake_visa_resource)
-        self.assertEqual(self.default_tool._visa_resource, fake_visa_resource)
+        # pass a (simulated) visa resource object with a valid session
+        rm = visa.ResourceManager('@sim')
+        sim_visa_resource = rm.open_resource('ASRL1::INSTR')
+        self.default_tool.attach_visa_resource(sim_visa_resource)
+        self.assertEqual(self.default_tool._visa_resource, sim_visa_resource)
 
-        # pass a valid (fake) visa resource object while another one is alrady attached
+        # pass a (simulated) visa resource object while another one is already attached
         with self.assertRaises(RuntimeError):
-            self.default_tool.attach_visa_resource(fake_visa_resource)
+            self.default_tool.attach_visa_resource(sim_visa_resource)
     
     def test_detach_visa_resource(self):
-        self.attach_fake_valid_visa_Resource()
+        self.attach_simulated_device()
 
         self.default_tool.detach_visa_resource()
         self.assertIsNone(self.default_tool._visa_resource)
@@ -130,23 +126,32 @@ class ToolTest(unittest.TestCase):
     def test_query(self):
         # No VISA resource
         with self.assertRaises(UnboundLocalError):
-            self.default_tool.query('request')
+            self.default_tool.query_data('request')
+        
+        # Valid request
+        self.attach_simulated_device()
+        self.default_tool.query('request')
+    
+    def test_query_data(self):
+        # No VISA resource
+        with self.assertRaises(UnboundLocalError):
+            self.default_tool.query_data('request')
         
         # No data format
         self.attach_simulated_device()
         with self.assertRaises(UnboundLocalError):
-            self.default_tool.query('request')
+            self.default_tool.query_data('request')
         
         # Unsupported data formats
         self.default_tool._available_transfer_formats.update({'toto': 'toto'})
         self.default_tool.transfer_format = 'toto'
         with self.assertRaises(RuntimeError):
-            self.default_tool.query('request')
+            self.default_tool.query_data('request')
 
         # Valid data formats
         self.default_tool._available_transfer_formats.update({'text': 'ascii'})
         self.default_tool.transfer_format = 'text'
-        self.default_tool.query('request')
+        self.default_tool.query_data('request')
     
 
     # TEST - High-level abstract interface

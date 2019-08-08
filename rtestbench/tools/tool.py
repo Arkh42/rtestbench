@@ -157,10 +157,10 @@ class Tool:
                     raise RuntimeError("Unsupported data format")
             except RuntimeError as err:
                 self.logger.error(err)
-                raise RuntimeError("Cannot query the data!")
+                raise RuntimeError("Cannot query the data by requesting {}!".format(request))
             except visa.VisaIOError as err:
                 self.logger.error('VisaIOError:', err.args)
-                raise RuntimeError("Cannot query the data!")
+                raise RuntimeError("Cannot query the data by requesting {}!".format(request))
     
 
     # High-level abstract interface (common to all tools)
