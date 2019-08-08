@@ -118,13 +118,21 @@ class RTestBench():
     ###
 
     def log_info(self, message):
+        """Log a message at INFO level."""
+
         self.logger.info(message)
     
     def log_warning(self, message):
+        """Log a message at WARNING level."""
+
         self.logger.warning(message)
     
     def log_error(self, message):
+        """Log a message at ERROR level."""
+
         self.logger.error(message)
     
     def log_critical(self, message):
+        """Log a message at CRITICAL level."""
+
         self.logger.critical(message)

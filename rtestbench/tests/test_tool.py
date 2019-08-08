@@ -186,5 +186,5 @@ class ToolTest(unittest.TestCase):
             self.default_tool.config_data_transfer_format('text')
 
             # Locks
-            self.default_tool.lock_system()
-            self.default_tool.unlock_system()
+            self.default_tool.lock()
+            self.default_tool.unlock()

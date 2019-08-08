@@ -6,6 +6,8 @@ import unittest
 # Module Under Test
 import rtestbench.tools.keysight.electrometer._interface as electrometer
 
+import logging
+
 
 class KeysightElectrometerTest(unittest.TestCase):
 
@@ -14,6 +16,7 @@ class KeysightElectrometerTest(unittest.TestCase):
 
     def setUp(self):
         self.default_electrometer = electrometer.Interface(model=None, serial_num=None)
+        logging.disable(logging.CRITICAL)
     
     
     def test_default_init(self):
@@ -25,6 +28,67 @@ class KeysightElectrometerTest(unittest.TestCase):
 
         self.assertIsNone(self.default_electrometer._visa_resource)
 
+
+    def test_is_available_view_mode(self):
+        # Not available
+        self.assertFalse(self.default_electrometer.is_available_view_mode('toto'))
+
+        # Available
+        self.assertTrue(self.default_electrometer.is_available_view_mode('meter'))
+        self.assertTrue(self.default_electrometer.is_available_view_mode('roll'))
+        self.assertTrue(self.default_electrometer.is_available_view_mode('hist'))
+        self.assertTrue(self.default_electrometer.is_available_view_mode('graph'))
+    
+    def test_view_mode(self):
+        # Check default value
+        self.assertEqual(self.default_electrometer.view_mode, 'meter')
+
+        # Check valid values
+        self.default_electrometer.view_mode = 'roll'
+        self.assertEqual(self.default_electrometer.view_mode, 'roll')
+
+        self.default_electrometer.view_mode = 'hist'
+        self.assertEqual(self.default_electrometer.view_mode, 'hist')
+
+        self.default_electrometer.view_mode = 'graph'
+        self.assertEqual(self.default_electrometer.view_mode, 'graph')
+
+        self.default_electrometer.view_mode = 'meter'
+        self.assertEqual(self.default_electrometer.view_mode, 'meter')
+
+        # Check valid values
+        with self.assertRaises(ValueError):
+            self.default_electrometer.view_mode = 'toto'
+
+
+    def test_config_data_transfer_format(self):
+        # Not available
+        with self.assertRaises(RuntimeError):
+            self.default_electrometer.config_data_transfer_format('toto')
+
+        # Available formats --> UnboundLocalError thrown because of send() while no VISA resource
+        with self.assertRaises(UnboundLocalError):
+            self.default_electrometer.config_data_transfer_format('text')
+            self.default_electrometer.config_data_transfer_format('bin')
+            self.default_electrometer.config_data_transfer_format('bin32')
+            self.default_electrometer.config_data_transfer_format('bin64')
+
+
+    def test_switch_display(self):
+        # Invalid values
+        with self.assertRaises(ValueError):
+            self.default_electrometer.switch_display('ONOFF')
+            self.default_electrometer.switch_display(2)
+            self.default_electrometer.switch_display(True)
+
+        # Valid values --> RuntimeError thrown after catching UnboundLocalError thrown because no VISA resource
+        with self.assertRaises(RuntimeError):
+            self.default_electrometer.switch_display('ON')
+            self.default_electrometer.switch_display('OFF')
+            self.default_electrometer.switch_display('1')
+            self.default_electrometer.switch_display('0')
+            self.default_electrometer.switch_display(1)
+            self.default_electrometer.switch_display(0)
 
 
 # Module Under Test

@@ -94,7 +94,8 @@ class Tool:
             else:
                 self._transfer_format = data_format
         else:
-            raise ValueError('The {0} format is not available for the {1} tool.'.format(data_format, self._id))
+            raise ValueError('The {0} format is not available for the {1} tool.\n\
+                Valid formats are: {2}'.format(data_format, self._id, self._available_transfer_formats))
 
     
     
@@ -182,8 +183,8 @@ class Tool:
         raise NotImplementedError('Function not implemented by the Tool class. Must be implemented by daughter classes.')
 
     
-    def lock_system(self):
+    def lock(self):
         raise NotImplementedError('Function not implemented by the Tool class. Must be implemented by daughter classes.')
     
-    def unlock_system(self):
+    def unlock(self):
         raise NotImplementedError('Function not implemented by the Tool class. Must be implemented by daughter classes.')
