@@ -15,3 +15,6 @@ class Interface(Electrometer):
             'text':'ASCii',
             'bin':'REAL,32', 'bin32':'REAL,32',
             'bin64':'REAL,64'})
+        
+        # Defaults
+        self.transfer_format = 'text'

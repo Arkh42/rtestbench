@@ -19,6 +19,20 @@ To use **R-testbench**, you simply need to import the *rtestbench* Python packag
 ```python
 import rtestbench
 ```
+Then you create an instance of `RTestBench`, that is basically the high-level interface/manager of the application.
+```python
+rtb = rtestbench.RTestBench()
+```
+Finally, you attach your instrument (resource) to `RTestBench` by passing the address of the instrument.
+Connection between the computer and the instrument can be made by USB, LAN (Ethernet, WiFi), GPIB or RS232.
+```python
+instr = rtb.attach_resource(ADDR_INSTR)
+```
+**R-testbench** performs *automatic instrument recognition*.
+You can check the current status of the project and an exhaustive list of supported instruments below.
+If your instrument is not implemented in the toolkit, you can create a generic Tool and send raw commands.
+In that case, please consider contributing by either writing the specific class or
+sending me your script which contains the raw commands.
 
 Tutorial scripts are available [here](./rtestbench/tutorials/).
 This is a user-friendly way to start with the toolkit.

@@ -11,6 +11,7 @@ import pandas as pd
 
 # R-testbench packages
 import rtestbench.tools
+import rtestbench.tools._factory as tool_factory
 
 
 
@@ -68,9 +69,16 @@ class RTestBench():
         else:
             if self._verbose:
                 self.logger.info(self.say_ready())
+        
+        self.__attached_resources = list()
     
 
     def __del__(self):
+        # logger.debug('Closing all connected resources...')
+        for device in self.__attached_resources:
+            device.detach_visa_resource()
+        # logger.debug('Closing all connected resources...')
+
         # logger.debug('Closing the VISA resource manager...')
         self.__visa_rm.close()
         # logger.debug('Closing the VISA resource manager...done')
@@ -94,5 +102,28 @@ class RTestBench():
             print('No available resources')
     
 
-    def attach_resource(self):
-        pass
+    def attach_resource(self, addr):
+        try:
+            new_resource = tool_factory.construct_tool(self.__visa_rm, addr)
+        except (RuntimeError, ValueError) as error_msg:
+            self.logger.error(error_msg)
+        else:
+            self.logger.info('New resource attached to R-testbench: {}'.format(new_resource))
+            self.__attached_resources.append(new_resource)
+            return new_resource
+
+
+    # High-level log functions
+    ###
+
+    def log_info(self, message):
+        self.logger.info(message)
+    
+    def log_warning(self, message):
+        self.logger.warning(message)
+    
+    def log_error(self, message):
+        self.logger.error(message)
+    
+    def log_critical(self, message):
+        self.logger.critical(message)

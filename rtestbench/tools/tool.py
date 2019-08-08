@@ -134,6 +134,15 @@ class Tool:
     def query(self, request):
         if self._visa_resource is None:
             raise UnboundLocalError("No VISA resource corresponding to the tool.")
+        try:
+            return self._visa_resource.query(request)
+        except visa.VisaIOError as err:
+            self.logger.error('VisaIOError:', err.args)
+            raise RuntimeError("Cannot query the request {}!".format(request))       
+    
+    def query_data(self, request):
+        if self._visa_resource is None:
+            raise UnboundLocalError("No VISA resource corresponding to the tool.")
         elif self.transfer_format is None:
             raise UnboundLocalError("No data format is selected for the tool.")
         else:
@@ -148,10 +157,10 @@ class Tool:
                     raise RuntimeError("Unsupported data format")
             except RuntimeError as err:
                 self.logger.error(err)
-                raise RuntimeError("Cannot query the values!")
+                raise RuntimeError("Cannot query the data!")
             except visa.VisaIOError as err:
                 self.logger.error('VisaIOError:', err.args)
-                raise RuntimeError("Cannot query the values!")
+                raise RuntimeError("Cannot query the data!")
     
 
     # High-level abstract interface (common to all tools)
