@@ -59,6 +59,28 @@ class ToolTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.default_tool.data_container = float
     
+
+    def test_is_available_transfer_format(self):
+        # Not available
+        self.assertFalse(self.default_tool.is_available_transfer_format('toto'))
+
+        # Available
+        self.default_tool._available_transfer_formats.update({'toto': None})
+        self.assertTrue(self.default_tool.is_available_transfer_format('toto'))
+
+    def test_is_implemented_transfer_format(self):
+        # Not available
+        self.assertFalse(self.default_tool.is_implemented_transfer_format('toto'))
+
+        # Available but not implemented
+        self.default_tool._available_transfer_formats.update({'toto': None})
+        self.assertFalse(self.default_tool.is_implemented_transfer_format('toto'))
+
+        # Implemented
+        self.default_tool._available_transfer_formats.update({'toto': 'Toto'})
+        self.assertTrue(self.default_tool.is_implemented_transfer_format('toto'))
+
+
     def test_transfer_format(self):
         # Check default value
         self.assertIsNone(self.default_tool.transfer_format)

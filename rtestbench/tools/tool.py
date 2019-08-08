@@ -65,18 +65,30 @@ class Tool:
             raise ValueError("Invalid data container type.")
     
 
+    
+    def is_available_transfer_format(self, key):
+        if key in self._available_transfer_formats.keys():
+            return True
+        else:
+            return False
+    
+    def is_implemented_transfer_format(self, key):
+        if self.is_available_transfer_format(key) and self._available_transfer_formats[key] is not None:
+            return True
+        else:
+            return False
+
     @property
     def transfer_format(self):
         """Get data transfer format."""
 
         return self._transfer_format
-    
 
     @transfer_format.setter
     def transfer_format(self, data_format):
         """Set data transfer format."""
 
-        if data_format in self._available_transfer_formats.keys():
+        if self.is_available_transfer_format(data_format):
             if self._available_transfer_formats[data_format] is None:
                 raise NotImplementedError('The {0} format is available but not implemented for the {1} tool.'.format(data_format, self._id))
             else:
