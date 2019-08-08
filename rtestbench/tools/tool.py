@@ -111,9 +111,9 @@ class Tool:
     
     def detach_visa_resource(self):
         if self._visa_resource is not None:
-            self.logger.debug("The {0} visa resource is detached from the {1} tool.".format(
-                self._visa_resource, self._id
-            ))
+            # self.logger.debug("The {0} visa resource is detached from the {1} tool.".format(
+            #     self._visa_resource, self._id
+            # ))
             self._visa_resource.close()
             self._visa_resource = None
     
