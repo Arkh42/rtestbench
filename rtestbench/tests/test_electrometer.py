@@ -5,31 +5,140 @@ import unittest
 # Module Under Test
 import rtestbench.tools.electrometer as electrometer
 
+import numpy
+
 
 
 class ElectrometerTest(unittest.TestCase):
-
-    """Test case for the Electrometer class.
-    """
+    """Test case for the Electrometer class."""
 
 
     def setUp(self):
         self.default_electrometer = electrometer.Electrometer()
-    
-    
-    def test_default_init(self):
-        self.assertEqual(self.default_electrometer._family, 'electrometer')
 
+
+    # TEST - Initialization & properties
+    ###
+
+    # Initialization
+    def test_default_init(self):
+        # Raw access
+        self.assertEqual(self.default_electrometer._family, 'electrometer')
         self.assertIsNone(self.default_electrometer._brand)
         self.assertIsNone(self.default_electrometer._model)
         self.assertIsNone(self.default_electrometer._serial_num)
 
         self.assertIsNone(self.default_electrometer._visa_resource)
+        self.assertIs(self.default_electrometer._data_container, numpy.ndarray)
+
+        self.assertDictEqual(
+            self.default_electrometer._available_transfer_formats,
+            {'text':None, 'bin':None, 'bin32': None, 'bin64': None})
+        self.assertIsNone(self.default_electrometer._transfer_format)
+
+        self.assertEqual(self.default_electrometer._available_meas_data_types, dict())
+        self.assertEqual(self.default_electrometer._available_result_data_types, dict())
+
+        self.assertIsNone(self.default_electrometer._meas_data_type)
+        self.assertEqual(self.default_electrometer._result_data_type, list())
+
+        # Getter access
+        self.assertEqual(self.default_electrometer.family, 'electrometer')
+        self.assertIsNone(self.default_electrometer.brand)
+        self.assertIsNone(self.default_electrometer.model)
+        self.assertIsNone(self.default_electrometer.serial_num)
+
+        self.assertIs(self.default_electrometer.data_container, numpy.ndarray)
+
+        self.assertIsNone(self.default_electrometer.transfer_format)
+
+        self.assertIsNone(self.default_electrometer.meas_data_type)
+        self.assertEqual(self.default_electrometer.result_data_type, list())
+
+
+    # Data types for results and measurements
+    def test_is_available_meas_data_type(self):
+        # Not available
+        self.assertFalse(self.default_electrometer.is_available_meas_data_type('toto'))
+
+        # Available
+        self.default_electrometer._available_meas_data_types.update({'toto': None})
+        self.assertTrue(self.default_electrometer.is_available_meas_data_type('toto'))
+
+    def test_is_implemented_meas_data_type(self):
+        # Not available
+        self.assertFalse(self.default_electrometer.is_implemented_meas_data_type('toto'))
+
+        # Available but not implemented
+        self.default_electrometer._available_meas_data_types.update({'toto': None})
+        self.assertFalse(self.default_electrometer.is_implemented_meas_data_type('toto'))
+
+        # Implemented
+        self.default_electrometer._available_meas_data_types.update({'toto': 'Toto'})
+        self.assertTrue(self.default_electrometer.is_implemented_meas_data_type('toto'))
+
+    def test_is_available_result_data_type(self):
+        # Not available
+        self.assertFalse(self.default_electrometer.is_available_result_data_type('toto'))
+
+        # Available
+        self.default_electrometer._available_result_data_types.update({'toto': None})
+        self.assertTrue(self.default_electrometer.is_available_result_data_type('toto'))
     
+    def test_is_implemented_result_data_type(self):
+        # Not available
+        self.assertFalse(self.default_electrometer.is_implemented_result_data_type('toto'))
+
+        # Available but not implemented
+        self.default_electrometer._available_result_data_types.update({'toto': None})
+        self.assertFalse(self.default_electrometer.is_implemented_result_data_type('toto'))
+
+        # Implemented
+        self.default_electrometer._available_result_data_types.update({'toto': 'Toto'})
+        self.assertTrue(self.default_electrometer.is_implemented_result_data_type('toto'))
+    
+    def test_meas_data_type(self):
+        # Default value
+        self.assertIsNone(self.default_electrometer.meas_data_type)
+
+        # Invalid data format
+        with self.assertRaises(ValueError):
+            self.default_electrometer.meas_data_type = 'toto'
+        
+        # Not implemented
+        self.default_electrometer._available_meas_data_types.update({'toto': None})
+        with self.assertRaises(NotImplementedError):
+            self.default_electrometer.meas_data_type = 'toto'
+        
+        # Implemented data format
+        self.default_electrometer._available_meas_data_types.update({'I': 'current'})
+        self.default_electrometer.meas_data_type = 'I'
+        self.assertEqual(self.default_electrometer.meas_data_type, 'I')
+
+    def test_result_data_type(self):
+        # Default value
+        self.assertEqual(self.default_electrometer.result_data_type, list())
+
+        # Invalid data format
+        with self.assertRaises(ValueError):
+            self.default_electrometer.result_data_type = ['toto']
+        
+        # Not implemented
+        self.default_electrometer._available_result_data_types.update({'toto': None})
+        with self.assertRaises(NotImplementedError):
+            self.default_electrometer.result_data_type = ['toto']
+        
+        # Implemented data format
+        self.default_electrometer._available_result_data_types.update({'I': 'current'})
+        self.default_electrometer.result_data_type = ['I']
+        self.assertEqual(self.default_electrometer.result_data_type, ['I'])
+
+
+    # TEST - High-level abstract interface
+    ###
 
     def test_abstract_interface(self):
         with self.assertRaises(NotImplementedError):
-
             # Enable/disable
             self.default_electrometer.switch_display('ON')
             self.default_electrometer.enable_display()
@@ -46,6 +155,9 @@ class ElectrometerTest(unittest.TestCase):
             self.default_electrometer.config_yscale('scale')
             self.default_electrometer.config_yoffset('offset')
 
+            # Data type
+            self.config_result_data_type('I')
+            
             # Range
             self.default_electrometer.switch_autorange('ON')
             self.default_electrometer.enable_autorange()

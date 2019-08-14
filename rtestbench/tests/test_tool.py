@@ -5,6 +5,8 @@ import unittest
 # Module Under Test
 import rtestbench.tools.tool as tool
 
+from ._test_facilities import attach_simulated_device_to
+
 import logging
 import visa
 import numpy
@@ -12,23 +14,12 @@ import numpy
 
 
 class ToolTest(unittest.TestCase):
-
-    """Test case for the Tool class.
-    """
+    """Test case for the Tool class. """
 
 
     def setUp(self):
         self.default_tool = tool.Tool()
         logging.disable(logging.CRITICAL)
-
-
-    # Methods for test purpose
-    ###
-
-    def attach_simulated_device(self):
-        rm = visa.ResourceManager('@sim')
-        sim_visa_resource = rm.open_resource('ASRL1::INSTR')
-        self.default_tool.attach_visa_resource(sim_visa_resource)
 
 
     # TEST - Initialization & properties
@@ -152,7 +143,7 @@ class ToolTest(unittest.TestCase):
             self.default_tool.attach_visa_resource(sim_visa_resource)
     
     def test_detach_visa_resource(self):
-        self.attach_simulated_device()
+        attach_simulated_device_to(self.default_tool)
         self.assertIsNotNone(self.default_tool._visa_resource)
 
         self.default_tool.detach_visa_resource()
@@ -168,7 +159,8 @@ class ToolTest(unittest.TestCase):
             self.default_tool.send('command')
         
         # Simulated tool
-        self.attach_simulated_device()
+        attach_simulated_device_to(self.default_tool)
+        # self.attach_simulated_device()
         self.default_tool.send('command')
     
     def test_query(self):
@@ -177,7 +169,7 @@ class ToolTest(unittest.TestCase):
             self.default_tool.query_data('request')
         
         # Valid request
-        self.attach_simulated_device()
+        attach_simulated_device_to(self.default_tool)
         self.default_tool.query('request')
     
     def test_query_data(self):
@@ -186,7 +178,7 @@ class ToolTest(unittest.TestCase):
             self.default_tool.query_data('request')
         
         # No data format
-        self.attach_simulated_device()
+        attach_simulated_device_to(self.default_tool)
         with self.assertRaises(UnboundLocalError):
             self.default_tool.query_data('request')
         
@@ -206,7 +198,7 @@ class ToolTest(unittest.TestCase):
     ###
 
     def test_abstract_interface(self):
-        self.attach_simulated_device()
+        attach_simulated_device_to(self.default_tool)
 
         with self.assertRaises(NotImplementedError):
 

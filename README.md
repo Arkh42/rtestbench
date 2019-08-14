@@ -49,3 +49,20 @@ However, I built the whole software architecture so that it can be extended to a
 If you would like to contribute to the project,
 please read the [contribution guidelines](https://github.com/Arkh42/rtestbench/blob/master/CONTRIBUTING.md).
 You can also contact me by [email](mailto:aquenon@hotmail.be).
+
+
+### List of supported devices
+
+List of devices currently supported in **R-testbench**, sorted by manufacturer:
+- Agilent
+- GW Instek
+- Keysight:
+	- B2981A (Electrometer)
+	- B2983A (Electrometer)
+	- B2985A (Electrometer)
+	- B2987A (Electrometer)
+- Rigol
+- Rohde & Schwarz
+- Siglent
+- Tektronix
+- Tenma

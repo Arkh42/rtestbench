@@ -3,7 +3,6 @@ from rtestbench.tools.keysight.electrometer.b2985a import B2985A
 
 
 class B2987A(B2985A):
-
     """Specific class to control a Keysight B2987A electrometer.
 
     This instrument allows current, charge and resistance measurement.
@@ -11,6 +10,10 @@ class B2987A(B2985A):
     """
 
 
+    # Initialization & properties
+    ###
+
+    # Initialization
     def __init__(self, serial_num):
 
         B2985A.__init__(self, serial_num=serial_num)
