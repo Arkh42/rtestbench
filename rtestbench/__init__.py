@@ -136,3 +136,23 @@ class RTestBench():
         """Log a message at CRITICAL level."""
 
         self.logger.critical(message)
+    
+
+    # Data management
+    ###
+
+    def log_data(self, path, *args):
+        """Log data into a csv file.
+        
+        path: absolute/relative path to the file into which the data is saved.
+        The function assumes that the path exists.
+
+        args: any number of tuples (header, data) where header is a string and data an iterable.
+        """
+
+        data_to_log = pd.DataFrame()
+
+        for item in args:
+            data_to_log[item[0]] = item[1]
+
+        data_to_log.to_csv(path)
