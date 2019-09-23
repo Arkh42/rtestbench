@@ -42,6 +42,9 @@ class ElectrometerTest(unittest.TestCase):
         self.assertIsNone(self.default_electrometer._meas_data_type)
         self.assertEqual(self.default_electrometer._result_data_type, list())
 
+        self.assertEqual(self.default_electrometer._available_trigger_sources, dict())
+        self.assertIsNone(self.default_electrometer._trigger_source)
+
         # Getter access
         self.assertEqual(self.default_electrometer.family, 'electrometer')
         self.assertIsNone(self.default_electrometer.brand)
@@ -54,6 +57,8 @@ class ElectrometerTest(unittest.TestCase):
 
         self.assertIsNone(self.default_electrometer.meas_data_type)
         self.assertEqual(self.default_electrometer.result_data_type, list())
+
+        self.assertIsNone(self.default_electrometer.trigger_source)
 
 
     # Data types for results and measurements
@@ -132,6 +137,34 @@ class ElectrometerTest(unittest.TestCase):
         self.default_electrometer._available_result_data_types.update({'I': 'current'})
         self.default_electrometer.result_data_type = ['I']
         self.assertEqual(self.default_electrometer.result_data_type, ['I'])
+    
+
+    # Trigger sources
+    def test_is_available_trigger_source(self):
+        # Not available
+        self.assertFalse(self.default_electrometer.is_available_trigger_source('toto'))
+
+        # Available
+        self.default_electrometer._available_trigger_sources.update({'toto': None})
+        self.assertTrue(self.default_electrometer.is_available_trigger_source('toto'))
+    
+    def test_trigger_source(self):
+        # Default value
+        self.assertEqual(self.default_electrometer.trigger_source, None)
+
+        # Invalid source
+        with self.assertRaises(ValueError):
+            self.default_electrometer.trigger_source = 'toto'
+        
+        # Not implemented
+        self.default_electrometer._available_trigger_sources.update({'toto': None})
+        with self.assertRaises(NotImplementedError):
+            self.default_electrometer.trigger_source = 'toto'
+        
+        # Implemented data format
+        self.default_electrometer._available_trigger_sources.update({'timer': 'TIMer'})
+        self.default_electrometer.trigger_source = 'timer'
+        self.assertEqual(self.default_electrometer.trigger_source, 'timer')
 
 
     # TEST - High-level abstract interface

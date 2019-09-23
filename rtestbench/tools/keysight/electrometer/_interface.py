@@ -27,6 +27,12 @@ class Interface(Electrometer):
         self._available_meas_data_types.update({'I': 'CURRent', 'i': 'CURRent'})
         self._available_result_data_types.update(self._available_meas_data_types)
         self._available_result_data_types.update({'t': 'TIME', 'math': 'MATH'})
+
+        self._available_trigger_sources.update({
+            'auto': 'AINT',
+            'time': 'TIMer', 'timer': 'TIMer',
+            'int1': 'INT1', 'int2': 'INT2'})
+        self.trigger_source = 'auto'
         
         self._available_view_modes = {
             'meter':'SINGle1', 'roll':'ROLL', 'hist':'HISTogram', 'graph':'GRAPH'}
@@ -350,6 +356,15 @@ class Interface(Electrometer):
     
 
     # Trigger
+    def config_trigger_source(self, source_name):
+        try:
+            self.trigger_source = source_name
+            self.send(':TRIGger:ACQuire:SOURce:SIGNal {}'.format(self._available_trigger_sources[source_name]))
+        except:
+            raise
+        else:
+            self.logger.info('The system {} trigger source has been set to {}.'.format(self.id, source_name))
+
     def config_trigger_count(self, value):
         try:
             if isinstance(value, int):

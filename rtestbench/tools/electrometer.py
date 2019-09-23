@@ -26,6 +26,9 @@ class Electrometer(Tool):
         self._meas_data_type = None
         self._result_data_type = list()
 
+        self._available_trigger_sources = dict()
+        self._trigger_source = None
+
 
     # Data types for results and measurements
     def is_available_meas_data_type(self, key):
@@ -77,9 +80,7 @@ class Electrometer(Tool):
 
     @property
     def result_data_type(self):
-
         """Get the current result data type."""
-
         return self._result_data_type
 
     @result_data_type.setter
@@ -97,6 +98,31 @@ class Electrometer(Tool):
                     Valid types are: {2}'.format(elem, self._id, self._available_result_data_types))
 
         self._result_data_type = data_type
+    
+    # Trigger sources
+    def is_available_trigger_source(self, key):
+        if key in self._available_trigger_sources.keys():
+            return True
+        else:
+            return False
+    
+    @property
+    def trigger_source(self):
+        """Get the current source for trigger."""
+        return self._trigger_source
+
+    @trigger_source.setter
+    def trigger_source(self, source_name):
+        """Set the trigger source if and only if the new source is available for the tool."""
+        if self.is_available_trigger_source(source_name):
+            if self._available_trigger_sources[source_name] is None:
+                raise NotImplementedError(
+                    'The {0} trigger source is available but not implemented for the {1} tool.'.format(source_name, self.id))
+            else:
+                self._trigger_source = source_name
+        else:
+            raise ValueError('The {0} trigger source is not available for the {1} tool.\n\
+                Valid sources are: {2}'.format(source_name, self._id, self._available_trigger_sources))
 
 
     # Display
@@ -188,6 +214,10 @@ class Electrometer(Tool):
     
 
     # Trigger
+    def config_trigger_source(self, source_name):
+        raise NotImplementedError('Function not implemented by the Electrometer class. \
+            Must be implemented by daughter classes.')
+
     def config_trigger_count(self, value):
         raise NotImplementedError('Function not implemented by the Electrometer class. \
             Must be implemented by daughter classes.')
