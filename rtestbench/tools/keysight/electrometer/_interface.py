@@ -328,7 +328,7 @@ class Interface(Electrometer):
             if self.meas_data_type is None:
                 raise RuntimeError("No measure data type has been selected.")
             else:
-                self.send(':SENSe:{0}:RANGe:AUTO {1}'.format(
+                self.send(':SENSe:{0}:RANGe:UPPer {1}'.format(
                     self._available_meas_data_types[self.meas_data_type], value))
         except:
             raise
@@ -446,7 +446,7 @@ class Interface(Electrometer):
         except:
             raise
         else:
-            self.logger.info('Measurements have been initiated by {}.'.format(self.id))
+            self.logger.info('Measurements have been fetched by {}.'.format(self.id))
 
     # def run_data_meas(self):
     #     try:
