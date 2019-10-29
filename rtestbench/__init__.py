@@ -141,8 +141,10 @@ class RTestBench():
     # Data management
     ###
 
-    def log_data(self, path, *args):
-        """Log data into a csv file.
+    def log_data(self, format, path, *args):
+        """Log data into a file.
+
+        format: csv, pickle.
         
         path: absolute/relative path to the file into which the data is saved.
         The function assumes that the path exists.
@@ -155,4 +157,13 @@ class RTestBench():
         for item in args:
             data_to_log[item[0]] = item[1]
 
-        data_to_log.to_csv(path)
+        if format=='csv':
+            data_to_log.to_csv(path + '.csv')
+        elif format=='pickle':
+            data_to_log.to_pickle(path + '.pkl')
+        elif format=='feather':
+            raise NotImplemented('Not supported because needs dependencies.') # data_to_log.to_feather(path + '.feather')
+        elif format=='hdf5':
+            raise NotImplemented('Not supported because needs dependencies.') # data_to_log.to_hdf(path + '.h5', key='data', format='fixed')
+        else:
+            self.log_warning("Unknown format {} passed to the log_data() function. Ignored.".format(format))

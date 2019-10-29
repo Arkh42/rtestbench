@@ -38,6 +38,8 @@ class Tool:
         self._available_transfer_formats = {
             'text':None, 'bin':None, 'bin32': None, 'bin64': None}
         self._transfer_format = None
+        self._data_header = None
+        self._big_endianess = False
 
         self.logger.debug("A(n) {} tool has been created.".format(self._id))
 
@@ -101,6 +103,8 @@ class Tool:
             self._data_container = class_name
         else:
             raise ValueError("Invalid data container type.")
+    
+    #
 
     
     # Formats for data transfer
@@ -134,6 +138,22 @@ class Tool:
         else:
             raise ValueError('The {0} format is not available for the {1} tool.\n\
                 Valid formats are: {2}'.format(data_format, self._id, self._available_transfer_formats))
+    
+    @property
+    def data_header(self):
+        return self._data_header
+    
+    @data_header.setter
+    def data_header(self, header):
+        self._data_header = header
+
+    @property
+    def big_endianess(self):
+        return self._big_endianess
+    
+    @big_endianess.setter
+    def big_endianess(self, flag):
+        self._big_endianess = flag
 
     
     # Functions to attach/detach a VISA resource
@@ -197,9 +217,11 @@ class Tool:
                 if self.transfer_format is 'text':
                     return self._visa_resource.query_ascii_values(request, container=self.data_container)
                 elif self.transfer_format in ('bin', 'bin32'):
-                    return self._visa_resource.query_binary_values(request, datatype='f', container=self.data_container)
+                    return self._visa_resource.query_binary_values(request, datatype='f', container=self.data_container,
+                        header_fmt=self.data_header, is_big_endian=self.big_endianess)
                 elif self.transfer_format is 'bin64':
-                    return self._visa_resource.query_binary_values(request, datatype='d', container=self.data_container)
+                    return self._visa_resource.query_binary_values(request, datatype='d', container=self.data_container, 
+                        header_fmt=self.data_header, is_big_endian=self.big_endianess)
                 else:
                     raise NotImplementedError("Unsupported data format {} is currently selected.".format(self.transfer_format))
             except visa.VisaIOError as err:

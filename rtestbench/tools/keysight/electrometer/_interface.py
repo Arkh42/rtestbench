@@ -23,6 +23,8 @@ class Interface(Electrometer):
             'text':'ASCii',
             'bin':'REAL,32', 'bin32':'REAL,32',
             'bin64':'REAL,64'})
+        self.data_header = 'empty'
+        self.big_endianess = True
         
         self._available_meas_data_types.update({'I': 'CURRent', 'i': 'CURRent'})
         self._available_result_data_types.update(self._available_meas_data_types)
