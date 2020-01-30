@@ -1,73 +1,46 @@
 
-# VISA protocol
-import visa
-
-# Logger
-from . import _logger
-
-# Scientific computations
 import numpy as np
 import pandas as pd
+import visa
 
-# R-testbench packages
+from rtestbench import _chat
+from rtestbench import _logger
 import rtestbench.tools
 import rtestbench.tools._factory as tool_factory
 
 
 
-class RTestBench():
+class RTestBench(object):
 
     """Manager for Remote Test Bench.
+
+    Attributes:
+        _VERBOSE: A boolean indicating the quantity of information sent through the terminal.
+        logger: A Logger handling log messages for streaming and printing.
+        chat: A TerminalChat for user interaction via the terminal.
     """
-
-
-    # Messages
-    ###
-
-    def say_welcome(self):
-        msg = '\n<------------------------'
-        msg += '   Welcome to R-testbench   '
-        msg += '------------------------>\n\n'
-        return msg
-
-    def say_goodbye(self):
-        msg = '\n\n<------------------------'
-        msg += '            Bye!            '
-        msg += '------------------------>\n'
-        return msg
-        # return '\n\nBye!\n'
-
-    def say_ready(self):
-        return 'R-testbench is ready for use\n'
     
 
-    # Constructor and destructor
-    ###
-    
     def __init__(self, verbose=True):
+        """Inits RTestBench with chat, logger and VISA resource manager."""
 
-        """Initialize the visa ressource manager.
+        self._VERBOSE = verbose
 
-        If verbose, prints the welcome and ready messages.
-        """
+        self.logger = _logger.make_logger('rtestbench', self._VERBOSE)
+        self.chat = _chat.TerminalChat()
 
-        self._verbose = verbose
 
-        self.logger = _logger.config(logger_name='rtestbench')
-
-        if self._verbose:
-            print(self.say_welcome())
+        if self._VERBOSE: self.chat.say_welcome()
         
         try:
             self.logger.debug('Calling the VISA resource manager...')
             self.__visa_rm = visa.ResourceManager()
-            self.__visa_rm
             self.logger.debug('Calling the VISA resource manager...done')
         except OSError as error_msg:
             self.logger.critical(error_msg)
             raise OSError("CRITICAL error: R-testbench cannot continue working.")
         else:
-            if self._verbose:
+            if self._VERBOSE:
                 self.logger.info(self.say_ready())
         
         self.__attached_resources = list()
@@ -83,7 +56,7 @@ class RTestBench():
         self.__visa_rm.close()
         # logger.debug('Closing the VISA resource manager...done')
 
-        if self._verbose:
+        if self._VERBOSE:
             print(self.say_goodbye())
 
     
