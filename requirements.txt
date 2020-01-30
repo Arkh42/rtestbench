@@ -1,0 +1,9 @@
+# VISA library
+pyvisa >= 1.9
+
+# Scientific computation
+numpy >= 1.13.0
+pandas >= 0.25.0
+
+# Plotting and graphing
+matplotlib >= 3.0.3

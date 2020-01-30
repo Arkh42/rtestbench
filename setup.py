@@ -1,21 +1,35 @@
 
-import setuptools
+from setuptools import setup, find_packages
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
     name="rtestbench",
-    version="0.0.0",
+    version="0.0.1",
+    packages=setuptools.find_packages(),
+
+    install_requires=[
+        'pyvisa >=1.9'
+        'numpy >=1.13.0',
+        'pandas >=0.25.0',
+        'matplotlib >=3.0.3'
+    ]
+ 
+    # Metadata
     author="Alexandre Quenon",
     author_email="aquenon@hotmail.be",
     description="A package to create a software remote test bench to control an actual electronic test bench remotely",
     long_description=long_description,
-    long_description_content_type="text/markdown",
     url="https://github.com/Arkh42/rtestbench",
-    packages=setuptools.find_packages(),
+    project_urls={
+        "Bug Tracker": "https://github.com/Arkh42/rtestbench/issues",
+        "Documentation": "https://github.com/Arkh42/rtestbench",
+        "Source Code": "https://github.com/Arkh42/rtestbench",
+    },
     classifiers=[
         "Programming Language :: Python :: 3",
         "Operating System :: OS Independent",
+        "Topic :: Electronics",
     ],
 )
