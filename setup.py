@@ -6,14 +6,14 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="rtestbench",
-    version="0.0.1",
+    version="0.0.2",
     packages=setuptools.find_packages(),
 
     install_requires=[
-        'pyvisa >=1.9'
+        'pyvisa >=1.9',
         'numpy >=1.13.0',
         'pandas >=0.25.0',
-        'matplotlib >=3.0.3'
+        'matplotlib >=3.0.3',
     ]
  
     # Metadata
