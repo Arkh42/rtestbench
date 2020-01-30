@@ -1,4 +1,4 @@
-"""A messager shaper for communication between app and user.
+"""A message shaper for communication between app and user.
 
 Defines private functions that create the messages.
 Defines classes for interactions with user on a specific channel.
