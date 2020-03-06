@@ -1,3 +1,8 @@
+"""The core of the rtestbench package.
+
+rtestbench relies on PyVISA, NumPy and pandas.
+"""
+
 
 import numpy as np
 import pandas as pd
@@ -16,44 +21,45 @@ class RTestBench(object):
 
     Attributes:
         _VERBOSE: A boolean indicating the quantity of information sent through the terminal.
-        logger: A Logger handling log messages for streaming and printing.
+        _attached_resources: A list of the resources (instruments) attached to the remote testbench.
+        _visa_rm: A ResourceManager from the visa module.
         chat: A TerminalChat for user interaction via the terminal.
+        logger: A Logger handling log messages for streaming and printing.
     """
     
 
     def __init__(self, verbose=True):
-        """Inits RTestBench with chat, logger and VISA resource manager."""
+        """Inits RTestBench with chat, logger, and VISA resource manager."""
 
         self._VERBOSE = verbose
+        
+        self._attached_resources = list()
 
         self.logger = _logger.make_logger('rtestbench', self._VERBOSE)
         self.chat = _chat.TerminalChat()
 
 
         if self._VERBOSE: self.chat.say_welcome()
-        
+
+        self.logger.debug('Calling the VISA resource manager...')
         try:
-            self.logger.debug('Calling the VISA resource manager...')
-            self.__visa_rm = visa.ResourceManager()
-            self.logger.debug('Calling the VISA resource manager...done')
-        except OSError as error_msg:
+            self._visa_rm = visa.ResourceManager()
+        except OSError as err:
             self.logger.critical(error_msg)
-            raise OSError("CRITICAL error: R-testbench cannot continue working.")
+            raise OSError('R-testbench cannot be properly initialized.')
         else:
-            if self._VERBOSE:
-                self.logger.info(self.say_ready())
-        
-        self.__attached_resources = list()
+            self.logger.debug('Calling the VISA resource manager...done')
+            if self._VERBOSE: self.chat.say_ready()
     
 
     def __del__(self):
         # logger.debug('Closing all connected resources...')
-        for device in self.__attached_resources:
+        for device in self._attached_resources:
             device.detach_visa_resource()
         # logger.debug('Closing all connected resources...')
 
         # logger.debug('Closing the VISA resource manager...')
-        self.__visa_rm.close()
+        self._visa_rm.close()
         # logger.debug('Closing the VISA resource manager...done')
 
         if self._VERBOSE:
@@ -64,7 +70,7 @@ class RTestBench(object):
     ###
 
     def detect_resources(self):
-        return self.__visa_rm.list_resources()
+        return self._visa_rm.list_resources()
     
     def print_available_resources(self):
         available_resources = self.detect_resources()
@@ -77,13 +83,13 @@ class RTestBench(object):
 
     def attach_resource(self, addr):
         try:
-            new_resource = tool_factory.construct_tool(self.__visa_rm, addr)
+            new_resource = tool_factory.construct_tool(self._visa_rm, addr)
         except (RuntimeError, ValueError) as error_msg:
             self.logger.error(error_msg)
             raise ValueError('Impossible to attach resource to R-testbench')
         else:
             self.logger.info('New resource attached to R-testbench: {}'.format(new_resource))
-            self.__attached_resources.append(new_resource)
+            self._attached_resources.append(new_resource)
             return new_resource
 
 

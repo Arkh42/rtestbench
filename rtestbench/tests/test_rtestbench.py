@@ -1,49 +1,42 @@
+"""Test for the rtestbench module."""
 
-# Unit tests framework
-import unittest
 
-# Package Under Test
+import pytest
+
 import rtestbench
 
-import logging
-import visa
+
+@pytest.fixture
+def sim_visa_rm():
+    """Returns a simulated VISA resource manager."""
+
+    import visa
+
+    return visa.ResourceManager('@sim')
+
+@pytest.fixture
+def rtb_quiet():
+    """Returns a non-verbose RTestBench."""
+
+    import logging
+    from rtestbench.core import RTestBench
+
+    rtb = RTestBench(verbose=False)
+    logging.disable(logging.CRITICAL)
+
+    return rtb
 
 
-class RTestBenchTest(unittest.TestCase):
+def test_initialize(rtb_quiet):
+    assert hasattr(rtb_quiet, "_VERBOSE")
+    assert hasattr(rtb_quiet, "_attached_resources")
+    assert hasattr(rtb_quiet, "chat")
+    assert hasattr(rtb_quiet, "logger")
 
-    """Test case for the RTestBench class.
-    """
+def test_detect_resources(rtb_quiet):
+    detected_resources = rtb_quiet.detect_resources()
+    assert isinstance(detected_resources, tuple)
 
-
-    def setUp(self):
-        self.rtb = rtestbench.RTestBench(verbose=False)
-        logging.disable(logging.CRITICAL)
-
-
-    def test_say_welcome(self):
-        message = self.rtb.say_welcome()
-        self.assertIsInstance(message, str)
-    
-    def test_say_goodbye(self):
-        message = self.rtb.say_goodbye()
-        self.assertIsInstance(message, str)
-    
-    def test_say_ready(self):
-        message = self.rtb.say_ready()
-        self.assertIsInstance(message, str)
-
-
-    def test_detect_resources(self):
-        detected_resources = self.rtb.detect_resources()
-        self.assertIsInstance(detected_resources, tuple)
-    
-    def test_attach_resource(self):
-        # Simulated resource: not implemented
-        rm = visa.ResourceManager('@sim')
-        with self.assertRaises(ValueError):
-            self.rtb.attach_resource('ASRL1::INSTR')
-
-
-
-if __name__ == "__main__":
-    unittest.main()
+def test_attach_resource(sim_visa_rm, rtb_quiet):
+    with pytest.raises(ValueError):
+        rtb_quiet.attach_resource('ASRL1::INSTR')
