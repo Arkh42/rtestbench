@@ -20,7 +20,7 @@ def _create_goodbye_message() -> str:
     return message
 
 def _create_ready_message() -> str:
-    return "R-testbench is ready for use!\n'"
+    return "R-testbench is ready for use!\n"
 
 
 class TerminalChat(object):

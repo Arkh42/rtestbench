@@ -63,7 +63,7 @@ class RTestBench(object):
         # logger.debug('Closing the VISA resource manager...done')
 
         if self._VERBOSE:
-            print(self.say_goodbye())
+            self.chat.say_goodbye()
 
     
     # Resources management
