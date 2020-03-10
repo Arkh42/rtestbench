@@ -34,14 +34,32 @@ class MetaDataManager(object):
         self._file_stream.close()
     
 
+    # Utilities
+    @staticmethod
+    def get_timestamp() -> str:
+        """Returns a string containing the current date time in ISO 8601 format."""
+
+        return datetime.now(tz=timezone.utc).astimezone().isoformat()
+
+    
     # Generic functions
     def dump_meta(self, metadata: dict):
         json.dump(metadata, self._file_stream)
     
     def dump_timestamp(self, label: str):
-        timestamp = datetime.now(tz=timezone.utc).astimezone().isoformat()
+        timestamp = self.get_timestamp()
+
         metadata = {label:timestamp}
         self.dump_meta(metadata)
     
 
     # Specific functions
+    def dump_run_info(self, number: int, description: str):
+        metadata = {
+            "Run":{
+                "Number": number,
+                "Timestamp": self.get_timestamp(),
+                "Info": description
+            }
+        }
+        self.dump_meta(metadata)
