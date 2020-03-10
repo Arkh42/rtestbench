@@ -5,7 +5,8 @@ import rtestbench
 
 
 # Step 1 - create the software remote test bench
-rtb = rtestbench.RTestBench()
+rtb = rtestbench.RTestBenchManager()
+
 
 # Step 2 - detect available resources
 available_resources = rtb.detect_resources()
@@ -21,3 +22,7 @@ print('Variable type:', type(available_resources), '\n')
 
 # Alternative to steps 2 and 3
 rtb.print_available_resources()
+
+
+# Step 4 - close everything properly
+rtb.close()

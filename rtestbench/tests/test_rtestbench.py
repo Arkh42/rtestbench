@@ -19,13 +19,15 @@ def rtb_quiet():
     """Returns a non-verbose RTestBench."""
 
     import logging
-    from rtestbench.core import RTestBench
+    from rtestbench.core import RTestBenchManager
 
-    rtb = RTestBench(verbose=False)
+    rtb = RTestBenchManager(verbose=False)
     logging.disable(logging.CRITICAL)
 
     return rtb
 
+
+# Constructor
 
 def test_initialize(rtb_quiet):
     assert hasattr(rtb_quiet, "_VERBOSE")
@@ -33,9 +35,24 @@ def test_initialize(rtb_quiet):
     assert hasattr(rtb_quiet, "chat")
     assert hasattr(rtb_quiet, "logger")
 
-def test_detect_resources(rtb_quiet):
+
+# Destructor and related close functions
+
+def test_close_visa_rm(rtb_quiet):
+    assert rtb_quiet._visa_rm is not None
+    rtb_quiet._close_visa_rm()
+    assert rtb_quiet._visa_rm is None
+
+
+# Information about resources
+
+def test_detect_resources(sim_visa_rm, rtb_quiet):
     detected_resources = rtb_quiet.detect_resources()
+    assert detected_resources
     assert isinstance(detected_resources, tuple)
+
+
+# Resource management
 
 def test_attach_resource(sim_visa_rm, rtb_quiet):
     with pytest.raises(ValueError):

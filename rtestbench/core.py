@@ -15,7 +15,7 @@ import rtestbench.tools._factory as tool_factory
 
 
 
-class RTestBench(object):
+class RTestBenchManager(object):
 
     """Manager for Remote Test Bench.
 
@@ -28,8 +28,10 @@ class RTestBench(object):
     """
     
 
+    # Constructor
+
     def __init__(self, verbose=True):
-        """Inits RTestBench with chat, logger, and VISA resource manager."""
+        """Initializes RTestBenchManager with chat, logger, and VISA resource manager."""
 
         self._VERBOSE = verbose
         
@@ -39,8 +41,10 @@ class RTestBench(object):
         self.chat = _chat.TerminalChat()
 
 
-        if self._VERBOSE: self.chat.say_welcome()
+        self.logger.debug('Initializing the rtestbench manager...')
 
+        if self._VERBOSE: self.chat.say_welcome()
+        
         self.logger.debug('Calling the VISA resource manager...')
         try:
             self._visa_rm = visa.ResourceManager()
@@ -50,26 +54,57 @@ class RTestBench(object):
         else:
             self.logger.debug('Calling the VISA resource manager...done')
             if self._VERBOSE: self.chat.say_ready()
+        
+        self.logger.debug('Initializing the rtestbench manager...done')
     
+
+    # Destructor and related close functions
 
     def __del__(self):
-        # logger.debug('Closing all connected resources...')
+        """Ensures that all resources are properly closed at destruction."""
+
+        self.close(enable_log=False) # Disable logging at destruction: cf. Issue #1
+
+        if self._VERBOSE: self.chat.say_goodbye()
+    
+
+    def close(self, enable_log: bool = True):
+        """Closes the R-testbench Manager."""
+
+        if self._attached_resources:
+            self.close_all_resources(enable_log)
+
+        if self._visa_rm is not None:
+            self._close_visa_rm(enable_log)
+    
+
+    def _close_visa_rm(self, enable_log: bool = True):
+        """Closes the visa resource manager and sets it to None."""
+
+        if enable_log:
+            self.logger.debug('Closing the VISA resource manager...')
+        self._visa_rm.close()
+        self._visa_rm = None
+        if enable_log: 
+            self.logger.debug('Closing the VISA resource manager...done')
+    
+    def close_all_resources(self, enable_log: bool = True):
+        """Closes all resources attached to the Manager and clear the corresponding list."""
+
+        if enable_log:
+            self.logger.debug('Closing all connected resources...')
         for device in self._attached_resources:
             device.detach_visa_resource()
-        # logger.debug('Closing all connected resources...')
-
-        # logger.debug('Closing the VISA resource manager...')
-        self._visa_rm.close()
-        # logger.debug('Closing the VISA resource manager...done')
-
-        if self._VERBOSE:
-            self.chat.say_goodbye()
+            if enable_log:
+                self.logger.info('Resource detached from R-testbench: {}'.format(device))
+        self._attached_resources.clear()
+        if enable_log:
+            self.logger.debug('Closing all connected resources...done')
 
     
-    # Resources management
-    ###
+    # Information about resources
 
-    def detect_resources(self):
+    def detect_resources(self) -> tuple:
         return self._visa_rm.list_resources()
     
     def print_available_resources(self):
@@ -81,7 +116,22 @@ class RTestBench(object):
             print('No available resources')
     
 
-    def attach_resource(self, addr):
+    # Resource management
+
+    def attach_resource(self, addr: str):
+        """
+        Attaches the resource at the specified address to the R-testbench manager.
+
+        Args:
+            addr: The address of the resource to attach to R-testbench manager.
+
+        Returns:
+            A Tool (or any daughter-class object) corresponding to the resource attached to the Manager.
+
+        Raises:
+            ValueError: An error occured reaching the specified address.
+        """
+
         try:
             new_resource = tool_factory.construct_tool(self._visa_rm, addr)
         except (RuntimeError, ValueError) as error_msg:
@@ -94,7 +144,6 @@ class RTestBench(object):
 
 
     # High-level log functions
-    ###
 
     def log_info(self, message):
         """Log a message at INFO level."""
@@ -118,17 +167,19 @@ class RTestBench(object):
     
 
     # Data management
-    ###
 
-    def log_data(self, format, path, *args):
+    def save_data(self, file_type: str, path: str, *args):
+        self.log_data(file_type, path, args)
+
+    def log_data(self, file_type: str, path: str, *args):
         """Log data into a file.
 
-        format: csv, pickle.
-        
-        path: absolute/relative path to the file into which the data is saved.
-        The function assumes that the path exists.
-
-        args: any number of tuples (header, data) where header is a string and data an iterable.
+        Args:
+            file_type: The type of file in which the data is saved.
+                Supported types are csv, pickle.
+            path: The absolute/relative path to the file.
+                The function assumes that the path exists.
+            args: Any number of tuples (header, data) where header is a string and data an iterable.
         """
 
         data_to_log = pd.DataFrame()
@@ -136,13 +187,13 @@ class RTestBench(object):
         for item in args:
             data_to_log[item[0]] = item[1]
 
-        if format=='csv':
+        if file_type == 'csv':
             data_to_log.to_csv(path + '.csv')
-        elif format=='pickle':
+        elif file_type == 'pickle':
             data_to_log.to_pickle(path + '.pkl')
-        elif format=='feather':
+        elif file_type == 'feather':
             raise NotImplemented('Not supported because needs dependencies.') # data_to_log.to_feather(path + '.feather')
-        elif format=='hdf5':
+        elif file_type == 'hdf5':
             raise NotImplemented('Not supported because needs dependencies.') # data_to_log.to_hdf(path + '.h5', key='data', format='fixed')
         else:
-            self.log_warning("Unknown format {} passed to the log_data() function. Ignored.".format(format))
+            self.log_warning("Unknown file_type {} passed to the log_data() function. Ignored.".format(file_type))
