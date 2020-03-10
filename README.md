@@ -78,3 +78,21 @@ List of devices currently supported in **R-testbench**, sorted by manufacturer:
 - Siglent
 - Tektronix
 - Tenma
+
+
+
+Organization of the package
+---------------------------
+
+
+The `rtestbench` package is organized with:
+- features, which are 'public' modules that provide the main functionalities;
+- utilities, which are 'private' modules that extend the capabilities of the package.
+
+Current features are:
+- `core`, the main module of r-testbench that regroups all functionalities.
+
+Current utilities are:
+- `_chat`, a message shaper for communication between app and user;
+- `_logger`, a logger configurator for the application;
+- `_meta`, a meta-data interface.
