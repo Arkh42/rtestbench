@@ -19,11 +19,11 @@ To use **R-testbench**, you simply need to import the *rtestbench* Python packag
 ```python
 import rtestbench
 ```
-Then you create an instance of `RTestBench`, that is basically the high-level interface/manager of the application.
+Then you create an instance of `RTestBenchManager`, that is basically the high-level interface/manager of the application.
 ```python
-rtb = rtestbench.RTestBench()
+rtb = rtestbench.RTestBenchManager()
 ```
-Finally, you attach your instrument (resource) to `RTestBench` by passing the address of the instrument.
+Finally, you attach your instrument (resource) to `RTestBenchManager` by passing the address of the instrument.
 Connection between the computer and the instrument can be made by USB, LAN (Ethernet, WiFi), GPIB or RS232.
 ```python
 instr = rtb.attach_resource(ADDR_INSTR)
