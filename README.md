@@ -51,6 +51,18 @@ please read the [contribution guidelines](https://github.com/Arkh42/rtestbench/b
 You can also contact me by [email](mailto:aquenon@hotmail.be).
 
 
+### Statistics
+
+![Language counts](https://img.shields.io/github/languages/count/Arkh42/rtestbench)
+&bull;
+![Top language](https://img.shields.io/github/languages/top/Arkh42/rtestbench)
+
+[![Issues](https://img.shields.io/github/issues-raw/Arkh42/rtestbench)](https://github.com/Arkh42/rtestbench/issues?q=is%3Aopen+is%3Aissue)
+&bull;
+[![Issues closed](https://img.shields.io/github/issues-closed-raw/Arkh42/rtestbench)](https://github.com/Arkh42/rtestbench/issues?q=is%3Aissue+is%3Aclosed)
+
+
+
 ### List of supported devices
 
 List of devices currently supported in **R-testbench**, sorted by manufacturer:
