@@ -9,6 +9,16 @@ import numpy
 import logging
 
 
+class ToolInfo:
+    """Gathers all information related to any Tool."""
+
+    def __init__(self):
+        self.family = None
+        self.brand = None
+        self.model = None
+        self.serial_number = None
+
+
 class Tool:
     """Generic class that defines the features common to all electronic tools."""
 
