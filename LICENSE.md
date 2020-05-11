@@ -5,6 +5,8 @@ authorship (the "Original Work") whose owner (the "Licensor") has placed the
 following licensing notice adjacent to the copyright notice for the Original
 Work:
 
+Copyright (c) 2019-2020, Alexandre Quenon (UMONS)
+
 Licensed under the Open Software License version 3.0
 
 1) Grant of Copyright License. Licensor grants You a worldwide, royalty-free,
