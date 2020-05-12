@@ -18,6 +18,11 @@ class ToolInfo:
         self.model = None
         self.serial_number = None
 
+    def __str__(self):
+        return "The tool is a(n) {} from {}, {} model (SN = {})".format(
+            self.family, self.brand, self.model, self.serial_number)
+
+
 
 class Tool:
     """Generic class that defines the features common to all electronic tools."""
