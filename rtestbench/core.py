@@ -14,23 +14,111 @@ import rtestbench.tools
 import rtestbench.tools._factory as tool_factory
 
 
+SUPPORTED_DATA_CONTAINERS = (np.ndarray, list, tuple)
+SUPPORTED_TRANSFERT_FORMATS = ('text', 'ascii', 'bin', 'bin32', 'bin64')
+SUPPORTED_ENDIAN_ORDER = ('big', 'little')
+
+
 
 ##########################
 # Generic tool interface #
 ##########################
 
 class ToolInfo(object):
-    """Gathers all information related to any Tool."""
+    """Gathers all information related to any Tool.
+    
+    Attributes:
+        family: A str representing the family of the tool (e.g., oscilloscope or multimeter).
+        manufacturer: A str containing the name of the manufacturer.
+        model: A str providing the specific model of the tool.
+        serial_number: A str giving the serial number of the tool.
+    """
 
     def __init__(self):
         self.family = None
-        self.brand = None
+        self.manufacturer = None
         self.model = None
         self.serial_number = None
 
     def __str__(self):
         return "The tool is a(n) {} from {}, {} model (SN = {})".format(
-            self.family, self.brand, self.model, self.serial_number)
+            self.family, self.manufacturer, self.model, self.serial_number)
+
+
+class ToolProperties(object):
+    """Gathers all properties to configure any Tool.
+    
+    Attributes:
+        _data_container: A container class to store the data retrieved from the tool (recommended: numpy.ndarray).
+        _transfer_format: A list representing the available transfer formats for communication between the tool and the computer.
+        bin_data_header: A str for the optional header that is in front of binary data.
+        _endian: A str stating if data is big or little endian.
+    """
+
+    def __init__(self):
+        self._data_container = np.ndarray
+
+        self._transfer_formats = []
+
+        self.bin_data_header = None
+        self._endian = None
+    
+
+    @property
+    def data_container(self):
+        return self._data_container
+
+    @data_container.setter
+    def data_container(self, class_name):
+        if class_name in SUPPORTED_DATA_CONTAINERS:
+            self._data_container = class_name
+        else:
+            raise ValueError("The class_name argument must be in {}.".format(SUPPORTED_DATA_CONTAINERS))
+
+
+    @property
+    def transfer_formats(self):
+        return self._transfer_formats
+
+    @transfer_formats.setter
+    def transfer_formats(self, formats: list):
+        if all(fmt in SUPPORTED_TRANSFERT_FORMATS for fmt in formats):
+            self._transfer_formats = formats
+        else:
+            raise ValueError("The formats argument must be a list containing at least one element among {}.".format(SUPPORTED_TRANSFERT_FORMATS))
+
+
+    @property
+    def endian(self):
+        return self._endian
+
+    @endian.setter
+    def endian(self, order: str):
+        if order in SUPPORTED_ENDIAN_ORDER:
+            self._endian = order
+        else:
+            raise ValueError("The order argument must be in {}.".format(SUPPORTED_ENDIAN_ORDER))
+
+
+
+class Tool(object):
+    """Generic class that defines the features common to all electronic tools.
+    
+    Tool can be used to implement a generic interface to send raw SCPI commands if the specific class does not exist.
+
+    Attributes:
+        _virtual_interface: An object that represents the virtual software interface which allows to communicate with the tool.
+        _info: A ToolInfo object including family, manufacturer, model and serial number.
+        _properties: A ToolProperties object for configuration.
+    """
+
+    def __init__(self):
+        self._virtual_interface = None
+
+        self._info = ToolInfo()
+        self._properties = ToolProperties()
+
+
 
 
 
