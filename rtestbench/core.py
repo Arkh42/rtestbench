@@ -15,6 +15,29 @@ import rtestbench.tools._factory as tool_factory
 
 
 
+##########################
+# Generic tool interface #
+##########################
+
+class ToolInfo(object):
+    """Gathers all information related to any Tool."""
+
+    def __init__(self):
+        self.family = None
+        self.brand = None
+        self.model = None
+        self.serial_number = None
+
+    def __str__(self):
+        return "The tool is a(n) {} from {}, {} model (SN = {})".format(
+            self.family, self.brand, self.model, self.serial_number)
+
+
+
+#######################
+# R-testbench manager #
+#######################
+
 class RTestBenchManager(object):
 
     """Manager for Remote Test Bench.

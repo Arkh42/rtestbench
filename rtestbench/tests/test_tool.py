@@ -2,28 +2,6 @@
 import pytest
 
 
-@pytest.fixture
-def tool_info_empty():
-    """Returns an empty ToolInfo object, i.e., with all fields equal to None."""
-
-    from rtestbench.tools.tool import ToolInfo
-    return ToolInfo()
-
-
-def test_tool_info_attributes(tool_info_empty):
-    assert hasattr(tool_info_empty, "family")
-    assert hasattr(tool_info_empty, "brand")
-    assert hasattr(tool_info_empty, "model")
-    assert hasattr(tool_info_empty, "serial_number")
-
-def test_tool_info_init(tool_info_empty):
-    assert tool_info_empty.family is None
-    assert tool_info_empty.brand is None
-    assert tool_info_empty.model is None
-    assert tool_info_empty.serial_number is None
-
-
-
 # --- Based on unittest --- #
 
 # Unit tests framework
