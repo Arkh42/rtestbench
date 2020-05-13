@@ -1,5 +1,7 @@
 # VISA library
 pyvisa >= 1.9
+pyvisa-py >= 0.3
+pyvisa-sim >= 0.3
 
 # Scientific computation
 numpy >= 1.13.0
