@@ -52,7 +52,7 @@ class ToolProperties(object):
         _data_container: A container class to store the data retrieved from the tool (recommended: numpy.ndarray).
         _transfer_format: A list representing the available transfer formats for communication between the tool and the computer.
         bin_data_header: A str for the optional header that is in front of binary data.
-        _endian: A str stating if data is big or little endian.
+        _endian: A str stating if binary data is big or little endian.
     """
 
     def __init__(self):
@@ -100,7 +100,6 @@ class ToolProperties(object):
             raise ValueError("The order argument must be in {}.".format(SUPPORTED_ENDIAN_ORDER))
 
 
-
 class Tool(object):
     """Generic class that defines the features common to all electronic tools.
     
@@ -120,8 +119,6 @@ class Tool(object):
 
 
 
-
-
 #######################
 # R-testbench manager #
 #######################
@@ -132,7 +129,7 @@ class RTestBenchManager(object):
 
     Attributes:
         _VERBOSE: A boolean indicating the quantity of information sent through the terminal.
-        _attached_resources: A list of the resources (instruments) attached to the remote testbench.
+        _attached_tools: A list of the resources (instruments) attached to the remote testbench.
         _visa_rm: A ResourceManager from the visa module.
         chat: A TerminalChat for user interaction via the terminal.
         logger: A Logger handling log messages for streaming and printing.
@@ -140,55 +137,52 @@ class RTestBenchManager(object):
     
 
     # Constructor
-
-    def __init__(self, verbose=True):
+    def __init__(self, verbose=True, visa_library=''):
         """Initializes RTestBenchManager with chat, logger, and VISA resource manager."""
 
         self._VERBOSE = verbose
-        
-        self._attached_resources = list()
-
+        self._attached_tools = list()
         self.logger = _logger.make_logger('rtestbench', self._VERBOSE)
         self.chat = _chat.TerminalChat()
 
-
         self.logger.debug('Initializing the rtestbench manager...')
 
-        if self._VERBOSE: self.chat.say_welcome()
+        if self._VERBOSE:
+            self.chat.say_welcome()
         
         self.logger.debug('Calling the VISA resource manager...')
         try:
-            self._visa_rm = visa.ResourceManager()
+            self._visa_rm = visa.ResourceManager(visa_library)
         except OSError as err:
             self.logger.critical(error_msg)
             raise OSError('R-testbench cannot be properly initialized.')
         else:
             self.logger.debug('Calling the VISA resource manager...done')
-            if self._VERBOSE: self.chat.say_ready()
+            if self._VERBOSE:
+                self.chat.say_ready()
         
         self.logger.debug('Initializing the rtestbench manager...done')
     
 
     # Destructor and related close functions
-
     def __del__(self):
         """Ensures that all resources are properly closed at destruction."""
 
         self.close(enable_log=False) # Disable logging at destruction: cf. Issue #1
 
-        if self._VERBOSE: self.chat.say_goodbye()
+        if self._VERBOSE:
+            self.chat.say_goodbye()
     
 
     def close(self, enable_log: bool = True):
         """Closes the R-testbench Manager."""
 
-        if self._attached_resources:
-            self.close_all_resources(enable_log)
+        if self._attached_tools:
+            self.close_all_tools(enable_log)
 
         if self._visa_rm is not None:
             self._close_visa_rm(enable_log)
     
-
     def _close_visa_rm(self, enable_log: bool = True):
         """Closes the visa resource manager and sets it to None."""
 
@@ -199,48 +193,45 @@ class RTestBenchManager(object):
         if enable_log: 
             self.logger.debug('Closing the VISA resource manager...done')
     
-    def close_all_resources(self, enable_log: bool = True):
+    def close_all_tools(self, enable_log: bool = True):
         """Closes all resources attached to the Manager and clear the corresponding list."""
 
         if enable_log:
             self.logger.debug('Closing all connected resources...')
-        for device in self._attached_resources:
+        for device in self._attached_tools:
             device.detach_visa_resource()
             if enable_log:
                 self.logger.info('Resource detached from R-testbench: {}'.format(device))
-        self._attached_resources.clear()
+        self._attached_tools.clear()
         if enable_log:
             self.logger.debug('Closing all connected resources...done')
 
     
-    # Information about resources
-
-    def detect_resources(self) -> tuple:
+    # Information about tools
+    def detect_tools(self) -> tuple:
         return self._visa_rm.list_resources()
     
-    def print_available_resources(self):
-        available_resources = self.detect_resources()
+    def print_available_tools(self):
+        available_tools = self.detect_tools()
 
-        if available_resources:
-            print('Available resources:', available_resources)
+        if available_tools:
+            print('Available tools:', available_tools)
         else:
-            print('No available resources')
+            print('No available tools.')
     
 
-    # Resource management
-
-    def attach_resource(self, addr: str):
-        """
-        Attaches the resource at the specified address to the R-testbench manager.
+    # Tools management
+    def attach_tool(self, addr: str):
+        """Attaches the tool at the specified address to the R-testbench manager.
 
         Args:
-            addr: The address of the resource to attach to R-testbench manager.
+            addr: The address of the tool to attach to R-testbench manager.
 
         Returns:
-            A Tool (or any daughter-class object) corresponding to the resource attached to the Manager.
+            A Tool (or any daughter-class object) corresponding to the tool attached to the Manager.
 
         Raises:
-            ValueError: An error occured reaching the specified address.
+            ValueError: An error occured when trying to reach the specified address.
         """
 
         try:
@@ -250,12 +241,11 @@ class RTestBenchManager(object):
             raise ValueError('Impossible to attach resource to R-testbench')
         else:
             self.logger.info('New resource attached to R-testbench: {}'.format(new_resource))
-            self._attached_resources.append(new_resource)
+            self._attached_tools.append(new_resource)
             return new_resource
 
 
     # High-level log functions
-
     def log_info(self, message):
         """Log a message at INFO level."""
 
@@ -278,7 +268,6 @@ class RTestBenchManager(object):
     
 
     # Data management
-
     def save_data(self, file_type: str, path: str, *args):
         self.log_data(file_type, path, args)
 

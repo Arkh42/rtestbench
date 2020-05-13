@@ -111,53 +111,51 @@ def test_toolProperties_endian(toolProperties_empty):
 #######################
 
 @pytest.fixture
-def sim_visa_rm():
-    """Returns a simulated VISA resource manager."""
-
-    import visa
-
-    return visa.ResourceManager('@sim')
-
-@pytest.fixture
 def rtb_quiet():
     """Returns a non-verbose RTestBench."""
 
     import logging
     from rtestbench.core import RTestBenchManager
 
-    rtb = RTestBenchManager(verbose=False)
+    rtb = RTestBenchManager(verbose=False, visa_library='')
     logging.disable(logging.CRITICAL)
+
+    return rtb
+
+@pytest.fixture
+def rtb_simulated_visaRM():
+    """Returns a non-verbose RTestBench with a simulated VISA resource manager."""
+
+    from rtestbench.core import RTestBenchManager
+
+    rtb = RTestBenchManager(verbose=False, visa_library='@sim')
 
     return rtb
 
 
 # Constructor
-
-def test_initialize(rtb_quiet):
-    assert hasattr(rtb_quiet, "_VERBOSE")
-    assert hasattr(rtb_quiet, "_attached_resources")
-    assert hasattr(rtb_quiet, "chat")
-    assert hasattr(rtb_quiet, "logger")
+def test_initialize(rtb_simulated_visaRM):
+    assert hasattr(rtb_simulated_visaRM, "_VERBOSE")
+    assert hasattr(rtb_simulated_visaRM, "_attached_tools")
+    assert hasattr(rtb_simulated_visaRM, "chat")
+    assert hasattr(rtb_simulated_visaRM, "logger")
 
 
 # Destructor and related close functions
-
-def test_close_visa_rm(rtb_quiet):
-    assert rtb_quiet._visa_rm is not None
-    rtb_quiet._close_visa_rm()
-    assert rtb_quiet._visa_rm is None
-
-
-# Information about resources
-
-def test_detect_resources(sim_visa_rm, rtb_quiet):
-    detected_resources = rtb_quiet.detect_resources()
-    assert detected_resources
-    assert isinstance(detected_resources, tuple)
+def test_close_visa_rm(rtb_simulated_visaRM):
+    assert rtb_simulated_visaRM._visa_rm is not None
+    rtb_simulated_visaRM._close_visa_rm()
+    assert rtb_simulated_visaRM._visa_rm is None
 
 
-# Resource management
+# Information about tools
+def test_detect_tools(rtb_simulated_visaRM):
+    detected_tools = rtb_simulated_visaRM.detect_tools()
+    assert detected_tools
+    assert isinstance(detected_tools, tuple)
 
-def test_attach_resource(sim_visa_rm, rtb_quiet):
-    with pytest.raises(ValueError):
-        rtb_quiet.attach_resource('ASRL1::INSTR')
+
+# Tools management
+# def test_attach_tool(sim_visa_rm, rtb_quiet):
+#     with pytest.raises(ValueError):
+#         rtb_quiet.attach_tool('ASRL1::INSTR')
