@@ -155,7 +155,7 @@ class RTestBenchManager(object):
         self.logger.debug('Calling the VISA resource manager...')
         try:
             self._visa_rm = visa.ResourceManager(visa_library)
-        except OSError as err:
+        except OSError as error_msg:
             self.logger.critical(error_msg)
             raise OSError('R-testbench cannot be properly initialized.')
         else:

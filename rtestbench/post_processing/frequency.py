@@ -45,11 +45,11 @@ def multiplot_psd(data: pd_list, NFFT='full', Fs=None, title='Power Spectral Den
     legend = list()
     index = 0
 
-    for data in y_data:
+    for y in data:
         if NFFT in ('full', 'whole'):
-            NFFT = len(data)
-        plt.psd(data, NFFT=NFFT, Fs=Fs, scale_by_freq=True, ls=_auto_style.auto_linestyle[index])
-        legend.append(data.name)
+            NFFT = len(y)
+        plt.psd(y, NFFT=NFFT, Fs=Fs, scale_by_freq=True, ls=_auto_style.auto_linestyle[index])
+        legend.append(y.name)
         index = index + 1
 
     plt.title(title)

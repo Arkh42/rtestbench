@@ -215,12 +215,12 @@ class Tool:
             raise UnboundLocalError("No data format is selected for the tool.")
         else:
             try:
-                if self.transfer_format is 'text':
+                if self.transfer_format == 'text':
                     return self._visa_resource.query_ascii_values(request, container=self.data_container)
                 elif self.transfer_format in ('bin', 'bin32'):
                     return self._visa_resource.query_binary_values(request, datatype='f', container=self.data_container,
                         header_fmt=self.data_header, is_big_endian=self.big_endianess)
-                elif self.transfer_format is 'bin64':
+                elif self.transfer_format == 'bin64':
                     return self._visa_resource.query_binary_values(request, datatype='d', container=self.data_container, 
                         header_fmt=self.data_header, is_big_endian=self.big_endianess)
                 else:
