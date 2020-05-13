@@ -33,12 +33,14 @@ def test_toolInfo_attributes(toolInfo_empty):
     assert hasattr(toolInfo_empty, "manufacturer")
     assert hasattr(toolInfo_empty, "model")
     assert hasattr(toolInfo_empty, "serial_number")
+    assert hasattr(toolInfo_empty, "interface")
 
 def test_toolInfo_init(toolInfo_empty):
     assert toolInfo_empty.family is None
     assert toolInfo_empty.manufacturer is None
     assert toolInfo_empty.model is None
     assert toolInfo_empty.serial_number is None
+    assert toolInfo_empty.interface is None
 
 # --------
 

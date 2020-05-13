@@ -40,9 +40,11 @@ class ToolInfo(object):
         self.model = None
         self.serial_number = None
 
+        self.interface = None
+
     def __str__(self):
-        return "The tool is a(n) {} from {}, {} model (SN = {})".format(
-            self.family, self.manufacturer, self.model, self.serial_number)
+        return "The tool is a(n) {} from {}, {} model (SN = {}), connected by {}".format(
+            self.family, self.manufacturer, self.model, self.serial_number, self.interface)
 
 
 class ToolProperties(object):
