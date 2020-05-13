@@ -109,11 +109,11 @@ class B2985A(Interface):
             else:
                 raise ValueError(
                     "Output source's low state {0} is not available in system {1}.\nLegal states are: {2}".format(
-                        condition, self.id, self._available_output_low_states))
+                        state, self.id, self._available_output_low_states))
         except:
             raise
         else:
-            self.logger.info("The system {} output source's low state has been set to {}.".format(self.id, condition))
+            self.logger.info("The system {} output source's low state has been set to {}.".format(self.id, state))
 
 
     # Temperature sensing

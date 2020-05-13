@@ -4,10 +4,10 @@ from setuptools import setup, find_packages
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-setuptools.setup(
+setup(
     name="rtestbench",
     version="0.1.1",
-    packages=setuptools.find_packages(),
+    packages=find_packages(),
     install_requires=[
         'pyvisa >=1.9',
         'numpy >=1.13.0',

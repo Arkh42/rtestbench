@@ -53,8 +53,8 @@ def multiplot(time_data, y_data, ylabel, title='Time series plot', **kwargs):
 
 
 def remove_offset(y, offset='mean'):
-    if offset is 'mean':
+    if offset == 'mean':
         return y - y.mean()
-    elif offset is 'first':
+    elif offset == 'first':
         return y - y.iloc[0]
 
