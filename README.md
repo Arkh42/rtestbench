@@ -51,6 +51,12 @@ please read the [contribution guidelines](https://github.com/Arkh42/rtestbench/b
 You can also contact me by [email](mailto:aquenon@hotmail.be).
 
 
+### Code quality
+
+![Continuous Integration (pip)](https://github.com/Arkh42/rtestbench/workflows/Continuous%20Integration%20(pip)/badge.svg?branch=master)
+![Coverage](https://img.shields.io/coveralls/github/Arkh42/rtestbench/master)
+
+
 ### Statistics
 
 ![Language counts](https://img.shields.io/github/languages/count/Arkh42/rtestbench)
