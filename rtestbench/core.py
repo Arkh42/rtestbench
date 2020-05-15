@@ -12,6 +12,7 @@ from rtestbench import _chat
 from rtestbench import _logger
 import rtestbench.tools
 import rtestbench.tools._factory as tool_factory
+from rtestbench.tools.keysight import _factory as keysight_factory
 
 
 SUPPORTED_DATA_CONTAINERS = (np.ndarray, list, tuple)
@@ -32,6 +33,8 @@ class ToolInfo(object):
         manufacturer: A str containing the name of the manufacturer.
         model: A str providing the specific model of the tool.
         serial_number: A str giving the serial number of the tool.
+        software_version: A str including the software version number of the tool.
+        interface: A str describing the type of interface that connects the tool.
     """
 
     def __init__(self):
@@ -39,12 +42,46 @@ class ToolInfo(object):
         self.manufacturer = None
         self.model = None
         self.serial_number = None
-
-        self.interface = None
+        self.software_version = None
+        self._interface = None
 
     def __str__(self):
         return "The tool is a(n) {} from {}, {} model (SN = {}), connected by {}".format(
-            self.family, self.manufacturer, self.model, self.serial_number, self.interface)
+            self.family, self.manufacturer, self.model, self.serial_number, self._interface)
+    
+
+    @property
+    def interface(self):
+        return self._interface
+    
+    @interface.setter
+    def interface(self, interface_type: visa.constants.InterfaceType):
+        if interface_type is None:
+            self._interface = None
+        elif interface_type == visa.constants.InterfaceType.gpib:
+            self._interface = "GPIB"
+        elif interface_type == visa.constants.InterfaceType.vxi:
+            self._interface = "VXI, VME or MXI"
+        elif interface_type == visa.constants.InterfaceType.gpib_vxi:
+            self._interface = "GPIB VXI"
+        elif interface_type == visa.constants.InterfaceType.asrl:
+            self._interface = "Serial (RS-232 or RS-485)"
+        elif interface_type == visa.constants.InterfaceType.pxi:
+            self._interface = "PXI"
+        elif interface_type == visa.constants.InterfaceType.tcpip:
+            self._interface = "TCP/IP"
+        elif interface_type == visa.constants.InterfaceType.usb:
+            self._interface = "USB"
+        elif interface_type == visa.constants.InterfaceType.rio:
+            self._interface = "Rio"
+        elif interface_type == visa.constants.InterfaceType.firewire:
+            self._interface = "Firewire"
+        elif interface_type == visa.constants.InterfaceType.rsnrp:
+            self._interface = "Rohde & Schwarz Device via Passport"
+        elif interface_type == visa.constants.InterfaceType.unknown:
+            self._interface = "Unknown"
+        else:
+            raise ResourceWarning("Unexpected interface type: {}.".format(interface_type))
 
 
 class ToolProperties(object):
@@ -108,16 +145,166 @@ class Tool(object):
     Tool can be used to implement a generic interface to send raw SCPI commands if the specific class does not exist.
 
     Attributes:
-        _virtual_interface: An object that represents the virtual software interface which allows to communicate with the tool.
         _info: A ToolInfo object including family, manufacturer, model and serial number.
         _properties: A ToolProperties object for configuration.
+        _virtual_interface: An object that represents the virtual software interface which allows to communicate with the tool.
     """
 
-    def __init__(self):
+    def __init__(self, info: ToolInfo):
+        self._info = info
+        self._properties = ToolProperties()
         self._virtual_interface = None
 
-        self._info = ToolInfo()
-        self._properties = ToolProperties()
+
+    def connect_virtual_interface(self, interface):
+        """Connects a virtual interface to the Tool object.
+
+        Raises:
+            AttributeError: An unexpected type of virtual interface has been passed.
+            IOError: The VISA session is not valid.
+            RuntimeError: A virtual interface is already attached.
+        """
+
+        if self._virtual_interface is None:
+            try:
+                interface.session
+            except AttributeError:
+                raise AttributeError("Unexpected virtual interface type {}.".format(interface))
+            except visa.InvalidSession as error_msg:
+                raise IOError(error_msg)
+            else:
+                self._virtual_interface = interface
+                self._info.interface = self._virtual_interface.interface_type
+        else:
+            raise RuntimeError("A virtual interface has already been attached to the tool {}.".format(self._info))
+    
+    def disconnect_virtual_interface(self):
+        """Disconnects the current virtual interface from the Tool object.
+        """
+
+        if self._virtual_interface is not None:
+            self._virtual_interface.close()
+            self._virtual_interface = None
+    
+
+    def send(self, command: str) -> int:
+        """Sends an SCPI command which does not expect any return from the tool (e.g., '*RST').
+        
+        Returns:
+            An int given the number of bytes sent to the tool.
+        Raises:
+            UnboundLocalError: No virtual interface is connected to the tool to send a command.
+            IOError: An error occured while sending the command.
+        """
+
+        if self._virtual_interface is None:
+            raise UnboundLocalError("No virtual interface connected to the tool {}.".format(self._info))
+        else:
+            try:
+                self._virtual_interface.write(command)
+            except visa.VisaIOError as err:
+                raise IOError("Cannot send the command {}; origin comes from {}.".format(command, err.description))
+    
+    def query(self, request: str) -> str:
+        """Sends an SCPI request which expects an answer from the tool (e.g., '*IDN?').
+        
+        Returns:
+            An str embedding the tool's answer.
+        Raises:
+            UnboundLocalError: No virtual interface is connected to the tool to send a command.
+            IOError: An error occured because no answer was received from the tool.
+        """
+
+        if self._virtual_interface is None:
+            raise UnboundLocalError("No virtual interface connected to the tool {}.".format(self._info))
+        try:
+            return self._virtual_interface.query(request)
+        except visa.VisaIOError as err:
+            raise IOError("Cannot get an answer from the request {}; origin comes from {}.".format(request, err.description))
+
+
+
+class ToolFactory(object):
+    """Factory for Tool objects.
+    
+    Attributes:
+        _tool_manager: A manager class for tools detection and connection.
+    """
+
+    def __init__(self, tool_manager):
+        
+        self._tool_manager = tool_manager
+    
+
+    def get_tool(self, address: str):
+        try:
+            new_tool_interface = self._find_tool(address)
+            tool_id = self._identify_tool(new_tool_interface)
+            tool_info = self._parse_tool_id(tool_id)
+        except (AttributeError, ValueError, RuntimeError):
+            raise
+
+        try:
+            new_tool = self._build_specific_tool()
+        except (NotImplementedError, ValueError):
+            new_tool = self._build_generic_tool()
+
+    
+    def _find_tool(self, address: str) -> visa.Resource:
+        try:
+            new_tool_interface = self._tool_manager.open_resource(address)
+        except AttributeError:
+            raise AttributeError("The interface type is not recognized in {}.".format(address))
+        except ValueError:
+            raise ValueError("Something is wrong in the address {}.".format(address))
+        else:
+            return new_tool_interface
+    
+    def _identify_tool(self, tool_interface: visa.Resource) -> str:
+        """Sends the '*IDN?' SCPI command to identify the tool that is connected.
+
+        Raises:
+            RuntimeError: The tool does not answer the identification request.
+        """
+
+        try:
+            full_id = tool_interface.query('*IDN?')
+        except visa.VisaIOError:
+            raise IOError("No response: impossible to identify the tool {}".format(tool_interface))
+        else:
+            return full_id
+    
+    def _parse_tool_id(self, full_id: str) -> ToolInfo:
+        """Parses the identifation string of the tool to create the corresponding ToolInfo.
+
+        Raises:
+            ValueError: The string cannot be parsed correctly.
+        """
+
+        info = full_id.split(",")
+
+        if len(info) == 4:
+            tool_info = ToolInfo()
+            tool_info.manufacturer = info[0]
+            tool_info.model = info[1]
+            tool_info.serial_number = info[2]
+            tool_info.software_version = info[3]
+        else:
+            raise ValueError("The full_id {} is not formatted as <manufacturer>, <model>, <serial number, <software version number>.".format(full_id))
+
+        return tool_info
+    
+    def _build_specific_tool(self, tool_info) -> Tool:
+        if tool_info.manufacturer == "Keysight Technologies":
+            try:
+                return keysight_factory.find_and_build(tool_info.model, tool_info.serial_num)
+            except ValueError:
+                raise
+        else:
+            raise NotImplementedError("The manufacturer {} has not been implemented yet.".format(tool_info.manufacturer))
+    
+    def _build_generic_tool(self, tool_info):
+        pass
 
 
 
