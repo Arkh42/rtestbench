@@ -221,6 +221,31 @@ class Tool(object):
             return self._virtual_interface.query(request)
         except visa.VisaIOError as err:
             raise IOError("Cannot get an answer from the request {}; origin comes from {}.".format(request, err.description))
+    
+    def query_data(self, request):
+        pass
+
+
+    def clear_status(self):
+        """Sends a command to clear the status registers."""
+
+        self.send("*CLS")
+    
+    def reset(self):
+        """Sends a command to reset the configuration."""
+
+        self.send("*RST")
+
+
+    def lock(self):
+        """Requests a remote lock of the tool's I/O interface."""
+
+        raise NotImplementedError("This function must be implemented by daughter classes.")
+
+    def unlock(self):
+        """Releases the remote lock of the tool's I/O interface."""
+
+        raise NotImplementedError("This function must be implemented by daughter classes.")
 
 
 
@@ -236,7 +261,7 @@ class ToolFactory(object):
         self._tool_manager = tool_manager
     
 
-    def get_tool(self, address: str):
+    def get_tool(self, address: str) -> Tool:
         try:
             new_tool_interface = self._find_tool(address)
             tool_id = self._identify_tool(new_tool_interface)
@@ -248,6 +273,8 @@ class ToolFactory(object):
             new_tool = self._build_specific_tool()
         except (NotImplementedError, ValueError):
             new_tool = self._build_generic_tool()
+        
+        return new_tool
 
     
     def _find_tool(self, address: str) -> visa.Resource:
@@ -297,14 +324,14 @@ class ToolFactory(object):
     def _build_specific_tool(self, tool_info) -> Tool:
         if tool_info.manufacturer == "Keysight Technologies":
             try:
-                return keysight_factory.find_and_build(tool_info.model, tool_info.serial_num)
+                return keysight_factory.find_and_build(tool_info.model, tool_info.serial_number)
             except ValueError:
                 raise
         else:
             raise NotImplementedError("The manufacturer {} has not been implemented yet.".format(tool_info.manufacturer))
     
     def _build_generic_tool(self, tool_info):
-        pass
+        return Tool(tool_info)
 
 
 
@@ -410,11 +437,11 @@ class RTestBenchManager(object):
     
 
     # Tools management
-    def attach_tool(self, addr: str):
+    def attach_tool(self, address: str):
         """Attaches the tool at the specified address to the R-testbench manager.
 
         Args:
-            addr: The address of the tool to attach to R-testbench manager.
+            address: The address of the tool to attach to R-testbench manager.
 
         Returns:
             A Tool (or any daughter-class object) corresponding to the tool attached to the Manager.
@@ -423,15 +450,16 @@ class RTestBenchManager(object):
             ValueError: An error occured when trying to reach the specified address.
         """
 
+        factory = ToolFactory(self._visa_rm)
         try:
-            new_resource = tool_factory.construct_tool(self._visa_rm, addr)
-        except (RuntimeError, ValueError) as error_msg:
+            new_tool = factory.get_tool(address)
+        except (AttributeError, ValueError, RuntimeError) as error_msg:
             self.logger.error(error_msg)
-            raise ValueError('Impossible to attach resource to R-testbench')
+            raise ValueError('Impossible to attach the tool to R-testbench')
         else:
-            self.logger.info('New resource attached to R-testbench: {}'.format(new_resource))
-            self._attached_tools.append(new_resource)
-            return new_resource
+            self.logger.info('New resource attached to R-testbench: {}'.format(new_tool))
+            self._attached_tools.append(new_tool)
+            return new_tool
 
 
     # High-level log functions

@@ -211,6 +211,19 @@ def test_toolFactory_parsetoolid(toolFactory):
     with pytest.raises(ValueError):
         tool_info = toolFactory._parse_tool_id(tool_id)
 
+def test_toolFactory_buildspecifictool(toolFactory, fakeTool):
+    # Unknown manufacturer
+    with pytest.raises(NotImplementedError):
+        toolFactory._build_specific_tool(fakeTool._info)
+    
+    # Known manufacturer but unknown model
+    fakeTool._info.manufacturer = "Keysight Technologies"
+    with pytest.raises(ValueError):
+        toolFactory._build_specific_tool(fakeTool._info)
+
+def test_toolFactory_buildgenerictool(toolFactory):
+    pass
+
 # --------
 
 def test_tool_connectVirtualInterface(toolFactory, fakeToolWithoutInterface):
@@ -233,12 +246,12 @@ def test_tool_connectVirtualInterface(toolFactory, fakeToolWithoutInterface):
     with pytest.raises(RuntimeError):
         fakeToolWithoutInterface.connect_virtual_interface(tool_interface)
 
-def test_tool_disconnectVirtualInterface(toolFactory, fakeTool):
+def test_tool_disconnectVirtualInterface(fakeTool):
     assert fakeTool._virtual_interface is not None
     fakeTool.disconnect_virtual_interface()
     assert fakeTool._virtual_interface is None
 
-def test_tool_send(toolFactory, fakeToolWithoutInterface, fakeTool):
+def test_tool_send(fakeToolWithoutInterface, fakeTool):
     # No virtual interface
     with pytest.raises(UnboundLocalError):
         fakeToolWithoutInterface.send('command')
@@ -247,7 +260,7 @@ def test_tool_send(toolFactory, fakeToolWithoutInterface, fakeTool):
     fakeTool.send('command')
     
 
-def test_tool_query(toolFactory, fakeToolWithoutInterface, fakeTool):
+def test_tool_query(fakeToolWithoutInterface, fakeTool):
     # No virtual interface
     with pytest.raises(UnboundLocalError):
         fakeToolWithoutInterface.query('request')
@@ -256,6 +269,14 @@ def test_tool_query(toolFactory, fakeToolWithoutInterface, fakeTool):
     answer = fakeTool.query("*IDN?")
     assert isinstance(answer, str)
 
+
+def test_tool_lock(fakeTool):
+    with pytest.raises(NotImplementedError):
+        fakeTool.lock()
+
+def test_tool_unlock(fakeTool):
+    with pytest.raises(NotImplementedError):
+        fakeTool.unlock()
 
 
 

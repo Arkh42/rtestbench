@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="rtestbench",
-    version="0.1.1",
+    version="0.1.2",
     packages=find_packages(),
     install_requires=[
         'pyvisa >=1.9',
