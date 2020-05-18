@@ -1,9 +1,9 @@
 
-from rtestbench.tools.electrometer import Electrometer
+from rtestbench.tools.electrometer_v1 import Electrometer_v1
 from rtestbench.tools.tool import Tool
 
 
-class Interface(Electrometer):
+class Interface(Electrometer_v1):
     """Defines the commands common to all Keysight electrometers."""
 
 
@@ -17,7 +17,7 @@ class Interface(Electrometer):
         The constructor arguments are necessary to build the _id attribute.
         """
 
-        Electrometer.__init__(self, brand='Keysight', model=model, serial_num=serial_num)
+        Electrometer_v1.__init__(self, brand='Keysight', model=model, serial_num=serial_num)
 
         self._available_transfer_formats.update({
             'text':'ASCii',

@@ -1,28 +1,21 @@
 
-# R-testbench toolkit
 import rtestbench
 
 
-
 # Step 1 - create the software remote test bench
-rtb = rtestbench.RTestBenchManager()
+testbench = rtestbench.Manager()
 
-
-# Step 2 - detect available resources
-available_resources = rtb.detect_resources()
+# Step 2 - detect available tools
+available_tools = testbench.detect_tools()
 
 # Step 3 - print the results
-if available_resources:
-    print('Available resources:', available_resources)
+if available_tools:
+    print('Available tools:', available_tools)
 else:
-    print('No available resources')
+    print('No available tools')
 
-print('Variable type:', type(available_resources), '\n')
-
-
-# Alternative to steps 2 and 3
-rtb.print_available_resources()
-
+# Steps 2 and 3 in one command
+testbench.print_available_tools()
 
 # Step 4 - close everything properly
-rtb.close()
+testbench.close()

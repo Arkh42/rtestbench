@@ -35,20 +35,27 @@ To use **R-testbench**, you simply need to import the *rtestbench* Python packag
 ```python
 import rtestbench
 ```
+
 Then you create an instance of `RTestBenchManager`, that is basically the high-level interface/manager of the application.
 ```python
-rtb = rtestbench.RTestBenchManager()
+testbench = rtestbench.RTestBenchManager()
 ```
-Finally, you attach your instrument (resource) to `RTestBenchManager` by passing the address of the instrument.
-Connection between the computer and the instrument can be made by USB, LAN (Ethernet, WiFi), GPIB or RS232.
+For easier use, the `RTestBenchManager` is also available as `Manager`, hence:
 ```python
-instr = rtb.attach_resource(ADDR_INSTR)
+testbench = rtestbench.Manager()
 ```
+
+Finally, you attach your instrument (tool) to `RTestBenchManager` by passing the address of the instrument.
+Connection between the computer and the instrument can be made by USB, LAN (Ethernet, WiFi), GPIB or serial.
+```python
+instr = testbench.attach_tool(ADDR_INSTR)
+```
+
 **R-testbench** performs *automatic instrument recognition*.
 You can check the current status of the project and an exhaustive list of supported instruments below.
-If your instrument is not implemented in the toolkit, you can create a generic Tool and send raw commands.
+If your instrument is not implemented in the toolkit, a generic Tool is created so that you send raw SCPI commands.
 In that case, please consider contributing by either writing the specific class or
-sending me your script which contains the raw commands.
+sending me your script which contains the SCPI commands.
 
 Tutorial scripts are available [here](./rtestbench/tutorials/).
 This is a user-friendly way to start with the toolkit.
@@ -112,7 +119,7 @@ The `rtestbench` package is organized with:
 - utilities, which are 'private' modules that extend the capabilities of the package.
 
 Current features are:
-- `core`, the main module of r-testbench that regroups all functionalities.
+- `core`, the main module of R-testbench that regroups all functionalities.
 
 Current utilities are:
 - `_chat`, a message shaper for communication between app and user;

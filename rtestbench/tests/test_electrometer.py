@@ -1,9 +1,19 @@
+"""Test for the core module."""
+
+
+import pytest
+
+
+
+
+
+#TODO: update to the new Tool architecture and with pytest
 
 # Unit tests framework
 import unittest
 
 # Module Under Test
-import rtestbench.tools.electrometer as electrometer
+import rtestbench.tools.electrometer_v1 as electrometer
 
 import numpy
 
@@ -14,7 +24,7 @@ class ElectrometerTest(unittest.TestCase):
 
 
     def setUp(self):
-        self.default_electrometer = electrometer.Electrometer()
+        self.default_electrometer = electrometer.Electrometer_v1()
 
 
     # TEST - Initialization & properties

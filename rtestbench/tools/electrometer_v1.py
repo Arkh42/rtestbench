@@ -1,8 +1,45 @@
 
+# from rtestbench.core import Tool
+
+
+# class Electrometer(Tool):
+#     """Interface class for features common to all electrometers.
+
+#     All functions defined here must be overriden in daughter classes implementing actual electrometers.
+#     """
+
+#     def __init__(self, info: ToolInfo):
+#         info.family = "electrometer"
+
+#         Tool.__init__(info)
+    
+
+#     def set_scale(self, axis, scale):
+#         raise NotImplementedError('This function must be implemented in daughter classes.')
+#     def set_offset(self, axis, offset):
+#         raise NotImplementedError('This function must be implemented in daughter classes.')
+
+#     def config_xscale(self, scale):
+#         raise NotImplementedError('Function not implemented by the Electrometer class. \
+#             Must be implemented by daughter classes.')
+#     def config_xoffset(self, offset):
+#         raise NotImplementedError('Function not implemented by the Electrometer class. \
+#             Must be implemented by daughter classes.')
+#     def config_yscale(self, scale):
+#         raise NotImplementedError('Function not implemented by the Electrometer class. \
+#             Must be implemented by daughter classes.')
+#     def config_yoffset(self, offset):
+#         raise NotImplementedError('Function not implemented by the Electrometer class. \
+#             Must be implemented by daughter classes.')
+
+
+
+
+#TODO: update to the new Tool architecture
 from rtestbench.tools.tool import Tool
 
 
-class Electrometer(Tool):
+class Electrometer_v1(Tool):
     """Interface class for features common to all electrometers.
 
     All functions defined here must be overriden in daughter classes implementing actual electrometers.

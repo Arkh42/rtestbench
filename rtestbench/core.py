@@ -10,8 +10,6 @@ import visa
 
 from rtestbench import _chat
 from rtestbench import _logger
-import rtestbench.tools
-import rtestbench.tools._factory as tool_factory
 from rtestbench.tools.keysight import _factory as keysight_factory
 
 
@@ -266,7 +264,7 @@ class ToolFactory(object):
             new_tool_interface = self._find_tool(address)
             tool_id = self._identify_tool(new_tool_interface)
             tool_info = self._parse_tool_id(tool_id)
-        except (AttributeError, ValueError, RuntimeError):
+        except (AttributeError, ValueError, IOError):
             raise
 
         try:
@@ -274,7 +272,12 @@ class ToolFactory(object):
         except (NotImplementedError, ValueError):
             new_tool = self._build_generic_tool()
         
-        return new_tool
+        try:
+            new_tool.connect_virtual_interface(new_tool_interface)
+        except (AttributeError, IOError, RuntimeError):
+            raise
+        else:
+            return new_tool
 
     
     def _find_tool(self, address: str) -> visa.Resource:
@@ -457,7 +460,7 @@ class RTestBenchManager(object):
             self.logger.error(error_msg)
             raise ValueError('Impossible to attach the tool to R-testbench')
         else:
-            self.logger.info('New resource attached to R-testbench: {}'.format(new_tool))
+            self.logger.info('New tool attached to R-testbench: {}'.format(new_tool))
             self._attached_tools.append(new_tool)
             return new_tool
 
