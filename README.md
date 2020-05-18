@@ -11,6 +11,22 @@ The implementation is built on top of [PyVISA](https://pyvisa.readthedocs.io/en/
 
 
 
+Installation
+------------
+
+The installation is a 2-step process:
+1. clone the git repository
+2. install the dependencies
+
+```
+git clone https://github.com/Arkh42/rtestbench
+pip install -r rtestbench/requirements.txt
+```
+
+You are ready to start!
+
+
+
 Quick start
 -----------
 
