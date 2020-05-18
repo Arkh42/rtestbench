@@ -4,7 +4,7 @@ import unittest
 
 
 # Module Under Test
-import rtestbench.tools.keysight.electrometer._interface as electrometer
+import rtestbench.tools.keysight.electrometer._interface_v1 as electrometer
 
 from ._test_facilities import attach_simulated_device_to
 

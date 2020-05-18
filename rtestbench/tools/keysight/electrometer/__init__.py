@@ -7,4 +7,4 @@ __all__ = [
 ]
 
 
-from . import _interface
+from . import _interface_v1

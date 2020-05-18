@@ -1,5 +1,5 @@
 
-from rtestbench.tools.keysight.electrometer._interface import Interface
+from rtestbench.tools.keysight.electrometer._interface_v1 import Interface
 
 
 class B2981A(Interface):
