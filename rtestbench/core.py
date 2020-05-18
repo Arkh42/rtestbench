@@ -135,6 +135,12 @@ class ToolProperties(object):
             self._endian = order
         else:
             raise ValueError("The order argument must be in {}.".format(SUPPORTED_ENDIAN_ORDER))
+    
+
+    def add_properties(self, **kw):
+        """Add all key-values as properties."""
+
+        self.__dict__.update(kw)
 
 
 class Tool(object):
@@ -154,6 +160,7 @@ class Tool(object):
         self._virtual_interface = None
 
 
+    # Virtual interface management
     def connect_virtual_interface(self, interface):
         """Connects a virtual interface to the Tool object.
 
@@ -185,6 +192,7 @@ class Tool(object):
             self._virtual_interface = None
     
 
+    # Generic commands
     def send(self, command: str) -> int:
         """Sends an SCPI command which does not expect any return from the tool (e.g., '*RST').
         
@@ -224,6 +232,7 @@ class Tool(object):
         pass
 
 
+    # Common SCPI commands
     def clear_status(self):
         """Sends a command to clear the status registers."""
 

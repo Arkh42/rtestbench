@@ -7,6 +7,10 @@ import visa
 import numpy as np
 
 import rtestbench
+from rtestbench.core import Tool
+from rtestbench.core import ToolFactory
+from rtestbench.core import ToolInfo
+from rtestbench.core import ToolProperties
 
 
 ##########################
@@ -17,31 +21,29 @@ import rtestbench
 def toolInfo_empty():
     """Returns an empty ToolInfo object, i.e., with all fields equal to None."""
 
-    from rtestbench.core import ToolInfo
     return ToolInfo()
 
 @pytest.fixture
 def toolProperties_empty():
     """Returns an empty ToolProperties object, i.e., with default values."""
 
-    from rtestbench.core import ToolProperties
     return ToolProperties()
 
 @pytest.fixture
 def toolFactory():
     """Returns a ToolFactory object with pyvisa-sim to enable a simulated resource."""
 
-    from rtestbench.core import ToolFactory
-
     manager = visa.ResourceManager(visa_library='@sim')
     return ToolFactory(tool_manager=manager)
 
 @pytest.fixture
+def tool_empty(toolInfo_empty):
+    """Returns an empty Tool, i.e., with default values."""
+
+    return Tool(toolInfo_empty)
+
+@pytest.fixture
 def fakeToolWithoutInterface():
-
-    from rtestbench.core import Tool
-    from rtestbench.core import ToolInfo
-
     info = ToolInfo()
     info.manufacturer = "Toto Tester"
     info.model = "No interface"
@@ -52,9 +54,6 @@ def fakeToolWithoutInterface():
 
 @pytest.fixture
 def fakeTool(toolFactory):
-    from rtestbench.core import Tool
-    from rtestbench.core import ToolInfo
-
     info = ToolInfo()
     info.manufacturer = "Toto Tester"
     info.model = "Simulated interface"
@@ -179,6 +178,10 @@ def test_toolProperties_endian(toolProperties_empty):
     with pytest.raises(ValueError):
         toolProperties_empty.endian = 'toto'
 
+def test_toolProperties_addproperties(toolProperties_empty):
+    toolProperties_empty.add_properties(tester="toto")
+    assert hasattr(toolProperties_empty, "tester")
+
 # --------
 
 def test_toolFactory_attributes(toolFactory):
@@ -228,6 +231,17 @@ def test_toolFactory_buildgenerictool(toolFactory):
     pass
 
 # --------
+
+def test_tool_init(tool_empty):
+    assert hasattr(tool_empty, "_info")
+    assert hasattr(tool_empty, "_properties")
+    assert hasattr(tool_empty, "_virtual_interface")
+
+def test_tool_properties(tool_empty, toolProperties_empty):
+    assert tool_empty._properties.data_container == toolProperties_empty.data_container
+    assert tool_empty._properties.transfer_formats == toolProperties_empty.transfer_formats
+    assert tool_empty._properties.bin_data_header == toolProperties_empty.bin_data_header
+    assert tool_empty._properties.endian == toolProperties_empty.endian
 
 def test_tool_connectVirtualInterface(toolFactory, fakeToolWithoutInterface):
     # Wrong tool interface
