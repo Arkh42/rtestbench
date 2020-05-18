@@ -138,6 +138,7 @@ def test_toolProperties_datacontainer(toolProperties_empty):
     # Forbidden values
     with pytest.raises(ValueError):
         toolProperties_empty.data_container = float
+    with pytest.raises(ValueError):
         toolProperties_empty.data_container = str
 
 def test_toolProperties_transferformats(toolProperties_empty):
@@ -162,7 +163,9 @@ def test_toolProperties_transferformats(toolProperties_empty):
     # Forbidden values
     with pytest.raises(ValueError):
         toolProperties_empty.transfer_formats = ['toto']
+    with pytest.raises(ValueError):
         toolProperties_empty.transfer_formats = ['toto', 'text']
+    with pytest.raises(ValueError):
         toolProperties_empty.transfer_formats = ['text', 'toto']
 
 def test_toolProperties_endian(toolProperties_empty):
