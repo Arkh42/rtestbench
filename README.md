@@ -3,12 +3,30 @@ R-testbench
 ===========
 
 
+<p align="center">
+<a href="https://travis-ci.org/github/Arkh42/rtestbench"><img alt="Build Status" src="https://travis-ci.org/Arkh42/rtestbench.svg?branch=master"></a>
+<a href="https://github.com/Arkh42/rtestbench/actions"><img alt="Actions Status" src="https://github.com/Arkh42/rtestbench/workflows/Continuous%20Integration%20(pip)/badge.svg?branch=master"></a>
+<a href="https://codecov.io/gh/Arkh42/rtestbench"><img alt="Coverage Status" src="https://codecov.io/gh/Arkh42/rtestbench/branch/master/graph/badge.svg"></a>
+<a href="https://github.com/Arkh42/rtestbench/blob/master/LICENSE.md"><img alt="License: OSL" src="https://img.shields.io/github/license/Arkh42/rtestbench"></a>
+</p>
+
+---
+
 
 **R-testbench** is a toolkit written in Python that allows the user to 
 create a software remote test bench to control an actual electronic test bench remotely.
 It relies on the VISA protocol ([Virtual Instrument Software Architecture](http://www.ni.com/visa/)).
 The implementation is built on top of [PyVISA](https://pyvisa.readthedocs.io/en/latest/).
 
+---
+
+_Contents:_ 
+**[Installation](#installation)** |
+**[Quick start](#quick-start)** |
+**[Current status](#current-status)** |
+**[Organization of the package](#organization-of-the-package)**
+
+---
 
 
 Installation
@@ -74,22 +92,13 @@ please read the [contribution guidelines](https://github.com/Arkh42/rtestbench/b
 You can also contact me by [email](mailto:aquenon@hotmail.be).
 
 
-### Code quality
-
-![Continuous Integration (pip)](https://github.com/Arkh42/rtestbench/workflows/Continuous%20Integration%20(pip)/badge.svg?branch=master)
-[![codecov](https://codecov.io/gh/Arkh42/rtestbench/branch/master/graph/badge.svg)](https://codecov.io/gh/Arkh42/rtestbench)
-
-
-
 
 ### Statistics
 
 ![Language counts](https://img.shields.io/github/languages/count/Arkh42/rtestbench)
-&bull;
 ![Top language](https://img.shields.io/github/languages/top/Arkh42/rtestbench)
 
 [![Issues](https://img.shields.io/github/issues-raw/Arkh42/rtestbench)](https://github.com/Arkh42/rtestbench/issues?q=is%3Aopen+is%3Aissue)
-&bull;
 [![Issues closed](https://img.shields.io/github/issues-closed-raw/Arkh42/rtestbench)](https://github.com/Arkh42/rtestbench/issues?q=is%3Aissue+is%3Aclosed)
 
 
