@@ -181,6 +181,7 @@ def test_toolProperties_endian(toolProperties_empty):
 def test_toolProperties_addproperties(toolProperties_empty):
     toolProperties_empty.add_properties(tester="toto")
     assert hasattr(toolProperties_empty, "tester")
+    assert toolProperties_empty.tester == "toto"
 
 # --------
 
@@ -242,6 +243,16 @@ def test_tool_properties(tool_empty, toolProperties_empty):
     assert tool_empty._properties.transfer_formats == toolProperties_empty.transfer_formats
     assert tool_empty._properties.bin_data_header == toolProperties_empty.bin_data_header
     assert tool_empty._properties.endian == toolProperties_empty.endian
+
+def test_toolProperties_addproperties(tool_empty):
+    tool_empty.add_properties(tester="toto")
+    assert hasattr(tool_empty._properties, "tester")
+    assert tool_empty._properties.tester == "toto"
+
+def test_tool_editproperty(tool_empty):
+    assert tool_empty._properties.endian is None
+    tool_empty.edit_property(name="endian", value="big")
+    assert tool_empty._properties.endian == "big"
 
 def test_tool_connectVirtualInterface(toolFactory, fakeToolWithoutInterface):
     # Wrong tool interface

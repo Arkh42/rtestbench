@@ -137,11 +137,11 @@ class ToolProperties(object):
             raise ValueError("The order argument must be in {}.".format(SUPPORTED_ENDIAN_ORDER))
     
 
-    def add_properties(self, **kw):
-        """Add all key-values as properties."""
+    def add_properties(self, **properties):
+        """Adds all key-values as properties."""
 
-        self.__dict__.update(kw)
-
+        self.__dict__.update(properties)
+    
 
 class Tool(object):
     """Generic class that defines the features common to all electronic tools.
@@ -158,6 +158,17 @@ class Tool(object):
         self._info = info
         self._properties = ToolProperties()
         self._virtual_interface = None
+
+    # Properties
+    def add_properties(self, **properties):
+        """Adds non existing properties to the Tool."""
+
+        self._properties.add_properties(**properties)
+    
+    def edit_property(self, name: str, value):
+        """Edits an existing propert.y"""
+
+        setattr(self._properties, name, value)
 
 
     # Virtual interface management
