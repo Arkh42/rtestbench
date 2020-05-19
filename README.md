@@ -77,7 +77,9 @@ You can also contact me by [email](mailto:aquenon@hotmail.be).
 ### Code quality
 
 ![Continuous Integration (pip)](https://github.com/Arkh42/rtestbench/workflows/Continuous%20Integration%20(pip)/badge.svg?branch=master)
-![Coverage](https://img.shields.io/coveralls/github/Arkh42/rtestbench/master)
+[![codecov](https://codecov.io/gh/Arkh42/rtestbench/branch/master/graph/badge.svg)](https://codecov.io/gh/Arkh42/rtestbench)
+
+
 
 
 ### Statistics
