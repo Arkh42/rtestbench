@@ -130,6 +130,7 @@ The `rtestbench` package is organized with:
 - utilities, which are 'private' modules that extend the capabilities of the package.
 
 Current features are:
+- `constants`, the module that defines all constants required in R-testbench;
 - `core`, the main module of R-testbench that regroups all functionalities.
 
 Current utilities are:

@@ -8,14 +8,10 @@ import numpy as np
 import pandas as pd
 import visa
 
+from rtestbench import constants
 from rtestbench import _chat
 from rtestbench import _logger
 from rtestbench.tools.keysight import _factory as keysight_factory
-
-
-SUPPORTED_DATA_CONTAINERS = (np.ndarray, list, tuple)
-SUPPORTED_TRANSFERT_FORMATS = ('text', 'ascii', 'bin', 'bin32', 'bin64')
-SUPPORTED_ENDIAN_ORDER = ('big', 'little')
 
 
 
@@ -44,7 +40,7 @@ class ToolInfo(object):
         self._interface = None
 
     def __str__(self):
-        return "The tool is a(n) {} from {}, {} model (SN = {}), connected by {}".format(
+        return "{} from {}, {} model (SN = {}), connected by {}".format(
             self.family, self.manufacturer, self.model, self.serial_number, self._interface)
     
 
@@ -86,19 +82,27 @@ class ToolProperties(object):
     """Gathers all properties to configure any Tool.
     
     Attributes:
-        _data_container: A container class to store the data retrieved from the tool (recommended: numpy.ndarray).
-        _transfer_format: A list representing the available transfer formats for communication between the tool and the computer.
+        data_container: A container class to store the data retrieved from the tool (recommended: numpy.ndarray).
+        transfer_format: A list representing the available transfer formats for communication between the tool and the computer.
         bin_data_header: A str for the optional header that is in front of binary data.
-        _endian: A str stating if binary data is big or little endian.
+        bin_data_endianess: A str stating if binary data is big or little endian.
+        text_data_converter: A str that specifies the format in which the text (ASCII) data are received.
+        text_data_separator: A character that specifies the separator used for text (ASCII) data.
+        activated_transfer_format: A str specified the transfer format currently in use.
     """
 
     def __init__(self):
         self._data_container = np.ndarray
-
         self._transfer_formats = []
 
-        self.bin_data_header = None
-        self._endian = None
+        self._bin_data_endianess = "little"
+        self._bin_data_header = "ieee"
+        self._bin_data_type = 'f'
+
+        self._text_data_converter = 'f'
+        self._text_data_separator = ','
+
+        self._activated_transfer_format = None
     
 
     @property
@@ -107,40 +111,116 @@ class ToolProperties(object):
 
     @data_container.setter
     def data_container(self, class_name):
-        if class_name in SUPPORTED_DATA_CONTAINERS:
+        if class_name in constants.RTB_DATA_CONTAINERS:
             self._data_container = class_name
         else:
-            raise ValueError("The class_name argument must be in {}.".format(SUPPORTED_DATA_CONTAINERS))
-
+            raise ValueError("The class_name argument must be in {}.".format(constants.RTB_DATA_CONTAINERS))
 
     @property
     def transfer_formats(self):
         return self._transfer_formats
-
     @transfer_formats.setter
     def transfer_formats(self, formats: list):
-        if all(fmt in SUPPORTED_TRANSFERT_FORMATS for fmt in formats):
+        if all(fmt in constants.RTB_TRANSFERT_FORMATS for fmt in formats):
             self._transfer_formats = formats
         else:
-            raise ValueError("The formats argument must be a list containing at least one element among {}.".format(SUPPORTED_TRANSFERT_FORMATS))
-
+            raise ValueError("The formats argument must be a list containing at least one element among {}.".format(constants.RTB_TRANSFERT_FORMATS))
 
     @property
-    def endian(self):
-        return self._endian
-
-    @endian.setter
-    def endian(self, order: str):
-        if order in SUPPORTED_ENDIAN_ORDER:
-            self._endian = order
+    def bin_data_endianess(self):
+        return self._bin_data_endianess
+    @bin_data_endianess.setter
+    def bin_data_endianess(self, endianess: str):
+        if endianess in constants.RTB_ENDIAN_ORDERS:
+            self._bin_data_endianess = endianess
         else:
-            raise ValueError("The order argument must be in {}.".format(SUPPORTED_ENDIAN_ORDER))
-    
+            raise ValueError("The order argument must be in {}.".format(constants.RTB_ENDIAN_ORDERS))
 
-    def add_properties(self, **properties):
-        """Adds all key-values as properties."""
+    @property
+    def bin_data_header(self):
+        return self._bin_data_header
+    @bin_data_header.setter
+    def bin_data_header(self, header_format):
+        if header_format in constants.RTB_BIN_DATA_HEADERS:
+            self._bin_data_header = header_format
+        else:
+            raise ValueError("The header_format argument must be in {}.".format(constants.RTB_BIN_DATA_HEADERS))
 
-        self.__dict__.update(properties)
+    @property
+    def bin_data_type(self):
+        return self._bin_data_type
+    @bin_data_type.setter
+    def bin_data_type(self, datatype):
+        if datatype in constants.RTB_BIN_DATA_TYPES_FLOAT:
+            self._bin_data_type = 'f'
+        elif datatype in constants.RTB_BIN_DATA_TYPES_DOUBLE:
+            self._bin_data_type = 'd'
+        elif datatype in constants.RTB_BIN_DATA_TYPES_INT16:
+            self._bin_data_type = 'h'
+        elif datatype in constants.RTB_BIN_DATA_TYPES_INT32:
+            self._bin_data_type = 'i'
+        elif datatype in constants.RTB_BIN_DATA_TYPES_INT64:
+            self._bin_data_type = 'q'
+        elif datatype in constants.RTB_BIN_DATA_TYPES_UINT16:
+            self._bin_data_type = 'H'
+        elif datatype in constants.RTB_BIN_DATA_TYPES_UINT32:
+            self._bin_data_type = 'I'
+        elif datatype in constants.RTB_BIN_DATA_TYPES_UINT64:
+            self._bin_data_type = 'Q'
+        else:
+            raise ValueError("The datatype argument must be in {}.".format(constants.RTB_BIN_DATA_TYPES))
+
+    @property
+    def text_data_converter(self):
+        return self._text_data_converter
+    @text_data_converter.setter
+    def text_data_converter(self, converter):
+        if converter in constants.RTB_TEXT_DATA_CONVERTERS_BIN:
+            self._text_data_converter = 'b'
+        elif converter in constants.RTB_TEXT_DATA_CONVERTERS_OCT:
+            self._text_data_converter = 'o'
+        elif converter in constants.RTB_TEXT_DATA_CONVERTERS_HEX:
+            self._text_data_converter = 'x'
+        elif converter in constants.RTB_TEXT_DATA_CONVERTERS_DEC:
+            self._text_data_converter = 'd'
+        elif converter in constants.RTB_TEXT_DATA_CONVERTERS_FIX:
+            self._text_data_converter = 'f'
+        elif converter in constants.RTB_TEXT_DATA_CONVERTERS_EXP:
+            self._text_data_converter = 'e'
+        elif converter in constants.RTB_TEXT_DATA_CONVERTERS_STR:
+            self._text_data_converter = 's'
+        else:
+            raise ValueError("The converter argument must be in {}.".format(constants.RTB_TEXT_DATA_CONVERTERS))
+
+    @property
+    def text_data_separator(self):
+        return self._text_data_separator
+    @text_data_separator.setter
+    def text_data_separator(self, sep):
+        if sep in constants.RTB_TEXT_DATA_SEPARATORS:
+            self._text_data_separator = sep
+        else:
+            raise ValueError("The sep argument must be in {}.".format(constants.RTB_TEXT_DATA_SEPARATORS))
+
+    @property
+    def activated_transfer_format(self):
+        return self._activated_transfer_format
+    @activated_transfer_format.setter
+    def activated_transfer_format(self, tsf_format: str):
+        if tsf_format in self.transfer_formats:
+            self._activated_transfer_format = tsf_format
+        else:
+            raise ValueError("The tsf_format must be selected among the available transfer formats {}.".format(self.transfer_formats))
+
+
+    def get_properties(self) -> dict:
+        return self.__dict__
+
+    def update_properties(self, **properties):
+        """Updates passed properties."""
+
+        for k, v in properties.items():
+            setattr(self, str(k), v)
     
 
 class Tool(object):
@@ -159,16 +239,51 @@ class Tool(object):
         self._properties = ToolProperties()
         self._virtual_interface = None
 
-    # Properties
-    def add_properties(self, **properties):
-        """Adds non existing properties to the Tool."""
 
-        self._properties.add_properties(**properties)
+    # Properties (maybe not necessary)
+    # def add_properties(self, **properties):
+    #     """Adds non existing properties to the Tool."""
+
+    #     existing_properties = []
+
+    #     for k, v in properties.items():
+    #         try:
+    #             test = getattr(self._properties, str(k))
+    #         except AttributeError:
+    #             pass # expected behaviour
+    #         else:
+    #             existing_properties.append(str(k))
+        
+    #     if existing_properties:
+    #         raise AttributeError("Some passed properties already exist: {}.".format(existing_properties))
+    #     else:
+    #         self._properties.update_properties(**properties)
     
-    def edit_property(self, name: str, value):
-        """Edits an existing propert.y"""
+    # def edit_properties(self, **properties):
+    #     """Edits an existing propert.y"""
 
-        setattr(self._properties, name, value)
+    #     unknown_properties = []
+
+    #     for k, v in properties.items():
+    #         try:
+    #             test = getattr(self._properties, str(k))
+    #         except AttributeError:
+    #             unknown_properties.append(str(k))
+
+    #     if unknown_properties:
+    #         raise AttributeError("Some passed properties are not known: {}.".format(unknown_properties))
+    #     else:
+    #         self._properties.update_properties(**properties)
+
+    # def get_properties(self):
+    #     """Gets all properties and their values."""
+
+    #     return self._properties.get_properties()
+    
+    # def get_property(self, name: str):
+    #     """Gets the value of the specified property."""
+
+    #     getattr(self._properties, name)
 
 
     # Virtual interface management
@@ -234,13 +349,49 @@ class Tool(object):
 
         if self._virtual_interface is None:
             raise UnboundLocalError("No virtual interface connected to the tool {}.".format(self._info))
-        try:
-            return self._virtual_interface.query(request)
-        except visa.VisaIOError as err:
-            raise IOError("Cannot get an answer from the request {}; origin comes from {}.".format(request, err.description))
+        else:
+            try:
+                return self._virtual_interface.query(request)
+            except visa.VisaIOError as err:
+                raise IOError("Cannot get an answer from the request {}; origin comes from {}.".format(request, err.description))
     
     def query_data(self, request):
-        pass
+        """Sends an SCPI request which expects data from the tool.
+        
+        Returns:
+            A container embedding the tool's answer (see the container property).
+        Raises:
+            UnboundLocalError: No virtual interface is connected to the tool to send a command.
+            IOError: An error occured because no answer was received from the tool.
+        """
+
+        if self._virtual_interface is None:
+            raise UnboundLocalError("No virtual interface connected to the tool {}.".format(self._info))
+        else:
+            transfer_format = self._properties.activated_transfer_format
+            if transfer_format is None:
+                raise UnboundLocalError("No transfer format is activated for the tool {}.".format(self._info))
+            else:
+                try:
+                    if transfer_format in ("text", "ascii"):
+                        return self._virtual_interface.query_ascii_values(
+                            request,
+                            container=self._properties.data_container,
+                            converter=self._properties.text_data_converter,
+                            separator=self._properties.text_data_separator,
+                        )
+                    elif transfer_format in ("bin", "binary"):
+                        return self._virtual_interface.query_binary_values(
+                            request,
+                            datatype=self._properties.bin_data_type,
+                            container=self._properties.data_container,
+                            header_fmt=self._properties.bin_data_header,
+                            is_big_endian=True if self._properties.bin_data_endianess == "big" else False
+                        )
+                    else:
+                        raise NotImplementedError("Unsupported transfer format {} is currently activated.".format(transfer_format))
+                except visa.VisaIOError as err:
+                    raise IOError("Cannot get an answer from the request {}; origin comes from {}.".format(request, err.description))
 
 
     # Common SCPI commands

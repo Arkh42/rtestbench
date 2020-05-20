@@ -9,9 +9,8 @@ before_install:
     - pip install -U pytest
     - pip install -U pytest-cov
     - pip install codecov
-    - pip install coveralls
 install:
     - pip install -r requirements.txt
 script: pytest --cov
-after_success:
-    - codecov # submit coverage
+#after_success:
+#    - codecov # submit coverage

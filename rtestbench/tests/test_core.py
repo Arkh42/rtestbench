@@ -7,6 +7,7 @@ import visa
 import numpy as np
 
 import rtestbench
+from rtestbench import constants
 from rtestbench.core import Tool
 from rtestbench.core import ToolFactory
 from rtestbench.core import ToolInfo
@@ -108,6 +109,9 @@ def test_toolInfo_interface(toolInfo_empty):
     toolInfo_empty.interface = visa.constants.InterfaceType.unknown
     assert toolInfo_empty.interface == "Unknown"
 
+    toolInfo_empty.interface = None
+    assert toolInfo_empty.interface is None
+
     with pytest.raises(ResourceWarning):
         toolInfo_empty.interface = "toto"
 
@@ -117,13 +121,17 @@ def test_toolProperties_attributes(toolProperties_empty):
     assert hasattr(toolProperties_empty, "data_container")
     assert hasattr(toolProperties_empty, "transfer_formats")
     assert hasattr(toolProperties_empty, "bin_data_header")
-    assert hasattr(toolProperties_empty, "endian")
+    assert hasattr(toolProperties_empty, "bin_data_endianess")
+    assert hasattr(toolProperties_empty, "text_data_separator")
+    assert hasattr(toolProperties_empty, "activated_transfer_format")
 
 def test_toolProperties_init(toolProperties_empty):
     assert toolProperties_empty.data_container is np.ndarray
     assert toolProperties_empty.transfer_formats == []
-    assert toolProperties_empty.bin_data_header is None
-    assert toolProperties_empty.endian is None
+    assert toolProperties_empty.bin_data_header == "ieee"
+    assert toolProperties_empty.bin_data_endianess == "little"
+    assert toolProperties_empty.text_data_separator == ","
+    assert toolProperties_empty.activated_transfer_format is None
 
 def test_toolProperties_datacontainer(toolProperties_empty):
     # Permitted values
@@ -148,16 +156,14 @@ def test_toolProperties_transferformats(toolProperties_empty):
     assert toolProperties_empty.transfer_formats == ['ascii']
     toolProperties_empty.transfer_formats = ['bin']
     assert toolProperties_empty.transfer_formats == ['bin']
-    toolProperties_empty.transfer_formats = ['bin32']
-    assert toolProperties_empty.transfer_formats == ['bin32']
-    toolProperties_empty.transfer_formats = ['bin64']
-    assert toolProperties_empty.transfer_formats == ['bin64']
+    toolProperties_empty.transfer_formats = ['binary']
+    assert toolProperties_empty.transfer_formats == ['binary']
 
     # Combination of permitted values
     toolProperties_empty.transfer_formats = ['text', 'bin']
     assert toolProperties_empty.transfer_formats == ['text', 'bin']
-    toolProperties_empty.transfer_formats = ['ascii', 'bin32', 'bin64']
-    assert toolProperties_empty.transfer_formats == ['ascii', 'bin32', 'bin64']
+    toolProperties_empty.transfer_formats = ['ascii', 'bin', 'binary']
+    assert toolProperties_empty.transfer_formats == ['ascii', 'bin', 'binary']
 
     # Forbidden values
     with pytest.raises(ValueError):
@@ -167,19 +173,111 @@ def test_toolProperties_transferformats(toolProperties_empty):
     with pytest.raises(ValueError):
         toolProperties_empty.transfer_formats = ['text', 'toto']
 
-def test_toolProperties_endian(toolProperties_empty):
+def test_toolProperties_bindataendianess(toolProperties_empty):
     # Permitted values
-    toolProperties_empty.endian = 'big'
-    assert toolProperties_empty.endian == 'big'
-    toolProperties_empty.endian = 'little'
-    assert toolProperties_empty.endian == 'little'
+    toolProperties_empty.bin_data_endianess = 'big'
+    assert toolProperties_empty.bin_data_endianess == 'big'
+    toolProperties_empty.bin_data_endianess = 'little'
+    assert toolProperties_empty.bin_data_endianess == 'little'
 
     # Forbidden values
     with pytest.raises(ValueError):
-        toolProperties_empty.endian = 'toto'
+        toolProperties_empty.bin_data_endianess = 'toto'
 
-def test_toolProperties_addproperties(toolProperties_empty):
-    toolProperties_empty.add_properties(tester="toto")
+def test_toolProperties_bindataheader(toolProperties_empty):
+    # Permitted values
+    toolProperties_empty.bin_data_header = 'ieee'
+    assert toolProperties_empty.bin_data_header == 'ieee'
+    toolProperties_empty.bin_data_header = 'empty'
+    assert toolProperties_empty.bin_data_header == 'empty'
+    toolProperties_empty.bin_data_header = 'hp'
+    assert toolProperties_empty.bin_data_header == 'hp'
+
+    # Forbidden values
+    with pytest.raises(ValueError):
+        toolProperties_empty.bin_data_header = 'toto'
+
+def test_toolProperties_bindatatype(toolProperties_empty):
+    # Permitted values
+    toolProperties_empty.bin_data_type = 'f'
+    assert toolProperties_empty.bin_data_type == 'f'
+    toolProperties_empty.bin_data_type = "bin64"
+    assert toolProperties_empty.bin_data_type == 'd'
+    toolProperties_empty.bin_data_type = "short"
+    assert toolProperties_empty.bin_data_type == 'h'
+    toolProperties_empty.bin_data_type = "int"
+    assert toolProperties_empty.bin_data_type == 'i'
+    toolProperties_empty.bin_data_type = "long long"
+    assert toolProperties_empty.bin_data_type == 'q'
+    toolProperties_empty.bin_data_type = 'H'
+    assert toolProperties_empty.bin_data_type == 'H'
+    toolProperties_empty.bin_data_type = "unsigned int"
+    assert toolProperties_empty.bin_data_type == 'I'
+    toolProperties_empty.bin_data_type = "uint64"
+    assert toolProperties_empty.bin_data_type == 'Q'
+
+    # Forbidden values
+    with pytest.raises(ValueError):
+        toolProperties_empty.bin_data_type = "toto"
+
+def test_toolProperties_textdataconverter(toolProperties_empty):
+    # Permitted values
+    toolProperties_empty.text_data_converter = 'b' 
+    assert toolProperties_empty.text_data_converter == 'b'
+    toolProperties_empty.text_data_converter = "oct"
+    assert toolProperties_empty.text_data_converter == 'o'
+    toolProperties_empty.text_data_converter = "hexadecimal"
+    assert toolProperties_empty.text_data_converter == 'x'
+    toolProperties_empty.text_data_converter = 'd'
+    assert toolProperties_empty.text_data_converter == 'd'
+    toolProperties_empty.text_data_converter = "fix"
+    assert toolProperties_empty.text_data_converter == 'f'
+    toolProperties_empty.text_data_converter = "exponent"
+    assert toolProperties_empty.text_data_converter == 'e'
+    toolProperties_empty.text_data_converter = 's'
+    assert toolProperties_empty.text_data_converter == 's'
+
+    # Forbidden values
+    with pytest.raises(ValueError):
+        toolProperties_empty.text_data_converter = "toto"  
+
+def test_toolProperties_textdataseparator(toolProperties_empty):
+    # Permitted values
+    toolProperties_empty.text_data_separator = ',' 
+    assert toolProperties_empty.text_data_separator == ','
+    toolProperties_empty.text_data_separator = ';'
+    assert toolProperties_empty.text_data_separator == ';'
+    toolProperties_empty.text_data_separator = ' '
+    assert toolProperties_empty.text_data_separator == ' '
+
+    # Forbidden values
+    with pytest.raises(ValueError):
+        toolProperties_empty.text_data_separator = "."    
+
+def test_toolProperties_activatedtransferformat(toolProperties_empty):
+    # No available formats
+    with pytest.raises(ValueError):
+        toolProperties_empty.activated_transfer_format = "bin"
+    
+    # One available format
+    toolProperties_empty.transfer_formats = ["bin"]
+    toolProperties_empty.activated_transfer_format = "bin"
+    assert toolProperties_empty.activated_transfer_format == "bin"
+    with pytest.raises(ValueError):
+        toolProperties_empty.activated_transfer_format = "toto"
+    
+    # All available formats
+    toolProperties_empty.transfer_formats = constants.RTB_TRANSFERT_FORMATS
+    toolProperties_empty.activated_transfer_format = "bin"
+    assert toolProperties_empty.activated_transfer_format == "bin"
+    toolProperties_empty.activated_transfer_format = "text"
+    assert toolProperties_empty.activated_transfer_format == "text"
+    with pytest.raises(ValueError):
+        toolProperties_empty.activated_transfer_format = "toto"
+
+
+def test_toolProperties_updateproperties(toolProperties_empty):
+    toolProperties_empty.update_properties(tester="toto")
     assert hasattr(toolProperties_empty, "tester")
     assert toolProperties_empty.tester == "toto"
 
@@ -242,17 +340,45 @@ def test_tool_properties(tool_empty, toolProperties_empty):
     assert tool_empty._properties.data_container == toolProperties_empty.data_container
     assert tool_empty._properties.transfer_formats == toolProperties_empty.transfer_formats
     assert tool_empty._properties.bin_data_header == toolProperties_empty.bin_data_header
-    assert tool_empty._properties.endian == toolProperties_empty.endian
+    assert tool_empty._properties.bin_data_endianess == toolProperties_empty.bin_data_endianess
+    assert tool_empty._properties.text_data_separator == toolProperties_empty.text_data_separator
+    assert tool_empty._properties.activated_transfer_format == toolProperties_empty.activated_transfer_format
 
-def test_toolProperties_addproperties(tool_empty):
-    tool_empty.add_properties(tester="toto")
-    assert hasattr(tool_empty._properties, "tester")
-    assert tool_empty._properties.tester == "toto"
+# Properties (maybe not necessary)
+# def test_tool_addproperties(tool_empty):
+#     # Property that does not exist
+#     tool_empty.add_properties(tester="toto")
+#     assert hasattr(tool_empty._properties, "tester")
+#     assert tool_empty._properties.tester == "toto"
 
-def test_tool_editproperty(tool_empty):
-    assert tool_empty._properties.endian is None
-    tool_empty.edit_property(name="endian", value="big")
-    assert tool_empty._properties.endian == "big"
+#     # Property that already exists
+#     with pytest.raises(AttributeError):
+#         tool_empty.add_properties(bin_data_endianess="big")
+
+# def test_tool_editproperties(tool_empty):
+#     # Property that exists
+#     assert tool_empty._properties.bin_data_endianess is None
+#     tool_empty.edit_properties(bin_data_endianess="big")
+#     assert tool_empty._properties.bin_data_endianess == "big"
+
+#     # Unknown property
+#     with pytest.raises(AttributeError):
+#         tool_empty.edit_properties(tester="toto")
+
+# def test_tool_getproperties(tool_empty):
+#     assert tool_empty.get_properties() == tool_empty._properties.get_properties()
+
+# def test_tool_getproperty(tool_empty):
+#     assert tool_empty.get_property("data_container") == tool_empty._properties.data_container
+#     assert tool_empty.get_property("transfer_formats") == tool_empty._properties.transfer_formats
+#     assert tool_empty.get_property("bin_data_header") == tool_empty._properties.bin_data_header
+#     assert tool_empty.get_property("bin_data_endianess") == tool_empty._properties.bin_data_endianess
+#     assert tool_empty.get_property("text_data_separator") == tool_empty._properties.text_data_separator
+#     assert tool_empty.get_property("activated_transfer_format") == tool_empty._properties.activated_transfer_format
+
+#     with pytest.raises(AttributeError):
+#         tool_empty.get_property("toto")
+
 
 def test_tool_connectVirtualInterface(toolFactory, fakeToolWithoutInterface):
     # Wrong tool interface
@@ -287,7 +413,6 @@ def test_tool_send(fakeToolWithoutInterface, fakeTool):
     # Send command (no exception raised by simulated device)
     fakeTool.send('command')
     
-
 def test_tool_query(fakeToolWithoutInterface, fakeTool):
     # No virtual interface
     with pytest.raises(UnboundLocalError):
@@ -296,6 +421,30 @@ def test_tool_query(fakeToolWithoutInterface, fakeTool):
     # Send request (no exception raised by simulated device)
     answer = fakeTool.query("*IDN?")
     assert isinstance(answer, str)
+
+def test_tool_querydata(fakeToolWithoutInterface, fakeTool):
+    # No virtual interface
+    with pytest.raises(UnboundLocalError):
+        fakeToolWithoutInterface.query_data('request')
+    
+    # No transfer format
+    with pytest.raises(UnboundLocalError):
+        fakeTool.query_data('request')
+    
+    # Activated transfer format
+    fakeTool._properties.transfer_formats=constants.RTB_TRANSFERT_FORMATS
+
+    fakeTool._properties.activated_transfer_format = "text"
+    data = fakeTool.query_data('request')
+
+    fakeTool._properties.activated_transfer_format = "ascii"
+    data = fakeTool.query_data('request')
+
+    # fakeTool._properties.activated_transfer_format = "bin"
+    # data = fakeTool.query_data('request')
+
+    # fakeTool._properties.activated_transfer_format = "binary"
+    # data = fakeTool.query_data('request')
 
 
 def test_tool_lock(fakeTool):
