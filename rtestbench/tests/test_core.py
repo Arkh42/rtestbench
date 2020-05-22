@@ -121,7 +121,7 @@ def test_toolProperties_attributes(toolProperties_empty):
     assert hasattr(toolProperties_empty, "data_container")
     assert hasattr(toolProperties_empty, "transfer_formats")
     assert hasattr(toolProperties_empty, "bin_data_header")
-    assert hasattr(toolProperties_empty, "bin_data_endianess")
+    assert hasattr(toolProperties_empty, "bin_data_endianness")
     assert hasattr(toolProperties_empty, "text_data_separator")
     assert hasattr(toolProperties_empty, "activated_transfer_format")
 
@@ -129,7 +129,7 @@ def test_toolProperties_init(toolProperties_empty):
     assert toolProperties_empty.data_container is np.ndarray
     assert toolProperties_empty.transfer_formats == []
     assert toolProperties_empty.bin_data_header == "ieee"
-    assert toolProperties_empty.bin_data_endianess == "little"
+    assert toolProperties_empty.bin_data_endianness == "little"
     assert toolProperties_empty.text_data_separator == ","
     assert toolProperties_empty.activated_transfer_format is None
 
@@ -175,14 +175,14 @@ def test_toolProperties_transferformats(toolProperties_empty):
 
 def test_toolProperties_bindataendianess(toolProperties_empty):
     # Permitted values
-    toolProperties_empty.bin_data_endianess = 'big'
-    assert toolProperties_empty.bin_data_endianess == 'big'
-    toolProperties_empty.bin_data_endianess = 'little'
-    assert toolProperties_empty.bin_data_endianess == 'little'
+    toolProperties_empty.bin_data_endianness = 'big'
+    assert toolProperties_empty.bin_data_endianness == 'big'
+    toolProperties_empty.bin_data_endianness = 'little'
+    assert toolProperties_empty.bin_data_endianness == 'little'
 
     # Forbidden values
     with pytest.raises(ValueError):
-        toolProperties_empty.bin_data_endianess = 'toto'
+        toolProperties_empty.bin_data_endianness = 'toto'
 
 def test_toolProperties_bindataheader(toolProperties_empty):
     # Permitted values
@@ -340,7 +340,7 @@ def test_tool_properties(tool_empty, toolProperties_empty):
     assert tool_empty._properties.data_container == toolProperties_empty.data_container
     assert tool_empty._properties.transfer_formats == toolProperties_empty.transfer_formats
     assert tool_empty._properties.bin_data_header == toolProperties_empty.bin_data_header
-    assert tool_empty._properties.bin_data_endianess == toolProperties_empty.bin_data_endianess
+    assert tool_empty._properties.bin_data_endianness == toolProperties_empty.bin_data_endianness
     assert tool_empty._properties.text_data_separator == toolProperties_empty.text_data_separator
     assert tool_empty._properties.activated_transfer_format == toolProperties_empty.activated_transfer_format
 
@@ -353,13 +353,13 @@ def test_tool_properties(tool_empty, toolProperties_empty):
 
 #     # Property that already exists
 #     with pytest.raises(AttributeError):
-#         tool_empty.add_properties(bin_data_endianess="big")
+#         tool_empty.add_properties(bin_data_endianness="big")
 
 # def test_tool_editproperties(tool_empty):
 #     # Property that exists
-#     assert tool_empty._properties.bin_data_endianess is None
-#     tool_empty.edit_properties(bin_data_endianess="big")
-#     assert tool_empty._properties.bin_data_endianess == "big"
+#     assert tool_empty._properties.bin_data_endianness is None
+#     tool_empty.edit_properties(bin_data_endianness="big")
+#     assert tool_empty._properties.bin_data_endianness == "big"
 
 #     # Unknown property
 #     with pytest.raises(AttributeError):
@@ -372,7 +372,7 @@ def test_tool_properties(tool_empty, toolProperties_empty):
 #     assert tool_empty.get_property("data_container") == tool_empty._properties.data_container
 #     assert tool_empty.get_property("transfer_formats") == tool_empty._properties.transfer_formats
 #     assert tool_empty.get_property("bin_data_header") == tool_empty._properties.bin_data_header
-#     assert tool_empty.get_property("bin_data_endianess") == tool_empty._properties.bin_data_endianess
+#     assert tool_empty.get_property("bin_data_endianness") == tool_empty._properties.bin_data_endianness
 #     assert tool_empty.get_property("text_data_separator") == tool_empty._properties.text_data_separator
 #     assert tool_empty.get_property("activated_transfer_format") == tool_empty._properties.activated_transfer_format
 

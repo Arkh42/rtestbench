@@ -7,7 +7,7 @@ import numpy as np
 # Constants for all tools
 RTB_DATA_CONTAINERS = (np.ndarray, list, tuple)
 
-RTB_ENDIAN_ORDERS = ("big", "little")
+RTB_BIN_DATA_ENDIANNESSES = ("big", "little")
 
 RTB_BIN_DATA_HEADERS = ('ieee', 'empty', 'hp')
 

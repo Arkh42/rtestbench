@@ -85,7 +85,7 @@ class ToolProperties(object):
         data_container: A container class to store the data retrieved from the tool (recommended: numpy.ndarray).
         transfer_format: A list representing the available transfer formats for communication between the tool and the computer.
         bin_data_header: A str for the optional header that is in front of binary data.
-        bin_data_endianess: A str stating if binary data is big or little endian.
+        bin_data_endianness: A str stating if binary data is big or little endian.
         text_data_converter: A str that specifies the format in which the text (ASCII) data are received.
         text_data_separator: A character that specifies the separator used for text (ASCII) data.
         activated_transfer_format: A str specified the transfer format currently in use.
@@ -95,7 +95,7 @@ class ToolProperties(object):
         self._data_container = np.ndarray
         self._transfer_formats = []
 
-        self._bin_data_endianess = "little"
+        self._bin_data_endianness = "little"
         self._bin_data_header = "ieee"
         self._bin_data_type = 'f'
 
@@ -127,14 +127,14 @@ class ToolProperties(object):
             raise ValueError("The formats argument must be a list containing at least one element among {}.".format(constants.RTB_TRANSFERT_FORMATS))
 
     @property
-    def bin_data_endianess(self):
-        return self._bin_data_endianess
-    @bin_data_endianess.setter
-    def bin_data_endianess(self, endianess: str):
-        if endianess in constants.RTB_ENDIAN_ORDERS:
-            self._bin_data_endianess = endianess
+    def bin_data_endianness(self):
+        return self._bin_data_endianness
+    @bin_data_endianness.setter
+    def bin_data_endianness(self, endianness: str):
+        if endianness in constants.RTB_BIN_DATA_ENDIANNESSES:
+            self._bin_data_endianness = endianness
         else:
-            raise ValueError("The order argument must be in {}.".format(constants.RTB_ENDIAN_ORDERS))
+            raise ValueError("The order argument must be in {}.".format(constants.RTB_BIN_DATA_ENDIANNESSES))
 
     @property
     def bin_data_header(self):
@@ -386,7 +386,7 @@ class Tool(object):
                             datatype=self._properties.bin_data_type,
                             container=self._properties.data_container,
                             header_fmt=self._properties.bin_data_header,
-                            is_big_endian=True if self._properties.bin_data_endianess == "big" else False
+                            is_big_endian=True if self._properties.bin_data_endianness == "big" else False
                         )
                     else:
                         raise NotImplementedError("Unsupported transfer format {} is currently activated.".format(transfer_format))
