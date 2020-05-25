@@ -3,13 +3,12 @@
 
 import pytest
 
+from rtestbench.core import ToolInfo
+from rtestbench.tools.electrometer import Electrometer
+
 
 @pytest.fixture
 def fakeElectrometerWithoutInterface():
-
-    from rtestbench.tools.electrometer import Electrometer
-    from rtestbench.core import ToolInfo
-
     info = ToolInfo()
     info.manufacturer = "Toto Tester"
     info.model = "No interface"

@@ -4,6 +4,7 @@ rtestbench relies on PyVISA, NumPy and pandas.
 """
 
 
+import logging
 import numpy as np
 import pandas as pd
 import visa
@@ -475,8 +476,11 @@ class ToolFactory(object):
 
         try:
             new_tool = self._build_specific_tool()
-        except (NotImplementedError, ValueError):
+            logging.debug("A specific/dedicated tool interface has been created.")
+        except (NotImplementedError, ValueError) as err_msg:
+            logging.warning("No specific/dedicated tool interface is available for the following reason: {}.".format(err_msg))
             new_tool = self._build_generic_tool()
+            logging.debug("A generic tool interface has been created.")
         
         try:
             new_tool.connect_virtual_interface(new_tool_interface)

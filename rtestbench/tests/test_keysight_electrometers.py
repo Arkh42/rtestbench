@@ -3,6 +3,39 @@
 
 import pytest
 
+from rtestbench import constants
+from rtestbench.core import ToolInfo
+from rtestbench.tools.keysight.electrometer import b298x
+
+
+@pytest.fixture
+def fakeB289xWithoutInterface():
+    info = ToolInfo()
+    info.serial_number = "42"
+    info.software_version = "3.x"
+
+    return b298x.B298X(info)
+
+
+def test_B298X_init_info(fakeB289xWithoutInterface):
+    assert fakeB289xWithoutInterface._info.family == "electrometer"
+
+def test_B298X_init_properties(fakeB289xWithoutInterface):
+    assert fakeB289xWithoutInterface._properties.transfer_formats == constants.RTB_TRANSFERT_FORMATS
+
+    assert fakeB289xWithoutInterface._properties.bin_data_endianness == "big"
+    assert fakeB289xWithoutInterface._properties.bin_data_header == "ieee"
+    assert fakeB289xWithoutInterface._properties.bin_data_type == 'f'
+
+    assert fakeB289xWithoutInterface._properties.read_msg_terminator == '\n'
+    assert fakeB289xWithoutInterface._properties.write_msg_terminator == '\n'
+
+    assert fakeB289xWithoutInterface._properties.text_data_converter == 'e'
+    assert fakeB289xWithoutInterface._properties.text_data_separator == ','
+
+
+    assert fakeB289xWithoutInterface._properties.activated_view_mode == None
+    assert fakeB289xWithoutInterface._properties.activated_subview_mode == None
 
 
 
