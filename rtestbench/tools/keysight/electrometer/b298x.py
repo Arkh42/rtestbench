@@ -195,7 +195,7 @@ class B298X(Electrometer):
     
     def set_yoffset(self, offset: float):
         try:
-            self.send(":DISPlay:VIEW:ROLL:Y:OFFSet:{} {}".format(self._properties.activated_meas_data_type, scale))
+            self.send(":DISPlay:VIEW:ROLL:Y:OFFSet:{} {}".format(self._properties.activated_meas_data_type, offset))
         except IOError as err_msg:
             logging.error(err_msg)
             raise RuntimeError("Cannot set the Y-axis offset on {}.".format(self._info))
