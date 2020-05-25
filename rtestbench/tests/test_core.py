@@ -62,6 +62,7 @@ def fakeTool(toolFactory):
     info.software_version = "3.x"
 
     fake_tool = Tool(info)
+    fake_tool._properties.write_msg_terminator = '\r\n' # Necessary for the simulated device
     tool_interface = toolFactory._find_tool("ASRL1::INSTR")
     fake_tool.connect_virtual_interface(tool_interface)
 
@@ -439,6 +440,8 @@ def test_tool_connectVirtualInterface(toolFactory, fakeToolWithoutInterface):
     tool_interface = toolFactory._find_tool("ASRL1::INSTR")
     fakeToolWithoutInterface.connect_virtual_interface(tool_interface)
     assert fakeToolWithoutInterface._info.interface == "Serial (RS-232 or RS-485)"
+    assert fakeToolWithoutInterface._virtual_interface.read_termination == fakeToolWithoutInterface._properties.read_msg_terminator
+    assert fakeToolWithoutInterface._virtual_interface.write_termination == fakeToolWithoutInterface._properties.write_msg_terminator
 
     # Connection while there is already an interface
     with pytest.raises(RuntimeError):
@@ -470,11 +473,11 @@ def test_tool_querydata(fakeToolWithoutInterface, fakeTool):
     # No virtual interface
     with pytest.raises(UnboundLocalError):
         fakeToolWithoutInterface.query_data('request')
-    
+
     # No transfer format
     with pytest.raises(UnboundLocalError):
         fakeTool.query_data('request')
-    
+
     # Activated transfer format
     fakeTool._properties.transfer_formats=constants.RTB_TRANSFERT_FORMATS
 

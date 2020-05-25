@@ -337,6 +337,12 @@ class Tool(object):
                 self._info.interface = self._virtual_interface.interface_type
         else:
             raise RuntimeError("A virtual interface has already been attached to the tool {}.".format(self._info))
+
+        try:
+            self._virtual_interface.read_termination = self._properties.read_msg_terminator
+            self._virtual_interface.write_termination = self._properties.write_msg_terminator
+        except ValueError:
+            raise
     
     def disconnect_virtual_interface(self):
         """Disconnects the current virtual interface from the Tool object.
