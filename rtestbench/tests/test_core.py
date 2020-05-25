@@ -122,6 +122,9 @@ def test_toolProperties_attributes(toolProperties_empty):
     assert hasattr(toolProperties_empty, "transfer_formats")
     assert hasattr(toolProperties_empty, "bin_data_header")
     assert hasattr(toolProperties_empty, "bin_data_endianness")
+    assert hasattr(toolProperties_empty, "read_msg_terminator")
+    assert hasattr(toolProperties_empty, "write_msg_terminator")
+    assert hasattr(toolProperties_empty, "text_data_converter")
     assert hasattr(toolProperties_empty, "text_data_separator")
     assert hasattr(toolProperties_empty, "activated_transfer_format")
 
@@ -130,7 +133,10 @@ def test_toolProperties_init(toolProperties_empty):
     assert toolProperties_empty.transfer_formats == []
     assert toolProperties_empty.bin_data_header == "ieee"
     assert toolProperties_empty.bin_data_endianness == "little"
-    assert toolProperties_empty.text_data_separator == ","
+    assert toolProperties_empty.read_msg_terminator == '\n'
+    assert toolProperties_empty.write_msg_terminator == '\n'
+    assert toolProperties_empty.text_data_converter == 'f'
+    assert toolProperties_empty.text_data_separator == ','
     assert toolProperties_empty.activated_transfer_format is None
 
 def test_toolProperties_datacontainer(toolProperties_empty):
@@ -219,6 +225,44 @@ def test_toolProperties_bindatatype(toolProperties_empty):
     # Forbidden values
     with pytest.raises(ValueError):
         toolProperties_empty.bin_data_type = "toto"
+
+def test_toolProperties_parsemsgterminator(toolProperties_empty):
+    # Permitted values
+    assert toolProperties_empty.parse_msg_terminator('\n') == '\n'
+    assert toolProperties_empty.parse_msg_terminator('LF') == '\n'
+    assert toolProperties_empty.parse_msg_terminator('NL') == '\n'
+    assert toolProperties_empty.parse_msg_terminator("CRLF") == '\r\n'
+    assert toolProperties_empty.parse_msg_terminator("carriage return") == '\r'
+
+    # Forbidden values
+    with pytest.raises(ValueError):
+        toolProperties_empty.parse_msg_terminator("toto")
+
+def test_toolProperties_readmsgterminator(toolProperties_empty):
+    # Permitted values
+    toolProperties_empty.read_msg_terminator = "line feed"
+    assert toolProperties_empty.read_msg_terminator == '\n'
+    toolProperties_empty.read_msg_terminator = "CR"
+    assert toolProperties_empty.read_msg_terminator == '\r'
+    toolProperties_empty.read_msg_terminator = "CRLF"
+    assert toolProperties_empty.read_msg_terminator == '\r\n'
+
+    # Forbidden values
+    with pytest.raises(ValueError):
+        toolProperties_empty.read_msg_terminator = "toto"
+
+def test_toolProperties_writemsgterminator(toolProperties_empty):
+    # Permitted values
+    toolProperties_empty.write_msg_terminator = "newline"
+    assert toolProperties_empty.write_msg_terminator == '\n'
+    toolProperties_empty.write_msg_terminator = '\r'
+    assert toolProperties_empty.write_msg_terminator == '\r'
+    toolProperties_empty.write_msg_terminator = '\r\n'
+    assert toolProperties_empty.write_msg_terminator == '\r\n'
+
+    # Forbidden values
+    with pytest.raises(ValueError):
+        toolProperties_empty.write_msg_terminator = "toto"
 
 def test_toolProperties_textdataconverter(toolProperties_empty):
     # Permitted values

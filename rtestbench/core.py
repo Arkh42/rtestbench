@@ -86,6 +86,8 @@ class ToolProperties(object):
         transfer_format: A list representing the available transfer formats for communication between the tool and the computer.
         bin_data_header: A str for the optional header that is in front of binary data.
         bin_data_endianness: A str stating if binary data is big or little endian.
+        read_msg_terminator: A str describing the terminator for read messages.
+        write_msg_terminator: A str describing the terminator for write messages.
         text_data_converter: A str that specifies the format in which the text (ASCII) data are received.
         text_data_separator: A character that specifies the separator used for text (ASCII) data.
         activated_transfer_format: A str specified the transfer format currently in use.
@@ -98,6 +100,9 @@ class ToolProperties(object):
         self._bin_data_endianness = "little"
         self._bin_data_header = "ieee"
         self._bin_data_type = 'f'
+
+        self._read_msg_terminator = '\n'
+        self._write_msg_terminator = '\n'
 
         self._text_data_converter = 'f'
         self._text_data_separator = ','
@@ -169,6 +174,30 @@ class ToolProperties(object):
             self._bin_data_type = 'Q'
         else:
             raise ValueError("The datatype argument must be in {}.".format(constants.RTB_BIN_DATA_TYPES))
+
+    def parse_msg_terminator(self, msg_terminator: str) -> str:
+        if msg_terminator in constants.RTB_MSG_CR_TERMINATORS:
+            return '\r'
+        elif msg_terminator in constants.RTB_MSG_CRLF_TERMINATORS:
+            return '\r\n'
+        elif msg_terminator in constants.RTB_MSG_LF_TERMINATORS:
+            return '\n'
+        else:
+            raise ValueError("The msg_terminator argument must be in {}.".format(constants.RTB_MSG_TERMINATORS))
+
+    @property
+    def read_msg_terminator(self):
+        return self._read_msg_terminator
+    @read_msg_terminator.setter
+    def read_msg_terminator(self, msg_terminator: str):
+        self._read_msg_terminator = self.parse_msg_terminator(msg_terminator)
+
+    @property
+    def write_msg_terminator(self):
+        return self._write_msg_terminator
+    @write_msg_terminator.setter
+    def write_msg_terminator(self, msg_terminator: str):
+        self._write_msg_terminator = self.parse_msg_terminator(msg_terminator)
 
     @property
     def text_data_converter(self):

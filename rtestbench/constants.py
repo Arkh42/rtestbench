@@ -30,6 +30,15 @@ RTB_BIN_DATA_TYPES = (
     RTB_BIN_DATA_TYPES_UINT64
 )
 
+RTB_MSG_CR_TERMINATORS = ('\r', "CR", "carriage return")
+RTB_MSG_CRLF_TERMINATORS = ('\r\n', "CRLF")
+RTB_MSG_LF_TERMINATORS = ('\n', "LF", "line feed", "NL", "newline")
+RTB_MSG_TERMINATORS = (
+    RTB_MSG_CR_TERMINATORS,
+    RTB_MSG_CRLF_TERMINATORS,
+    RTB_MSG_LF_TERMINATORS
+)
+
 RTB_TEXT_DATA_CONVERTERS_BIN = ('b', "bin", "binary")
 RTB_TEXT_DATA_CONVERTERS_OCT = ('o', "oct", "octal")
 RTB_TEXT_DATA_CONVERTERS_HEX = ('x', "hex", "hexadecimal")
