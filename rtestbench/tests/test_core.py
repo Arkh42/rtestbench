@@ -321,6 +321,9 @@ def test_toolProperties_activatedtransferformat(toolProperties_empty):
         toolProperties_empty.activated_transfer_format = "toto"
 
 
+def test_toolProperties_getproperties(toolProperties_empty):
+    assert toolProperties_empty.get_properties() == toolProperties_empty.__dict__
+
 def test_toolProperties_updateproperties(toolProperties_empty):
     toolProperties_empty.update_properties(tester="toto")
     assert hasattr(toolProperties_empty, "tester")
@@ -356,10 +359,20 @@ def test_toolFactory_identifytool(toolFactory):
         tool_id = toolFactory._identify_tool(fake_tool_interface)
 
 def test_toolFactory_parsetoolid(toolFactory):
+    # Failing parsing
     fake_tool_interface = toolFactory._find_tool("ASRL1::INSTR")
     tool_id = toolFactory._identify_tool(fake_tool_interface)
     with pytest.raises(ValueError):
         tool_info = toolFactory._parse_tool_id(tool_id)
+    
+    # Correct parsing
+    tool_id = "Manufacturer,model,serial,revision"
+    tool_info = toolFactory._parse_tool_id(tool_id)
+    assert isinstance(tool_info, ToolInfo)
+    assert tool_info.manufacturer == "Manufacturer"
+    assert tool_info.model == "model"
+    assert tool_info.serial_number == "serial"
+    assert tool_info.software_version == "revision"
 
 def test_toolFactory_buildspecifictool(toolFactory, fakeTool):
     # Unknown manufacturer
@@ -371,8 +384,11 @@ def test_toolFactory_buildspecifictool(toolFactory, fakeTool):
     with pytest.raises(ValueError):
         toolFactory._build_specific_tool(fakeTool._info)
 
-def test_toolFactory_buildgenerictool(toolFactory):
-    pass
+def test_toolFactory_buildgenerictool(toolFactory, fakeTool):
+    new_tool = toolFactory._build_generic_tool(fakeTool._info)
+    assert isinstance(new_tool, Tool)
+    assert new_tool._info == fakeTool._info
+
 
 # --------
 
@@ -493,6 +509,12 @@ def test_tool_querydata(fakeToolWithoutInterface, fakeTool):
     # fakeTool._properties.activated_transfer_format = "binary"
     # data = fakeTool.query_data('request')
 
+
+def test_tool_clear_status(fakeTool):
+    fakeTool.clear_status()
+
+def test_tool_reset(fakeTool):
+    fakeTool.reset()
 
 def test_tool_lock(fakeTool):
     with pytest.raises(NotImplementedError):
