@@ -127,6 +127,7 @@ def test_toolProperties_attributes(toolProperties_empty):
     assert hasattr(toolProperties_empty, "write_msg_terminator")
     assert hasattr(toolProperties_empty, "text_data_converter")
     assert hasattr(toolProperties_empty, "text_data_separator")
+    assert hasattr(toolProperties_empty, "timeout")
     assert hasattr(toolProperties_empty, "activated_transfer_format")
 
 def test_toolProperties_init(toolProperties_empty):
@@ -138,6 +139,7 @@ def test_toolProperties_init(toolProperties_empty):
     assert toolProperties_empty.write_msg_terminator == '\n'
     assert toolProperties_empty.text_data_converter == 'f'
     assert toolProperties_empty.text_data_separator == ','
+    assert toolProperties_empty.timeout == 0
     assert toolProperties_empty.activated_transfer_format is None
 
 def test_toolProperties_datacontainer(toolProperties_empty):
@@ -299,6 +301,17 @@ def test_toolProperties_textdataseparator(toolProperties_empty):
     with pytest.raises(ValueError):
         toolProperties_empty.text_data_separator = "."    
 
+def test_toolProperties_timeout(toolProperties_empty):
+    # Special values
+    toolProperties_empty.timeout = "infinite"
+    assert toolProperties_empty.timeout == float('+inf')
+    toolProperties_empty.timeout = "immediate"
+    assert toolProperties_empty.timeout == 0
+
+    # Float
+    toolProperties_empty.timeout = 42
+    assert toolProperties_empty.timeout == 42
+
 def test_toolProperties_activatedtransferformat(toolProperties_empty):
     # No available formats
     with pytest.raises(ValueError):
@@ -402,7 +415,9 @@ def test_tool_properties(tool_empty, toolProperties_empty):
     assert tool_empty._properties.transfer_formats == toolProperties_empty.transfer_formats
     assert tool_empty._properties.bin_data_header == toolProperties_empty.bin_data_header
     assert tool_empty._properties.bin_data_endianness == toolProperties_empty.bin_data_endianness
+    assert tool_empty._properties.text_data_converter == toolProperties_empty.text_data_converter
     assert tool_empty._properties.text_data_separator == toolProperties_empty.text_data_separator
+    assert tool_empty._properties.timeout == toolProperties_empty.timeout
     assert tool_empty._properties.activated_transfer_format == toolProperties_empty.activated_transfer_format
 
 # Properties (maybe not necessary)

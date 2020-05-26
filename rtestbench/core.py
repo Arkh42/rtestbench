@@ -91,6 +91,7 @@ class ToolProperties(object):
         write_msg_terminator: A str describing the terminator for write messages.
         text_data_converter: A str that specifies the format in which the text (ASCII) data are received.
         text_data_separator: A character that specifies the separator used for text (ASCII) data.
+        timeout: A float that expresses the timeout in milliseconds for all tool I/O operations.
         activated_transfer_format: A str specified the transfer format currently in use.
     """
 
@@ -107,6 +108,8 @@ class ToolProperties(object):
 
         self._text_data_converter = 'f'
         self._text_data_separator = ','
+
+        self._timeout = 0
 
         self._activated_transfer_format = None
     
@@ -231,6 +234,18 @@ class ToolProperties(object):
             self._text_data_separator = sep
         else:
             raise ValueError("The sep argument must be in {}.".format(constants.RTB_TEXT_DATA_SEPARATORS))
+
+    @property
+    def timeout(self):
+        return self._timeout
+    @timeout.setter
+    def timeout(self, time_ms):
+        if time_ms == "infinite":
+            self._timeout = float('+inf')
+        elif time_ms == "immediate":
+            self._timeout = 0
+        else:
+            self._timeout = time_ms
 
     @property
     def activated_transfer_format(self):
@@ -427,6 +442,18 @@ class Tool(object):
 
 
     # Common SCPI commands
+    def set_timeout(self, time_ms):
+        """Sets the timeout in milliseconds for all IO operations."""
+
+        current_timeout = self._virtual_interface.timeout
+        try:
+            self._properties.timeout = time_ms
+            self._virtual_interface.timeout = self._properties.timeout
+        except:
+            self._properties.timeout = self._virtual_interface.timeout
+            raise
+
+
     def clear_status(self):
         """Sends a command to clear the status registers."""
 
