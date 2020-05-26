@@ -67,3 +67,20 @@ def test_electrometer_interface(fakeElectrometerWithoutInterface):
         fakeElectrometerWithoutInterface.set_integration_time_min()
     with pytest.raises(NotImplementedError):
         fakeElectrometerWithoutInterface.set_integration_time_max()
+    # Trigger interface
+    with pytest.raises(NotImplementedError):
+        fakeElectrometerWithoutInterface.set_trigger_count(42)
+    with pytest.raises(NotImplementedError):
+        fakeElectrometerWithoutInterface.set_trigger_count_min()
+    with pytest.raises(NotImplementedError):
+        fakeElectrometerWithoutInterface.set_trigger_count_max()
+    with pytest.raises(NotImplementedError):
+        fakeElectrometerWithoutInterface.get_trigger_count()
+    with pytest.raises(NotImplementedError):
+        fakeElectrometerWithoutInterface.set_trigger_timer(42)
+    with pytest.raises(NotImplementedError):
+        fakeElectrometerWithoutInterface.set_trigger_timer_min()
+    with pytest.raises(NotImplementedError):
+        fakeElectrometerWithoutInterface.set_trigger_timer_max()
+    with pytest.raises(NotImplementedError):
+        fakeElectrometerWithoutInterface.get_trigger_timer()

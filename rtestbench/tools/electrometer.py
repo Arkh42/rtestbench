@@ -62,3 +62,28 @@ class Electrometer(Tool):
         self.set_aperture_time_min()
     def set_integration_time_max(self):
         self.set_aperture_time_max()
+
+    # Trigger interface
+    def set_trigger_source(self, source_name: str):
+        raise NotImplementedError('This function must be implemented in daughter classes.')
+    def get_trigger_source(self) -> str:
+        raise NotImplementedError('This function must be implemented in daughter classes.')
+
+    def set_trigger_count(self, value: int):
+        raise NotImplementedError('This function must be implemented in daughter classes.')
+    def set_trigger_count_min(self):
+        raise NotImplementedError('This function must be implemented in daughter classes.')
+    def set_trigger_count_max(self):
+        raise NotImplementedError('This function must be implemented in daughter classes.')
+    def get_trigger_count(self) -> int:
+        raise NotImplementedError('This function must be implemented in daughter classes.')
+
+    def set_trigger_timer(self, value: float):
+        raise NotImplementedError('This function must be implemented in daughter classes.')
+    def set_trigger_timer_min(self):
+        raise NotImplementedError('This function must be implemented in daughter classes.')
+    def set_trigger_timer_max(self):
+        raise NotImplementedError('This function must be implemented in daughter classes.')
+    def get_trigger_timer(self) -> float:
+        raise NotImplementedError('This function must be implemented in daughter classes.')
+

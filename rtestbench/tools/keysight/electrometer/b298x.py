@@ -46,6 +46,37 @@ KEYSIGHT_B2985_MEAS_DATA_TYPES = (
 )
 KEYSIGHT_B2987_MEAS_DATA_TYPES = KEYSIGHT_B2985_MEAS_DATA_TYPES
 
+KEYSIGHT_B298X_TRIGGER_SOURCE_AUTO = "AINT"
+KEYSIGHT_B298X_TRIGGER_SOURCE_BUS = "BUS"
+KEYSIGHT_B298X_TRIGGER_SOURCE_TIMER = "TIMer"
+KEYSIGHT_B298X_TRIGGER_SOURCE_INTERNAL1 = "INT1"
+KEYSIGHT_B298X_TRIGGER_SOURCE_INTERNAL2 = "INT2"
+KEYSIGHT_B298X_TRIGGER_SOURCE_LAN = "LAN"
+KEYSIGHT_B298X_TRIGGER_SOURCE_EXTERNAL1 = "EXT1"
+KEYSIGHT_B298X_TRIGGER_SOURCE_EXTERNAL2 = "EXT2"
+KEYSIGHT_B298X_TRIGGER_SOURCE_EXTERNAL3 = "EXT3"
+KEYSIGHT_B298X_TRIGGER_SOURCE_EXTERNAL4 = "EXT4"
+KEYSIGHT_B298X_TRIGGER_SOURCE_EXTERNAL5 = "EXT5"
+KEYSIGHT_B298X_TRIGGER_SOURCE_EXTERNAL6 = "EXT6"
+KEYSIGHT_B298X_TRIGGER_SOURCE_EXTERNAL7 = "EXT7"
+KEYSIGHT_B298X_TRIGGER_SOURCE_TRIGGER_IN = "TIN"
+KEYSIGHT_B298X_TRIGGER_SOURCES = (
+    KEYSIGHT_B298X_TRIGGER_SOURCE_AUTO,
+    KEYSIGHT_B298X_TRIGGER_SOURCE_BUS,
+    KEYSIGHT_B298X_TRIGGER_SOURCE_TIMER,
+    KEYSIGHT_B298X_TRIGGER_SOURCE_INTERNAL1,
+    KEYSIGHT_B298X_TRIGGER_SOURCE_INTERNAL2,
+    KEYSIGHT_B298X_TRIGGER_SOURCE_LAN,
+    KEYSIGHT_B298X_TRIGGER_SOURCE_EXTERNAL1,
+    KEYSIGHT_B298X_TRIGGER_SOURCE_EXTERNAL2,
+    KEYSIGHT_B298X_TRIGGER_SOURCE_EXTERNAL3,
+    KEYSIGHT_B298X_TRIGGER_SOURCE_EXTERNAL4,
+    KEYSIGHT_B298X_TRIGGER_SOURCE_EXTERNAL5,
+    KEYSIGHT_B298X_TRIGGER_SOURCE_EXTERNAL6,
+    KEYSIGHT_B298X_TRIGGER_SOURCE_EXTERNAL7,
+    KEYSIGHT_B298X_TRIGGER_SOURCE_TRIGGER_IN
+)
+
 
 
 class B298X(Electrometer):
@@ -250,6 +281,76 @@ class B298X(Electrometer):
     def set_aperture_time_max(self):
         self.set_aperture_time("MAX")
 
+
+    # Trigger interface
+    def set_trigger_source(self, source_name: str):
+        if source_name in KEYSIGHT_B298X_TRIGGER_SOURCES:
+            try:
+                self.send(":TRIGger:ACQuire:SOURce:SIGNal {}".format(value))
+            except IOError as err_msg:
+                logging.error(err_msg)
+                raise RuntimeError("Cannot set the trigger source to {} on {}.".format(value, self._info))
+        else:
+            raise ValueError("The source_name argument must be in {}.".format(KEYSIGHT_B298X_TRIGGER_SOURCES))
+    def get_trigger_source(self) -> str:
+        try:
+            return self.query(":TRIGger:ACQuire:SOURce:SIGNal?")
+        except IOError as err_msg:
+            logging.error(err_msg)
+            raise RuntimeError("Cannot get the trigger source from {}.".format(self._info))
+
+    def set_trigger_count(self, value: int):
+        try:
+            self.send(":TRIGger:ACQuire:COUNt {}".format(value))
+        except IOError as err_msg:
+            logging.error(err_msg)
+            raise RuntimeError("Cannot set the trigger count to {} on {}.".format(value, self._info))
+
+    def set_trigger_count_min(self):
+        self.set_trigger_count("MIN")
+    def set_trigger_count_max(self):
+        self.set_trigger_count("MAX")
+
+    def get_trigger_count(self) -> int:
+        try:
+            return self.query(":TRIGger:ACQuire:COUNt?")
+        except IOError as err_msg:
+            logging.error(err_msg)
+            raise RuntimeError("Cannot get the trigger count from {}.".format(self._info))
+
+    def set_trigger_timer(self, value: float):
+        try:
+            self.send(":TRIGger:ACQuire:TIMer {}".format(value))
+        except IOError as err_msg:
+            logging.error(err_msg)
+            raise RuntimeError("Cannot set the trigger timer interval to {} on {}.".format(value, self._info))
+
+    def set_trigger_timer_min(self):
+        self.set_trigger_timer("MIN")
+    def set_trigger_timer_max(self):
+        self.set_trigger_timer("MAX")
+
+    def get_trigger_timer(self) -> float:
+        try:
+            return self.query(":TRIGger:ACQuire:TIMer?")
+        except IOError as err_msg:
+            logging.error(err_msg)
+            raise RuntimeError("Cannot get the trigger timer interval from {}.".format(self._info))
+
+
+    # Amperemeter interface
+    def enable_amperemeter(self):
+        try:
+            self.send(":INPut:STATe ON")
+        except IOError as err_msg:
+            logging.error(err_msg)
+            raise RuntimeError("Cannot enable the ampemeter input on {}.".format(self._info))
+    def disable_amperemeter(self):
+        try:
+            self.send(":INPut:STATe OFF")
+        except IOError as err_msg:
+            logging.error(err_msg)
+            raise RuntimeError("Cannot disable the ampemeter input on {}.".format(self._info))
 
 
 class B2981(B298X):
