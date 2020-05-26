@@ -420,41 +420,6 @@ def test_tool_properties(tool_empty, toolProperties_empty):
     assert tool_empty._properties.timeout == toolProperties_empty.timeout
     assert tool_empty._properties.activated_transfer_format == toolProperties_empty.activated_transfer_format
 
-# Properties (maybe not necessary)
-# def test_tool_addproperties(tool_empty):
-#     # Property that does not exist
-#     tool_empty.add_properties(tester="toto")
-#     assert hasattr(tool_empty._properties, "tester")
-#     assert tool_empty._properties.tester == "toto"
-
-#     # Property that already exists
-#     with pytest.raises(AttributeError):
-#         tool_empty.add_properties(bin_data_endianness="big")
-
-# def test_tool_editproperties(tool_empty):
-#     # Property that exists
-#     assert tool_empty._properties.bin_data_endianness is None
-#     tool_empty.edit_properties(bin_data_endianness="big")
-#     assert tool_empty._properties.bin_data_endianness == "big"
-
-#     # Unknown property
-#     with pytest.raises(AttributeError):
-#         tool_empty.edit_properties(tester="toto")
-
-# def test_tool_getproperties(tool_empty):
-#     assert tool_empty.get_properties() == tool_empty._properties.get_properties()
-
-# def test_tool_getproperty(tool_empty):
-#     assert tool_empty.get_property("data_container") == tool_empty._properties.data_container
-#     assert tool_empty.get_property("transfer_formats") == tool_empty._properties.transfer_formats
-#     assert tool_empty.get_property("bin_data_header") == tool_empty._properties.bin_data_header
-#     assert tool_empty.get_property("bin_data_endianness") == tool_empty._properties.bin_data_endianness
-#     assert tool_empty.get_property("text_data_separator") == tool_empty._properties.text_data_separator
-#     assert tool_empty.get_property("activated_transfer_format") == tool_empty._properties.activated_transfer_format
-
-#     with pytest.raises(AttributeError):
-#         tool_empty.get_property("toto")
-
 
 def test_tool_connectVirtualInterface(toolFactory, fakeToolWithoutInterface):
     # Wrong tool interface

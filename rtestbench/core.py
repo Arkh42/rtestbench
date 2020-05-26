@@ -285,52 +285,6 @@ class Tool(object):
         self._virtual_interface = None
 
 
-    # Properties (maybe not necessary)
-    # def add_properties(self, **properties):
-    #     """Adds non existing properties to the Tool."""
-
-    #     existing_properties = []
-
-    #     for k, v in properties.items():
-    #         try:
-    #             test = getattr(self._properties, str(k))
-    #         except AttributeError:
-    #             pass # expected behaviour
-    #         else:
-    #             existing_properties.append(str(k))
-        
-    #     if existing_properties:
-    #         raise AttributeError("Some passed properties already exist: {}.".format(existing_properties))
-    #     else:
-    #         self._properties.update_properties(**properties)
-    
-    # def edit_properties(self, **properties):
-    #     """Edits an existing propert.y"""
-
-    #     unknown_properties = []
-
-    #     for k, v in properties.items():
-    #         try:
-    #             test = getattr(self._properties, str(k))
-    #         except AttributeError:
-    #             unknown_properties.append(str(k))
-
-    #     if unknown_properties:
-    #         raise AttributeError("Some passed properties are not known: {}.".format(unknown_properties))
-    #     else:
-    #         self._properties.update_properties(**properties)
-
-    # def get_properties(self):
-    #     """Gets all properties and their values."""
-
-    #     return self._properties.get_properties()
-    
-    # def get_property(self, name: str):
-    #     """Gets the value of the specified property."""
-
-    #     getattr(self._properties, name)
-
-
     # Virtual interface management
     def connect_virtual_interface(self, interface):
         """Connects a virtual interface to the Tool object.
