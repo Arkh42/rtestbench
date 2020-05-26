@@ -402,6 +402,23 @@ def test_toolFactory_buildgenerictool(toolFactory, fakeTool):
     assert isinstance(new_tool, Tool)
     assert new_tool._info == fakeTool._info
 
+def test_toolFactory_get_tool(toolFactory):
+    # Incorrect interface
+    with pytest.raises(AttributeError):
+        test_tool = toolFactory.get_tool("toto::INSTR")
+    
+    # Error in address format
+    with pytest.raises(ValueError):
+        test_tool = toolFactory.get_tool("ASRL1:INSTR")
+    
+    # Tool device that cannot be reached
+    with pytest.raises(IOError):
+        test_tool = toolFactory.get_tool("TCPIP0::localhost::inst0::INSTR")
+
+    # Tool that answers but cannot be parsed
+    with pytest.raises(ValueError):
+        test_tool = toolFactory.get_tool("ASRL1::INSTR")
+
 
 # --------
 
@@ -475,7 +492,7 @@ def test_tool_querydata(fakeToolWithoutInterface, fakeTool):
         fakeTool.query_data('request')
 
     # Activated transfer format
-    fakeTool._properties.transfer_formats=constants.RTB_TRANSFERT_FORMATS
+    fakeTool._properties.transfer_formats = constants.RTB_TRANSFERT_FORMATS
 
     fakeTool._properties.activated_transfer_format = "text"
     data = fakeTool.query_data('request')
@@ -489,6 +506,17 @@ def test_tool_querydata(fakeToolWithoutInterface, fakeTool):
     # fakeTool._properties.activated_transfer_format = "binary"
     # data = fakeTool.query_data('request')
 
+    # Unsupported transfer formats
+    fakeTool._properties._transfer_formats = "toto" # for test purpose only
+    fakeTool._properties.activated_transfer_format = "toto"
+    with pytest.raises(NotImplementedError):
+        data = fakeTool.query_data('request')
+
+
+def test_tool_set_timeout(fakeTool):
+    fakeTool.set_timeout(42)
+    assert fakeTool._properties.timeout == 42
+    assert fakeTool._virtual_interface.timeout == 42
 
 def test_tool_clear_status(fakeTool):
     fakeTool.clear_status()
