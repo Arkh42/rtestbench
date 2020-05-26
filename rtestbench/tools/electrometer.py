@@ -33,6 +33,8 @@ class Electrometer(Tool):
     # Range interface
     def set_range(self, value):
         raise NotImplementedError('This function must be implemented in daughter classes.')
+    def get_range(self):
+        raise NotImplementedError('This function must be implemented in daughter classes.')
 
     def set_autorange(self, switch: bool):
         raise NotImplementedError('This function must be implemented in daughter classes.')
@@ -45,8 +47,12 @@ class Electrometer(Tool):
     # Aperture (integration) time interface
     def set_aperture_time(self, value):
         raise NotImplementedError('This function must be implemented in daughter classes.')
+    def get_aperture_time(self):
+        raise NotImplementedError('This function must be implemented in daughter classes.')
     def set_integration_time(self, value):
         self.set_aperture_time(value)
+    def get_integration_time(self):
+        self.get_aperture_time()
 
     def set_aperture_time_min(self):
         raise NotImplementedError('This function must be implemented in daughter classes.')

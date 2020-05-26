@@ -43,6 +43,8 @@ def test_electrometer_interface(fakeElectrometerWithoutInterface):
     with pytest.raises(NotImplementedError):
         fakeElectrometerWithoutInterface.set_range(value=42)
     with pytest.raises(NotImplementedError):
+        fakeElectrometerWithoutInterface.get_range()
+    with pytest.raises(NotImplementedError):
         fakeElectrometerWithoutInterface.set_autorange(switch=True)
     with pytest.raises(NotImplementedError):
         fakeElectrometerWithoutInterface.set_range_min()
@@ -52,7 +54,11 @@ def test_electrometer_interface(fakeElectrometerWithoutInterface):
     with pytest.raises(NotImplementedError):
         fakeElectrometerWithoutInterface.set_aperture_time(value=42)
     with pytest.raises(NotImplementedError):
+        fakeElectrometerWithoutInterface.get_aperture_time()
+    with pytest.raises(NotImplementedError):
         fakeElectrometerWithoutInterface.set_integration_time(value=42)
+    with pytest.raises(NotImplementedError):
+        fakeElectrometerWithoutInterface.get_integration_time()
     with pytest.raises(NotImplementedError):
         fakeElectrometerWithoutInterface.set_aperture_time_min()
     with pytest.raises(NotImplementedError):

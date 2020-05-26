@@ -202,27 +202,54 @@ class B298X(Electrometer):
 
 
     # Range interface
-    def set_range(self, value):
-        raise NotImplementedError('This function must be implemented in daughter classes.')
+    def set_range(self, value: float):
+        try:
+            self.send(":SENSe:{}:RANGe:UPPer {}".format(self._properties.activated_meas_data_type, value))
+        except IOError as err_msg:
+            logging.error(err_msg)
+            raise RuntimeError("Cannot set the range to {} on {}.".format(value, self._info))
+    def get_range(self):
+        try:
+            return self.query(":SENSe:{}:RANGe:UPPer?".format(self._properties.activated_meas_data_type))
+        except IOError as err_msg:
+            logging.error(err_msg)
+            raise RuntimeError("Cannot get the range from {}.".format(self._info))
 
     def set_autorange(self, switch: bool):
-        raise NotImplementedError('This function must be implemented in daughter classes.')
+        try:
+            if switch:
+                self.send(":SENSe:{}:RANGe:AUTO ON".format(self._properties.activated_meas_data_type))
+            else:
+                self.send(":SENSe:{}:RANGe:AUTO OFF".format(self._properties.activated_meas_data_type))
+        except IOError as err_msg:
+            logging.error(err_msg)
+            raise RuntimeError("Cannot modify autorange configuration on {}.".format(self._info))
 
     def set_range_min(self):
-        raise NotImplementedError('This function must be implemented in daughter classes.')
+        self.set_range("MIN")
     def set_range_max(self):
-        raise NotImplementedError('This function must be implemented in daughter classes.')
+        self.set_range("MAX")
+
 
     # Aperture (integration) time interface
-    def set_aperture_time(self, value):
-        raise NotImplementedError('This function must be implemented in daughter classes.')
-    def set_integration_time(self, value):
-        self.set_aperture_time(value)
+    def set_aperture_time(self, value: float):
+        try:
+            self.send(":SENSe:{}:APERture {}".format(self._properties.activated_meas_data_type, value))
+        except IOError as err_msg:
+            logging.error(err_msg)
+            raise RuntimeError("Cannot set the aperture/integration time to {} on {}.".format(value, self._info))
+    def get_aperture_time(self):
+        try:
+            return self.query(":SENSe:{}:APERture?".format(self._properties.activated_meas_data_type))
+        except IOError as err_msg:
+            logging.error(err_msg)
+            raise RuntimeError("Cannot get the aperture/integration time from {}.".format(self._info))
 
     def set_aperture_time_min(self):
-        raise NotImplementedError('This function must be implemented in daughter classes.')
+        self.set_aperture_time("MIN")
     def set_aperture_time_max(self):
-        raise NotImplementedError('This function must be implemented in daughter classes.')
+        self.set_aperture_time("MAX")
+
 
 
 class B2981(B298X):
