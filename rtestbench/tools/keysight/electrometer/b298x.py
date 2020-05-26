@@ -286,10 +286,10 @@ class B298X(Electrometer):
     def set_trigger_source(self, source_name: str):
         if source_name in KEYSIGHT_B298X_TRIGGER_SOURCES:
             try:
-                self.send(":TRIGger:ACQuire:SOURce:SIGNal {}".format(value))
+                self.send(":TRIGger:ACQuire:SOURce:SIGNal {}".format(source_name))
             except IOError as err_msg:
                 logging.error(err_msg)
-                raise RuntimeError("Cannot set the trigger source to {} on {}.".format(value, self._info))
+                raise RuntimeError("Cannot set the trigger source to {} on {}.".format(source_name, self._info))
         else:
             raise ValueError("The source_name argument must be in {}.".format(KEYSIGHT_B298X_TRIGGER_SOURCES))
     def get_trigger_source(self) -> str:
