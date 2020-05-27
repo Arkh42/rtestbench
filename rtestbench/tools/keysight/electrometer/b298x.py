@@ -97,15 +97,15 @@ class B298X(Electrometer):
         try:
             self._properties.activated_transfer_format = tsf_format
         except ValueError as err:
-            logging.error(err_msg)
+            logging.error(err)
             raise RuntimeError("Cannot sets the data transfer format as {} for the tool {}.".format(tsf_format, self._info))
 
         if tsf_format in constants.RTB_TRANSFERT_FORMAT_TEXT:
             try:
                 self.send(":FORMat:DATA ASCii")
                 self._properties.text_data_converter = data_type
-            except IOError as err_msg:
-                logging.error(err_msg)
+            except IOError as err:
+                logging.error(err)
                 raise RuntimeError("Cannot sets the data transfer format as ASCII for the tool {}.".format(self._info))
             except ValueError:
                 raise
@@ -114,15 +114,15 @@ class B298X(Electrometer):
                 try:
                     self.send(":FORMat:DATA REAL,32")
                     self._properties.bin_data_type = data_type
-                except IOError as err_msg:
-                    logging.error(err_msg)
+                except IOError as err:
+                    logging.error(err)
                     raise RuntimeError("Cannot sets the data transfer format as bin32 for the tool {}.".format(self._info))
             elif data_type in constants.RTB_BIN_DATA_TYPES_DOUBLE:
                 try:
                     self.send(":FORMat:DATA REAL,64")
                     self._properties.bin_data_type = data_type
-                except IOError as err_msg:
-                    logging.error(err_msg)
+                except IOError as err:
+                    logging.error(err)
                     raise RuntimeError("Cannot sets the data transfer format as bin64 for the tool {}.".format(self._info))
             else:
                 raise NotImplementedError("The data_type argument must be in {} or in {} to use binary data for the tool {}.".format(
@@ -253,29 +253,29 @@ class B298X(Electrometer):
     def set_xscale(self, scale: float):
         try:
             self.send(":DISPlay:VIEW:ROLL:X:PDIVision {}".format(scale))
-        except IOError as err_msg:
-            logging.error(err_msg)
+        except IOError as err:
+            logging.error(err)
             raise RuntimeError("Cannot set the X-axis scale on {}.".format(self._info))
 
     def set_yscale(self, scale: float):
         try:
             self.send(":DISPlay:VIEW:ROLL:Y:PDIVision:{} {}".format(self._properties.activated_meas_data_type, scale))
-        except IOError as err_msg:
-            logging.error(err_msg)
+        except IOError as err:
+            logging.error(err)
             raise RuntimeError("Cannot set the Y-axis scale on {}.".format(self._info))
 
     def set_xoffset(self, offset: float):
         try:
             self.send(":DISPlay:VIEW:ROLL:X:OFFSet {}".format(offset))
-        except IOError as err_msg:
-            logging.error(err_msg)
+        except IOError as err:
+            logging.error(err)
             raise RuntimeError("Cannot set the X-axis offset on {}.".format(self._info))
     
     def set_yoffset(self, offset: float):
         try:
             self.send(":DISPlay:VIEW:ROLL:Y:OFFSet:{} {}".format(self._properties.activated_meas_data_type, offset))
-        except IOError as err_msg:
-            logging.error(err_msg)
+        except IOError as err:
+            logging.error(err)
             raise RuntimeError("Cannot set the Y-axis offset on {}.".format(self._info))
 
 
@@ -283,14 +283,14 @@ class B298X(Electrometer):
     def set_range(self, value: float):
         try:
             self.send(":SENSe:{}:RANGe:UPPer {}".format(self._properties.activated_meas_data_type, value))
-        except IOError as err_msg:
-            logging.error(err_msg)
+        except IOError as err:
+            logging.error(err)
             raise RuntimeError("Cannot set the range to {} on {}.".format(value, self._info))
     def get_range(self):
         try:
             return self.query(":SENSe:{}:RANGe:UPPer?".format(self._properties.activated_meas_data_type))
-        except IOError as err_msg:
-            logging.error(err_msg)
+        except IOError as err:
+            logging.error(err)
             raise RuntimeError("Cannot get the range from {}.".format(self._info))
 
     def set_autorange(self, switch: bool):
@@ -299,8 +299,8 @@ class B298X(Electrometer):
                 self.send(":SENSe:{}:RANGe:AUTO ON".format(self._properties.activated_meas_data_type))
             else:
                 self.send(":SENSe:{}:RANGe:AUTO OFF".format(self._properties.activated_meas_data_type))
-        except IOError as err_msg:
-            logging.error(err_msg)
+        except IOError as err:
+            logging.error(err)
             raise RuntimeError("Cannot modify autorange configuration on {}.".format(self._info))
 
     def set_range_min(self):
@@ -313,14 +313,14 @@ class B298X(Electrometer):
     def set_aperture_time(self, value: float):
         try:
             self.send(":SENSe:{}:APERture {}".format(self._properties.activated_meas_data_type, value))
-        except IOError as err_msg:
-            logging.error(err_msg)
+        except IOError as err:
+            logging.error(err)
             raise RuntimeError("Cannot set the aperture/integration time to {} on {}.".format(value, self._info))
     def get_aperture_time(self):
         try:
             return self.query(":SENSe:{}:APERture?".format(self._properties.activated_meas_data_type))
-        except IOError as err_msg:
-            logging.error(err_msg)
+        except IOError as err:
+            logging.error(err)
             raise RuntimeError("Cannot get the aperture/integration time from {}.".format(self._info))
 
     def set_aperture_time_min(self):
@@ -334,23 +334,23 @@ class B298X(Electrometer):
         if source_name in KEYSIGHT_B298X_TRIGGER_SOURCES:
             try:
                 self.send(":TRIGger:ACQuire:SOURce:SIGNal {}".format(source_name))
-            except IOError as err_msg:
-                logging.error(err_msg)
+            except IOError as err:
+                logging.error(err)
                 raise RuntimeError("Cannot set the trigger source to {} on {}.".format(source_name, self._info))
         else:
             raise ValueError("The source_name argument must be in {}.".format(KEYSIGHT_B298X_TRIGGER_SOURCES))
     def get_trigger_source(self) -> str:
         try:
             return self.query(":TRIGger:ACQuire:SOURce:SIGNal?")
-        except IOError as err_msg:
-            logging.error(err_msg)
+        except IOError as err:
+            logging.error(err)
             raise RuntimeError("Cannot get the trigger source from {}.".format(self._info))
 
     def set_trigger_count(self, value: int):
         try:
             self.send(":TRIGger:ACQuire:COUNt {}".format(value))
-        except IOError as err_msg:
-            logging.error(err_msg)
+        except IOError as err:
+            logging.error(err)
             raise RuntimeError("Cannot set the trigger count to {} on {}.".format(value, self._info))
 
     def set_trigger_count_min(self):
@@ -361,15 +361,15 @@ class B298X(Electrometer):
     def get_trigger_count(self) -> int:
         try:
             return self.query(":TRIGger:ACQuire:COUNt?")
-        except IOError as err_msg:
-            logging.error(err_msg)
+        except IOError as err:
+            logging.error(err)
             raise RuntimeError("Cannot get the trigger count from {}.".format(self._info))
 
     def set_trigger_timer(self, value: float):
         try:
             self.send(":TRIGger:ACQuire:TIMer {}".format(value))
-        except IOError as err_msg:
-            logging.error(err_msg)
+        except IOError as err:
+            logging.error(err)
             raise RuntimeError("Cannot set the trigger timer interval to {} on {}.".format(value, self._info))
 
     def set_trigger_timer_min(self):
@@ -380,8 +380,8 @@ class B298X(Electrometer):
     def get_trigger_timer(self) -> float:
         try:
             return self.query(":TRIGger:ACQuire:TIMer?")
-        except IOError as err_msg:
-            logging.error(err_msg)
+        except IOError as err:
+            logging.error(err)
             raise RuntimeError("Cannot get the trigger timer interval from {}.".format(self._info))
 
 
@@ -389,14 +389,14 @@ class B298X(Electrometer):
     def enable_amperemeter(self):
         try:
             self.send(":INPut:STATe ON")
-        except IOError as err_msg:
-            logging.error(err_msg)
+        except IOError as err:
+            logging.error(err)
             raise RuntimeError("Cannot enable the ampemeter input on {}.".format(self._info))
     def disable_amperemeter(self):
         try:
             self.send(":INPut:STATe OFF")
-        except IOError as err_msg:
-            logging.error(err_msg)
+        except IOError as err:
+            logging.error(err)
             raise RuntimeError("Cannot disable the ampemeter input on {}.".format(self._info))
 
 
