@@ -551,6 +551,10 @@ def test_tool_set_timeout(fakeTool):
     assert fakeTool._properties.timeout == 42
     assert fakeTool._virtual_interface.timeout == 42
 
+def test_tool_set_data_transfer_format(fakeTool):
+    with pytest.raises(NotImplementedError):
+        fakeTool.set_data_transfer_format("bin", "bin32")
+
 def test_tool_clear_status(fakeTool):
     fakeTool.clear_status()
 

@@ -414,6 +414,12 @@ class Tool(object):
             raise
 
 
+    def set_data_transfer_format(self, tsf_format: str, data_type: str):
+        """Sets the data transfer format of the tool."""
+
+        raise NotImplementedError("This function must be implemented by daughter classes.")
+
+
     def clear_status(self):
         """Sends a command to clear the status registers."""
 

@@ -8,75 +8,58 @@ from rtestbench.core import ToolInfo
 from rtestbench.tools.electrometer import Electrometer
 
 
-KEYSIGHT_B298X_VIEW_MODE_METER = "SINGle1"
-KEYSIGHT_B298X_VIEW_MODE_ROLL = "ROLL"
-KEYSIGHT_B298X_VIEW_MODE_HISTOGRAM = "HISTogram"
-KEYSIGHT_B298X_VIEW_MODE_GRAPH = "GRAPH"
-KEYSIGHT_B298X_VIEW_MODES = (
-    KEYSIGHT_B298X_VIEW_MODE_METER,
-    KEYSIGHT_B298X_VIEW_MODE_ROLL,
-    KEYSIGHT_B298X_VIEW_MODE_HISTOGRAM,
-    KEYSIGHT_B298X_VIEW_MODE_GRAPH
-)
+KEYSIGHT_B298X_VIEW_MODE_METER = ("SINGle1")
+KEYSIGHT_B298X_VIEW_MODE_ROLL = ("ROLL")
+KEYSIGHT_B298X_VIEW_MODE_HISTOGRAM = ("HISTogram")
+KEYSIGHT_B298X_VIEW_MODE_GRAPH = ("GRAPH")
+KEYSIGHT_B298X_VIEW_MODES = KEYSIGHT_B298X_VIEW_MODE_METER + KEYSIGHT_B298X_VIEW_MODE_ROLL + KEYSIGHT_B298X_VIEW_MODE_HISTOGRAM + KEYSIGHT_B298X_VIEW_MODE_GRAPH
 
-KEYSIGHT_B298X_SUBVIEW_MODE_ROLL = "ROLL"
-KEYSIGHT_B298X_SUBVIEW_MODE_HISTOGRAM = "HISTogram"
-KEYSIGHT_B298X_SUBVIEW_MODE_RANGE = "RANGe"
-KEYSIGHT_B298X_SUBVIEW_MODE_TRIGGER = "TRIGger"
-KEYSIGHT_B298X_SUBVIEW_MODE_FUNCTION = "FUNCtion"
-KEYSIGHT_B298X_SUBVIEW_MODES = (
-    KEYSIGHT_B298X_SUBVIEW_MODE_ROLL,
-    KEYSIGHT_B298X_SUBVIEW_MODE_HISTOGRAM,
-    KEYSIGHT_B298X_SUBVIEW_MODE_RANGE,
-    KEYSIGHT_B298X_SUBVIEW_MODE_TRIGGER,
-    KEYSIGHT_B298X_SUBVIEW_MODE_FUNCTION
-)
+KEYSIGHT_B298X_SUBVIEW_MODE_ROLL = ("ROLL")
+KEYSIGHT_B298X_SUBVIEW_MODE_HISTOGRAM = ("HISTogram")
+KEYSIGHT_B298X_SUBVIEW_MODE_RANGE = ("RANGe")
+KEYSIGHT_B298X_SUBVIEW_MODE_TRIGGER = ("TRIGger")
+KEYSIGHT_B298X_SUBVIEW_MODE_FUNCTION = ("FUNCtion")
+KEYSIGHT_B298X_SUBVIEW_MODES = KEYSIGHT_B298X_SUBVIEW_MODE_ROLL + KEYSIGHT_B298X_SUBVIEW_MODE_HISTOGRAM + KEYSIGHT_B298X_SUBVIEW_MODE_RANGE + KEYSIGHT_B298X_SUBVIEW_MODE_TRIGGER + KEYSIGHT_B298X_SUBVIEW_MODE_FUNCTION
 
-KEYSIGHT_B298X_MEAS_DATA_TYPE_CHARGE = "CHARge"
-KEYSIGHT_B298X_MEAS_DATA_TYPE_CURRENT = "CURRent"
-KEYSIGHT_B298X_MEAS_DATA_TYPE_RESISTANCE = "RESistance"
-KEYSIGHT_B298X_MEAS_DATA_TYPE_VOLTAGE = "VOLTage"
-KEYSIGHT_B2981_MEAS_DATA_TYPES = (KEYSIGHT_B298X_MEAS_DATA_TYPE_CURRENT)
+KEYSIGHT_B298X_MEAS_DATA_TYPE_CHARGE = ("CHARge")
+KEYSIGHT_B298X_MEAS_DATA_TYPE_CURRENT = ("CURRent")
+KEYSIGHT_B298X_MEAS_DATA_TYPE_HUMIDITY = ("HUMidity")
+KEYSIGHT_B298X_MEAS_DATA_TYPE_RESISTANCE = ("RESistance")
+KEYSIGHT_B298X_MEAS_DATA_TYPE_TEMPERATURE = ("TEMPerature")
+KEYSIGHT_B298X_MEAS_DATA_TYPE_TIME = ("TIME")
+KEYSIGHT_B298X_MEAS_DATA_TYPE_VOLTAGE = ("VOLTage")
+
+KEYSIGHT_B2981_DISPLAY_XDATA_TYPES = KEYSIGHT_B298X_MEAS_DATA_TYPE_TIME
+KEYSIGHT_B2981_DISPLAY_YDATA_TYPES = KEYSIGHT_B298X_MEAS_DATA_TYPE_CURRENT
+KEYSIGHT_B2981_MEAS_DATA_TYPES = KEYSIGHT_B2981_DISPLAY_XDATA_TYPES + KEYSIGHT_B2981_DISPLAY_YDATA_TYPES
+
+KEYSIGHT_B2983_DISPLAY_XDATA_TYPES = KEYSIGHT_B2981_DISPLAY_XDATA_TYPES
+KEYSIGHT_B2983_DISPLAY_YDATA_TYPES = KEYSIGHT_B2981_DISPLAY_YDATA_TYPES
 KEYSIGHT_B2983_MEAS_DATA_TYPES = KEYSIGHT_B2981_MEAS_DATA_TYPES
-KEYSIGHT_B2985_MEAS_DATA_TYPES = (
-    KEYSIGHT_B298X_MEAS_DATA_TYPE_CHARGE,
-    KEYSIGHT_B298X_MEAS_DATA_TYPE_CURRENT,
-    KEYSIGHT_B298X_MEAS_DATA_TYPE_RESISTANCE,
-    KEYSIGHT_B298X_MEAS_DATA_TYPE_VOLTAGE
-)
+
+KEYSIGHT_B2985_DISPLAY_XDATA_TYPES = KEYSIGHT_B298X_MEAS_DATA_TYPE_TIME
+KEYSIGHT_B2985_DISPLAY_YDATA_TYPES = KEYSIGHT_B298X_MEAS_DATA_TYPE_CHARGE + KEYSIGHT_B298X_MEAS_DATA_TYPE_CURRENT + KEYSIGHT_B298X_MEAS_DATA_TYPE_RESISTANCE + KEYSIGHT_B298X_MEAS_DATA_TYPE_VOLTAGE
+KEYSIGHT_B2985_MEAS_DATA_TYPES = KEYSIGHT_B2985_DISPLAY_XDATA_TYPES + KEYSIGHT_B2985_DISPLAY_YDATA_TYPES + KEYSIGHT_B298X_MEAS_DATA_TYPE_HUMIDITY + KEYSIGHT_B298X_MEAS_DATA_TYPE_TEMPERATURE
+
+KEYSIGHT_B2987_DISPLAY_XDATA_TYPES = KEYSIGHT_B2985_DISPLAY_XDATA_TYPES
+KEYSIGHT_B2987_DISPLAY_YDATA_TYPES = KEYSIGHT_B2985_DISPLAY_YDATA_TYPES
 KEYSIGHT_B2987_MEAS_DATA_TYPES = KEYSIGHT_B2985_MEAS_DATA_TYPES
 
-KEYSIGHT_B298X_TRIGGER_SOURCE_AUTO = "AINT"
-KEYSIGHT_B298X_TRIGGER_SOURCE_BUS = "BUS"
-KEYSIGHT_B298X_TRIGGER_SOURCE_TIMER = "TIMer"
-KEYSIGHT_B298X_TRIGGER_SOURCE_INTERNAL1 = "INT1"
-KEYSIGHT_B298X_TRIGGER_SOURCE_INTERNAL2 = "INT2"
-KEYSIGHT_B298X_TRIGGER_SOURCE_LAN = "LAN"
-KEYSIGHT_B298X_TRIGGER_SOURCE_EXTERNAL1 = "EXT1"
-KEYSIGHT_B298X_TRIGGER_SOURCE_EXTERNAL2 = "EXT2"
-KEYSIGHT_B298X_TRIGGER_SOURCE_EXTERNAL3 = "EXT3"
-KEYSIGHT_B298X_TRIGGER_SOURCE_EXTERNAL4 = "EXT4"
-KEYSIGHT_B298X_TRIGGER_SOURCE_EXTERNAL5 = "EXT5"
-KEYSIGHT_B298X_TRIGGER_SOURCE_EXTERNAL6 = "EXT6"
-KEYSIGHT_B298X_TRIGGER_SOURCE_EXTERNAL7 = "EXT7"
-KEYSIGHT_B298X_TRIGGER_SOURCE_TRIGGER_IN = "TIN"
-KEYSIGHT_B298X_TRIGGER_SOURCES = (
-    KEYSIGHT_B298X_TRIGGER_SOURCE_AUTO,
-    KEYSIGHT_B298X_TRIGGER_SOURCE_BUS,
-    KEYSIGHT_B298X_TRIGGER_SOURCE_TIMER,
-    KEYSIGHT_B298X_TRIGGER_SOURCE_INTERNAL1,
-    KEYSIGHT_B298X_TRIGGER_SOURCE_INTERNAL2,
-    KEYSIGHT_B298X_TRIGGER_SOURCE_LAN,
-    KEYSIGHT_B298X_TRIGGER_SOURCE_EXTERNAL1,
-    KEYSIGHT_B298X_TRIGGER_SOURCE_EXTERNAL2,
-    KEYSIGHT_B298X_TRIGGER_SOURCE_EXTERNAL3,
-    KEYSIGHT_B298X_TRIGGER_SOURCE_EXTERNAL4,
-    KEYSIGHT_B298X_TRIGGER_SOURCE_EXTERNAL5,
-    KEYSIGHT_B298X_TRIGGER_SOURCE_EXTERNAL6,
-    KEYSIGHT_B298X_TRIGGER_SOURCE_EXTERNAL7,
-    KEYSIGHT_B298X_TRIGGER_SOURCE_TRIGGER_IN
-)
-
+KEYSIGHT_B298X_TRIGGER_SOURCE_AUTO = ("AINT")
+KEYSIGHT_B298X_TRIGGER_SOURCE_BUS = ("BUS")
+KEYSIGHT_B298X_TRIGGER_SOURCE_TIMER = ("TIMer")
+KEYSIGHT_B298X_TRIGGER_SOURCE_INTERNAL1 = ("INT1")
+KEYSIGHT_B298X_TRIGGER_SOURCE_INTERNAL2 = ("INT2")
+KEYSIGHT_B298X_TRIGGER_SOURCE_LAN = ("LAN")
+KEYSIGHT_B298X_TRIGGER_SOURCE_EXTERNAL1 = ("EXT1")
+KEYSIGHT_B298X_TRIGGER_SOURCE_EXTERNAL2 = ("EXT2")
+KEYSIGHT_B298X_TRIGGER_SOURCE_EXTERNAL3 = ("EXT3")
+KEYSIGHT_B298X_TRIGGER_SOURCE_EXTERNAL4 = ("EXT4")
+KEYSIGHT_B298X_TRIGGER_SOURCE_EXTERNAL5 = ("EXT5")
+KEYSIGHT_B298X_TRIGGER_SOURCE_EXTERNAL6 = ("EXT6")
+KEYSIGHT_B298X_TRIGGER_SOURCE_EXTERNAL7 = ("EXT7")
+KEYSIGHT_B298X_TRIGGER_SOURCE_TRIGGER_IN = ("TIN")
+KEYSIGHT_B298X_TRIGGER_SOURCES = KEYSIGHT_B298X_TRIGGER_SOURCE_AUTO + KEYSIGHT_B298X_TRIGGER_SOURCE_BUS + KEYSIGHT_B298X_TRIGGER_SOURCE_TIMER + KEYSIGHT_B298X_TRIGGER_SOURCE_INTERNAL1 + KEYSIGHT_B298X_TRIGGER_SOURCE_INTERNAL2 + KEYSIGHT_B298X_TRIGGER_SOURCE_LAN + KEYSIGHT_B298X_TRIGGER_SOURCE_EXTERNAL1 + KEYSIGHT_B298X_TRIGGER_SOURCE_EXTERNAL2 + KEYSIGHT_B298X_TRIGGER_SOURCE_EXTERNAL3 + KEYSIGHT_B298X_TRIGGER_SOURCE_EXTERNAL4 + KEYSIGHT_B298X_TRIGGER_SOURCE_EXTERNAL5 + KEYSIGHT_B298X_TRIGGER_SOURCE_EXTERNAL6 + KEYSIGHT_B298X_TRIGGER_SOURCE_EXTERNAL7 + KEYSIGHT_B298X_TRIGGER_SOURCE_TRIGGER_IN
 
 
 class B298X(Electrometer):
@@ -102,11 +85,53 @@ class B298X(Electrometer):
         self._properties.update_properties(
             activated_view_mode=None,
             activated_subview_mode=None,
+            activated_display_ydata_type=KEYSIGHT_B298X_MEAS_DATA_TYPE_CURRENT,
             activated_meas_data_type=KEYSIGHT_B298X_MEAS_DATA_TYPE_CURRENT
         )
 
 
     # Common SCPI commands
+    def set_data_transfer_format(self, tsf_format: str, data_type: str):
+        """Sets the data transfer format of the tool."""
+
+        try:
+            self._properties.activated_transfer_format = tsf_format
+        except ValueError as err:
+            logging.error(err_msg)
+            raise RuntimeError("Cannot sets the data transfer format as {} for the tool {}.".format(tsf_format, self._info))
+
+        if tsf_format in constants.RTB_TRANSFERT_FORMAT_TEXT:
+            try:
+                self.send(":FORMat:DATA ASCii")
+                self._properties.text_data_converter = data_type
+            except IOError as err_msg:
+                logging.error(err_msg)
+                raise RuntimeError("Cannot sets the data transfer format as ASCII for the tool {}.".format(self._info))
+            except ValueError:
+                raise
+        elif tsf_format in constants.RTB_TRANSFERT_FORMAT_BIN:
+            if data_type in constants.RTB_BIN_DATA_TYPES_FLOAT:
+                try:
+                    self.send(":FORMat:DATA REAL,32")
+                    self._properties.bin_data_type = data_type
+                except IOError as err_msg:
+                    logging.error(err_msg)
+                    raise RuntimeError("Cannot sets the data transfer format as bin32 for the tool {}.".format(self._info))
+            elif data_type in constants.RTB_BIN_DATA_TYPES_DOUBLE:
+                try:
+                    self.send(":FORMat:DATA REAL,64")
+                    self._properties.bin_data_type = data_type
+                except IOError as err_msg:
+                    logging.error(err_msg)
+                    raise RuntimeError("Cannot sets the data transfer format as bin64 for the tool {}.".format(self._info))
+            else:
+                raise NotImplementedError("The data_type argument must be in {} or in {} to use binary data for the tool {}.".format(
+                    constants.RTB_BIN_DATA_TYPES_FLOAT,
+                    constants.RTB_BIN_DATA_TYPES_DOUBLE,
+                    self._info
+                ))
+
+
     def lock(self):
         """Requests a remote lock of the tool's I/O interface."""
 
@@ -175,15 +200,37 @@ class B298X(Electrometer):
 
 
     # Measurement type interface
-    def set_ydata_type(self, data_type: str):
+    def set_meas_data_types(self, data_types: list):
         raise NotImplementedError("This function must be implemented in daughter classes.")
 
-    def get_ydata_type(self) -> str:
+    def get_meas_data_types(self) -> str:
         try:
-            self.send(":DISPlay:VIEW:{}:Y:ELEMent?".format(self._properties.activated_view_mode))
-        except IOError:
-            logging.error("Cannot get the data type on the Y-axis.")
-            raise
+            return self.query(":FORMat:ELEMents:SENSe?")
+        except IOError as err:
+            logging.error(err)
+            raise RuntimeError("Cannot get the measurement data type.")
+
+
+    def set_display_xdata_type(self, data_type: str):
+        raise NotImplementedError("This function must be implemented in daughter classes.")
+
+    def get_display_xdata_type(self) -> str:
+        try:
+            return self.query(":DISPlay:VIEW:GRAPh:X:ELEMent?")
+        except IOError as err:
+            logging.error(err)
+            raise RuntimeError("Cannot get the data type on the X-axis.")
+
+
+    def set_display_ydata_type(self, data_type: str):
+        raise NotImplementedError("This function must be implemented in daughter classes.")
+
+    def get_display_ydata_type(self) -> str:
+        try:
+            return self.query(":DISPlay:VIEW:{}:Y:ELEMent?".format(self._properties.activated_view_mode))
+        except IOError as err:
+            logging.error(err)
+            raise RuntimeError("Cannot get the data type on the Y-axis.")
 
 
     # Scale and offset interface
@@ -358,19 +405,42 @@ class B2981(B298X):
 
     def __init__(self, info: ToolInfo):
         B298X.__init__(self, info)
-    
+
     # Measurement type interface
-    def set_ydata_type(self, data_type: str):
+    def set_meas_data_type(self, data_type: str):
         if data_type in KEYSIGHT_B2981_MEAS_DATA_TYPES:
             try:
-                self.send(":DISPlay:VIEW:{}:Y:ELEMent {}".format(self._properties.activated_view_mode, data_type))
-            except IOError:
-                logging.error("Cannot set the data type on the Y-axis.")
-                raise
+                self.send(":FORMat:ELEMents:SENSe {}".format(','.join(data_type)))
+            except IOError as err:
+                logging.error(err)
+                raise RuntimeError("Cannot set the measurement data type.")
             else:
                 self._properties.activated_meas_data_type = data_type
         else:
             raise ValueError("The data_type argument must be in {}.".format(KEYSIGHT_B2981_MEAS_DATA_TYPES))
+
+
+    def set_display_xdata_type(self, data_type: str):
+        if data_type in KEYSIGHT_B2981_DISPLAY_XDATA_TYPES:
+            try:
+                self.send(":DISPlay:VIEW:GRAPh:X:ELEMent {}".format(data_type))
+            except IOError as err:
+                logging.error(err)
+                raise RuntimeError("Cannot set the data type on the X-axis.")
+        else:
+            raise ValueError("The data_type argument must be in {}.".format(KEYSIGHT_B2981_DISPLAY_XDATA_TYPES))
+
+    def set_display_ydata_type(self, data_type: str):
+        if data_type in KEYSIGHT_B2981_DISPLAY_YDATA_TYPES:
+            try:
+                self.send(":DISPlay:VIEW:{}:Y:ELEMent {}".format(self._properties.activated_view_mode, data_type))
+            except IOError as err:
+                logging.error(err)
+                raise RuntimeError("Cannot set the data type on the Y-axis.")
+            else:
+                self._properties.activated_display_ydata_type = data_type
+        else:
+            raise ValueError("The data_type argument must be in {}.".format(KEYSIGHT_B2981_DISPLAY_YDATA_TYPES))
 
 
 class B2983(B2981):
@@ -387,17 +457,39 @@ class B2985(B298X):
         B298X.__init__(self, info)
     
     # Measurement type interface
-    def set_ydata_type(self, data_type: str):
+    def set_meas_data_type(self, data_type: str):
         if data_type in KEYSIGHT_B2985_MEAS_DATA_TYPES:
             try:
-                self.send(":DISPlay:VIEW:{}:Y:ELEMent {}".format(self._properties.activated_view_mode, data_type))
-            except IOError:
-                logging.error("Cannot set the data type on the Y-axis.")
-                raise
+                self.send(":FORMat:ELEMents:SENSe {}".format(','.join(data_type)))
+            except IOError as err:
+                logging.error(err)
+                raise RuntimeError("Cannot set the measurement data type.")
             else:
                 self._properties.activated_meas_data_type = data_type
         else:
             raise ValueError("The data_type argument must be in {}.".format(KEYSIGHT_B2985_MEAS_DATA_TYPES))
+
+    def set_display_xdata_type(self, data_type: str):
+        if data_type in KEYSIGHT_B2985_DISPLAY_XDATA_TYPES:
+            try:
+                self.send(":DISPlay:VIEW:GRAPh:X:ELEMent {}".format(data_type))
+            except IOError as err:
+                logging.error(err)
+                raise RuntimeError("Cannot set the data type on the X-axis.")
+        else:
+            raise ValueError("The data_type argument must be in {}.".format(KEYSIGHT_B2985_DISPLAY_XDATA_TYPES))
+
+    def set_display_ydata_type(self, data_type: str):
+        if data_type in KEYSIGHT_B2985_DISPLAY_YDATA_TYPES:
+            try:
+                self.send(":DISPlay:VIEW:{}:Y:ELEMent {}".format(self._properties.activated_view_mode, data_type))
+            except IOError as err:
+                logging.error(err)
+                raise RuntimeError("Cannot set the data type on the Y-axis.")
+            else:
+                self._properties.activated_display_ydata_type = data_type
+        else:
+            raise ValueError("The data_type argument must be in {}.".format(KEYSIGHT_B2985_DISPLAY_YDATA_TYPES))
 
 
 class B2987(B2985):
