@@ -335,6 +335,8 @@ class Tool(object):
         else:
             try:
                 self._virtual_interface.write(command)
+            except visa.InvalidSession as err:
+                raise RuntimeError("Cannot send the command {}; {}".format(command, err))
             except visa.VisaIOError as err:
                 raise IOError("Cannot send the command {}; origin comes from {}.".format(command, err.description))
     
@@ -353,6 +355,8 @@ class Tool(object):
         else:
             try:
                 return self._virtual_interface.query(request)
+            except visa.InvalidSession as err:
+                raise RuntimeError("Cannot get an answer from the request {}; {}".format(request, err))
             except visa.VisaIOError as err:
                 raise IOError("Cannot get an answer from the request {}; origin comes from {}.".format(request, err.description))
     
@@ -391,6 +395,8 @@ class Tool(object):
                         )
                     else:
                         raise NotImplementedError("Unsupported transfer format {} is currently activated.".format(transfer_format))
+                except visa.InvalidSession as err:
+                    raise RuntimeError("Cannot get an answer from the request {}; {}".format(request, err))
                 except visa.VisaIOError as err:
                     raise IOError("Cannot get an answer from the request {}; origin comes from {}.".format(request, err.description))
 
@@ -643,7 +649,7 @@ class RTestBenchManager(object):
         factory = ToolFactory(self._visa_rm)
         try:
             new_tool = factory.get_tool(address)
-        except (AttributeError, ValueError, RuntimeError) as error_msg:
+        except (AttributeError, ValueError, IOError, RuntimeError) as error_msg:
             self.logger.error(error_msg)
             raise ValueError('Impossible to attach the tool to R-testbench')
         else:

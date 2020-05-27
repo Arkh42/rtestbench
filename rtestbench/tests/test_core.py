@@ -1,6 +1,7 @@
 """Test for the core module."""
 
 
+import logging
 import pytest
 
 import visa
@@ -8,6 +9,7 @@ import numpy as np
 
 import rtestbench
 from rtestbench import constants
+from rtestbench.core import RTestBenchManager
 from rtestbench.core import Tool
 from rtestbench.core import ToolFactory
 from rtestbench.core import ToolInfo
@@ -62,6 +64,7 @@ def fakeTool(toolFactory):
     info.software_version = "3.x"
 
     fake_tool = Tool(info)
+    fake_tool._properties.bin_data_header = "empty" # Necessary for the simulated device
     fake_tool._properties.write_msg_terminator = '\r\n' # Necessary for the simulated device
     tool_interface = toolFactory._find_tool("ASRL1::INSTR")
     fake_tool.connect_virtual_interface(tool_interface)
@@ -472,6 +475,16 @@ def test_tool_send(fakeToolWithoutInterface, fakeTool):
     
     # Send command (no exception raised by simulated device)
     fakeTool.send('command')
+
+    # DOES NOT WORK - Change write termination character to generate visa.VisaIOError
+    # fakeTool._virtual_interface.write_termination = '\r'
+    # with pytest.raises(IOError):
+    #     answer = fakeTool.send("command")
+
+    # Close virtual interface to generate visa.InvalidSession
+    fakeTool._virtual_interface.close()
+    with pytest.raises(RuntimeError):
+        fakeTool.send('command')
     
 def test_tool_query(fakeToolWithoutInterface, fakeTool):
     # No virtual interface
@@ -481,6 +494,16 @@ def test_tool_query(fakeToolWithoutInterface, fakeTool):
     # Send request (no exception raised by simulated device)
     answer = fakeTool.query("*IDN?")
     assert isinstance(answer, str)
+
+    # Change read termination character to generate visa.VisaIOError
+    fakeTool._virtual_interface.read_termination = '\r'
+    with pytest.raises(IOError):
+        answer = fakeTool.query("*IDN?")
+
+    # Close virtual interface to generate visa.InvalidSession
+    fakeTool._virtual_interface.close()
+    with pytest.raises(RuntimeError):
+        fakeTool.query("*IDN?")
 
 def test_tool_querydata(fakeToolWithoutInterface, fakeTool):
     # No virtual interface
@@ -500,17 +523,27 @@ def test_tool_querydata(fakeToolWithoutInterface, fakeTool):
     fakeTool._properties.activated_transfer_format = "ascii"
     data = fakeTool.query_data('request')
 
-    # fakeTool._properties.activated_transfer_format = "bin"
-    # data = fakeTool.query_data('request')
+    fakeTool._properties.activated_transfer_format = "bin"
+    data = fakeTool.query_data('request')
 
-    # fakeTool._properties.activated_transfer_format = "binary"
-    # data = fakeTool.query_data('request')
+    fakeTool._properties.activated_transfer_format = "binary"
+    data = fakeTool.query_data('request')
+
+    # Change read termination character to generate visa.VisaIOError
+    fakeTool._virtual_interface.read_termination = '\r'
+    with pytest.raises(IOError):
+        answer = fakeTool.query_data('request')
 
     # Unsupported transfer formats
     fakeTool._properties._transfer_formats = "toto" # for test purpose only
     fakeTool._properties.activated_transfer_format = "toto"
     with pytest.raises(NotImplementedError):
         data = fakeTool.query_data('request')
+
+    # Close virtual interface to generate visa.InvalidSession
+    fakeTool._virtual_interface.close()
+    with pytest.raises(RuntimeError):
+        fakeTool.query_data('request')
 
 
 def test_tool_set_timeout(fakeTool):
@@ -542,9 +575,6 @@ def test_tool_unlock(fakeTool):
 def rtb_quiet():
     """Returns a non-verbose RTestBench."""
 
-    import logging
-    from rtestbench.core import RTestBenchManager
-
     rtb = RTestBenchManager(verbose=False, visa_library='')
     logging.disable(logging.CRITICAL)
 
@@ -554,9 +584,8 @@ def rtb_quiet():
 def rtb_simulated_visaRM():
     """Returns a non-verbose RTestBench with a simulated VISA resource manager."""
 
-    from rtestbench.core import RTestBenchManager
-
     rtb = RTestBenchManager(verbose=False, visa_library='@sim')
+    logging.disable(logging.CRITICAL)
 
     return rtb
 
@@ -582,8 +611,25 @@ def test_detect_tools(rtb_simulated_visaRM):
     assert detected_tools
     assert isinstance(detected_tools, tuple)
 
+def test_print_available_tools(capsys, rtb_simulated_visaRM):
+    rtb_simulated_visaRM.print_available_tools()
+    assert "ASRL1::INSTR" in capsys.readouterr().out
+
 
 # Tools management
-# def test_attach_tool(sim_visa_rm, rtb_quiet):
-#     with pytest.raises(ValueError):
-#         rtb_quiet.attach_tool('ASRL1::INSTR')
+def test_attach_tool(rtb_simulated_visaRM):
+    # Incorrect interface
+    with pytest.raises(ValueError):
+        test_tool = rtb_simulated_visaRM.attach_tool("toto::INSTR")
+    
+    # Error in address format
+    with pytest.raises(ValueError):
+        test_tool = rtb_simulated_visaRM.attach_tool("ASRL1:INSTR")
+    
+    # Tool device that cannot be reached
+    with pytest.raises(ValueError):
+        test_tool = rtb_simulated_visaRM.attach_tool("TCPIP0::localhost::inst0::INSTR")
+
+    # Tool that answers but cannot be parsed
+    with pytest.raises(ValueError):
+        test_tool = rtb_simulated_visaRM.attach_tool("ASRL1::INSTR")
