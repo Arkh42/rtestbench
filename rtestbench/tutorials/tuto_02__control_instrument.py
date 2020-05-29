@@ -1,69 +1,53 @@
 
-# R-testbench toolkit
-import rtestbench
-
 import sys
 
+import rtestbench
 
 
 # Step 1 - create the software remote test bench
-rtb = rtestbench.RTestBenchManager()
+testbench = rtestbench.Manager()
 
-
-# Step 2 - attach your resource (instrument) to the test bench
+# Step 2 - attach your tool (instrument) to the test bench
 instr_1 = None
 instr_2 = None
 
-ADDR_INSTR = 'USB0::0x0957::0x9318::MY54321248::0::INSTR' # write the address of your instrument here
-ADDR_INSTR = 'no::instrument' # uncomment to go inside the else/except
+ADDR_INSTR_1 = "no::instrument" # uncomment to go inside the else/except
+ADDR_INSTR_2 = "USB0::0x0957::0x9318::MY54321248::0::INSTR" # example of tool address
 
 
-    # 1st solution
-if ADDR_INSTR in rtb.detect_resources():
-    instr_1 = rtb.attach_resource(ADDR_INSTR)
+# 1st method: if/else
+if ADDR_INSTR_1 in testbench.detect_tools():
+    instr_1 = testbench.attach_tool(ADDR_INSTR_1)
 else:
-    rtb.log_warning('It seems that there is no instrument @ {}.'.format(ADDR_INSTR))
+    testbench.log_warning("It seems that there is no instrument @ {}.".format(ADDR_INSTR_1))
 
-    # 2nd solution
+# 2nd method: try/except
 try:
-    instr_2 = rtb.attach_resource(ADDR_INSTR)
-except ValueError as error_msg:
-    rtb.log_warning(error_msg)
+    instr_2 = testbench.attach_tool(ADDR_INSTR_2)
+except ValueError as err:
+    testbench.log_warning(err)
 
-if instr_1 is None and instr_2 is None:
-    sys.exit('Cannot continue without an instrument... Abort!')
-
-instr = None
-if instr_2 is not None:
-    instr = instr_2
-else:
-    instr = instr_1
-    
+if instr_2 is None:
+    testbench.log_critical("Cannot continue without an instrument... Abort!")
+    sys.exit()
 
 # Step 3 - set the format of data transfer
 try:
-    if instr.transfer_format is None:
-        instr.transfer_format = 'text'
-    else:
-        rtb.log_info('Default transfer format is text.\n\n')
-except (NotImplementedError, ValueError) as error_msg:
-    rtb.log_error(error_msg)
-
+    instr_2.set_data_transfer_format(tsf_format="text", data_type="float")
+except (NotImplementedError, ValueError, RuntimeError) as err:
+    testbench.log_error(err)
 
 # Step 4 - send raw commands to your resource
-translation_table = dict.fromkeys(map(ord, '\n'), None) # tip to remove newline termination character
-
 try:
-    id_instr = instr.query('*IDN?') # generic command available for all instruments
-    temperature = instr.query_data(':SYSTem:TEMPerature?') # command specific to Keysight B2895A/B2987A electrometers
-except (UnboundLocalError, RuntimeError) as error_msg:
-    rtb.log_error(error_msg)
+    id_instr = instr.query("*IDN?") # generic command available for all instruments
+    temperature = instr.query_data(":SYSTem:TEMPerature?") # command specific to Keysight B2895A/B2987A electrometers
+except (UnboundLocalError, IOError, RuntimeError) as err:
+    testbench.log_error(err)
 else:
-    rtb.log_info('Instrument ID = {}'.format(id_instr.translate(translation_table)))
-    rtb.log_info('Variable type of Instrument ID is {} because of query()\n'.format(type(id_instr)))
-    rtb.log_info('Temperature = {}'.format(temperature))
-    rtb.log_info('Variable type of Temperature is {} because of query_data()\n'.format(type(temperature)))
-
+    testbench.log_info("Instrument ID = {}.".format(translation_table))
+    testbench.log_info("Variable type of Instrument ID is {} because of query().".format(type(id_instr)))
+    testbench.log_info("Temperature = {}.".format(temperature))
+    testbench.log_info("Variable type of Temperature is {} because of query_data().".format(type(temperature)))
 
 # Step 4 - close everything properly
-rtb.close()
+testbench.close()
