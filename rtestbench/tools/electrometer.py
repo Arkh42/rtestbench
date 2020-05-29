@@ -1,6 +1,5 @@
 
 from rtestbench.core import Tool
-from rtestbench.core import ToolInfo
 
 
 class Electrometer(Tool):
@@ -9,7 +8,7 @@ class Electrometer(Tool):
     All functions defined here must be overriden in daughter classes implementing actual electrometers.
     """
 
-    def __init__(self, info: ToolInfo):
+    def __init__(self, info):
         info.family = "electrometer"
 
         Tool.__init__(self, info)

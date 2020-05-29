@@ -1,89 +1,83 @@
-
-# Unit tests framework
-import unittest
+"""Test of all dedicated factories."""
 
 
-# Module Under Test
-import rtestbench.tools.keysight._factory as keysight_factory
+import pytest
+
+from rtestbench.core import ToolInfo
+from rtestbench.tools.keysight import _factory as keysight_factory
+from rtestbench.tools.keysight.electrometer import b298x
 
 
-class KeysightFactoryTest(unittest.TestCase):
+@pytest.fixture
+def info_unknown():
+    tool_info = ToolInfo()
 
-    """Test case for the keysight factory.
-    """
+    tool_info.family = "unknown"
+    tool_info.model = "unknown"
 
-    # Electrometers
-    def test_b2981a_factory(self):
-        from rtestbench.tools.keysight.electrometer.b2981a import B2981A as device
+    return tool_info
 
-        instr = keysight_factory.find_and_build(model='B2981A', serial_num=42)
-        self.assertIsInstance(instr, device)
+@pytest.fixture
+def info_keysight_b2891():
+    tool_info = ToolInfo()
+
+    tool_info.family = "electrometer"
+    tool_info.manufacturer = "Keysight Technologies"
+    tool_info.model = "B2981A"
     
-    def test_b2983a_factory(self):
-        from rtestbench.tools.keysight.electrometer.b2983a import B2983A as device
+    return tool_info
 
-        instr = keysight_factory.find_and_build(model='B2983A', serial_num=42)
-        self.assertIsInstance(instr, device)
+@pytest.fixture
+def info_keysight_b2893():
+    tool_info = ToolInfo()
+
+    tool_info.family = "electrometer"
+    tool_info.manufacturer = "Keysight Technologies"
+    tool_info.model = "B2983A"
     
-    def test_b2985a_factory(self):
-        from rtestbench.tools.keysight.electrometer.b2985a import B2985A as device
+    return tool_info
 
-        instr = keysight_factory.find_and_build(model='B2985A', serial_num=42)
-        self.assertIsInstance(instr, device)
+@pytest.fixture
+def info_keysight_b2895():
+    tool_info = ToolInfo()
+
+    tool_info.family = "electrometer"
+    tool_info.manufacturer = "Keysight Technologies"
+    tool_info.model = "B2985A"
     
-    def test_b2987a_factory(self):
-        from rtestbench.tools.keysight.electrometer.b2987a import B2987A as device
+    return tool_info
 
-        instr = keysight_factory.find_and_build(model='B2987A', serial_num=42)
-        self.assertIsInstance(instr, device)
+@pytest.fixture
+def info_keysight_b2897():
+    tool_info = ToolInfo()
+
+    tool_info.family = "electrometer"
+    tool_info.manufacturer = "Keysight Technologies"
+    tool_info.model = "B2987A"
     
-    # Unknown model
-    def test_unknown_factory(self):
-        with self.assertRaises(ValueError):
-            instr = keysight_factory.find_and_build(model='JohnDoe', serial_num=42)
+    return tool_info
 
 
-
-# Module Under Test
-import rtestbench.tools._factory as tool_factory
-
-
-class ToolFactoryTest(unittest.TestCase):
-
-    """Test case for the top-level tool factory.
-    """
-
-    # Keysight Electrometers
-    def test_keysight_b2981a_factory(self):
-        from rtestbench.tools.keysight.electrometer.b2981a import B2981A as device
-
-        instr = tool_factory.find_and_build_tool(brand='Keysight Technologies', model='B2981A', serial_num=42)
-        self.assertIsInstance(instr, device)
+# Keysight factory
+def test_get_keysight_tool(info_unknown, info_keysight_b2891):
+    with pytest.raises(ValueError):
+        keysight_factory.get_keysight_tool(info_unknown)
     
-    def test_keysight_b2983a_factory(self):
-        from rtestbench.tools.keysight.electrometer.b2983a import B2983A as device
+    test_electrometer = keysight_factory.get_keysight_tool(info_keysight_b2891)
+    assert isinstance(test_electrometer, b298x.B2981)
+    
+def test_get_keysight_electrometer(info_unknown, info_keysight_b2891, info_keysight_b2893, info_keysight_b2895, info_keysight_b2897):
+    with pytest.raises(ValueError):
+        keysight_factory.get_keysight_electrometer(info_unknown)
+    
+    test_electrometer = keysight_factory.get_keysight_electrometer(info_keysight_b2891)
+    assert isinstance(test_electrometer, b298x.B2981)
 
-        instr = tool_factory.find_and_build_tool(brand='Keysight Technologies', model='B2983A', serial_num=42)
-        self.assertIsInstance(instr, device)
-    
-    def test_keysight_b2985a_factory(self):
-        from rtestbench.tools.keysight.electrometer.b2985a import B2985A as device
+    test_electrometer = keysight_factory.get_keysight_electrometer(info_keysight_b2893)
+    assert isinstance(test_electrometer, b298x.B2983)
 
-        instr = tool_factory.find_and_build_tool(brand='Keysight Technologies', model='B2985A', serial_num=42)
-        self.assertIsInstance(instr, device)
-    
-    def test_keysight_b2987a_factory(self):
-        from rtestbench.tools.keysight.electrometer.b2987a import B2987A as device
+    test_electrometer = keysight_factory.get_keysight_electrometer(info_keysight_b2895)
+    assert isinstance(test_electrometer, b298x.B2985)
 
-        instr = tool_factory.find_and_build_tool(brand='Keysight Technologies', model='B2987A', serial_num=42)
-        self.assertIsInstance(instr, device)
-    
-    # Unknown Keysight model
-    def test_keysight_unknown_factory(self):
-        with self.assertRaises(ValueError):
-            instr = tool_factory.find_and_build_tool(brand='Keysight Technologies', model='JohnDoe', serial_num=42)
-    
-    # Unknown brand
-    def test_unknown_factory(self):
-        with self.assertRaises(ValueError):
-            instr = tool_factory.find_and_build_tool(brand='JohnDoe', model='JohnDoe', serial_num=42)
+    test_electrometer = keysight_factory.get_keysight_electrometer(info_keysight_b2897)
+    assert isinstance(test_electrometer, b298x.B2987)

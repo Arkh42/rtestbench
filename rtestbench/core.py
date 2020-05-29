@@ -12,8 +12,6 @@ import visa
 from rtestbench import constants
 from rtestbench import _chat
 from rtestbench import _logger
-from rtestbench.tools.keysight import _factory as keysight_factory
-
 
 
 ##########################
@@ -443,6 +441,13 @@ class Tool(object):
 
 
 
+###########
+# Factory #
+###########
+
+from rtestbench.tools.keysight._factory import get_keysight_tool
+
+
 class ToolFactory(object):
     """Factory for Tool objects.
     
@@ -528,7 +533,7 @@ class ToolFactory(object):
     def _build_specific_tool(self, tool_info) -> Tool:
         if tool_info.manufacturer == "Keysight Technologies":
             try:
-                return keysight_factory.find_and_build(tool_info.model, tool_info.serial_number)
+                return get_keysight_tool(tool_info)
             except ValueError:
                 raise
         else:
