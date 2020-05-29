@@ -39,8 +39,8 @@ except (NotImplementedError, ValueError, RuntimeError) as err:
 
 # Step 4 - send raw commands to your resource
 try:
-    id_instr = instr.query("*IDN?") # generic command available for all instruments
-    temperature = instr.query_data(":SYSTem:TEMPerature?") # command specific to Keysight B2895A/B2987A electrometers
+    id_instr = instr_2.query("*IDN?") # generic command available for all instruments
+    temperature = instr_2.query_data(":SYSTem:TEMPerature?") # command specific to Keysight B2895A/B2987A electrometers
 except (UnboundLocalError, IOError, RuntimeError) as err:
     testbench.log_error(err)
 else:

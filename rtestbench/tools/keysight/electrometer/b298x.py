@@ -622,7 +622,7 @@ class B2985(B298X):
             raise RuntimeError("Cannot get the temperature sensor from {}.".format(self._info))
 
     def set_temperature_unit(self, unit: str):
-        if sensor in KEYSIGHT_B2985_TEMPERATURE_UNITS:
+        if unit in KEYSIGHT_B2985_TEMPERATURE_UNITS:
             try:
                 self.send(":SYSTem:TEMPerature:UNIT {}".format(unit))
             except IOError as err:
