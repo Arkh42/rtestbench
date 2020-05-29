@@ -158,6 +158,17 @@ class B298X(Electrometer):
 
 
     # View mode
+    def set_display(self, switch: bool):
+        try:
+            if switch:
+                self.send(":DISPlay:ENABle ON")
+            else:
+                self.send(":DISPlay:ENABle OFF")
+        except IOError as err:
+            logging.error(err)
+            raise RuntimeError("Cannot switch the display of {}.".format(self._info))
+                
+
     def set_view_mode(self, mode: str):
         if mode in KEYSIGHT_B298X_VIEW_MODES:
             try:
@@ -398,6 +409,22 @@ class B298X(Electrometer):
         except IOError as err:
             logging.error(err)
             raise RuntimeError("Cannot disable the ampemeter input on {}.".format(self._info))
+
+
+    # Measurement actions interface
+    def initiate_measurement(self):
+        try:
+            self.send(":INITiate:IMMediate:ACQuire")
+        except IOError as err:
+            logging.log(err)
+            raise RuntimeError("Cannot initiate measurement with {}.".format(self._info))
+
+    def fetch_data(self):
+        try:
+            return self.query_data(":FETCh:ARRay?")
+        except IOError as err:
+            logging.error(err)
+            raise RuntimeError("Cannot fetch data from {}.".format(self._info))
 
 
 class B2981(B298X):

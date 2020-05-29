@@ -88,3 +88,8 @@ def test_electrometer_interface(fakeElectrometerWithoutInterface):
         fakeElectrometerWithoutInterface.set_trigger_timer_max()
     with pytest.raises(NotImplementedError):
         fakeElectrometerWithoutInterface.get_trigger_timer()
+    # Measurement actions interface
+    with pytest.raises(NotImplementedError):
+        fakeElectrometerWithoutInterface.initiate_measurement()
+    with pytest.raises(NotImplementedError):
+        fakeElectrometerWithoutInterface.fetch_data()
