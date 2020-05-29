@@ -44,7 +44,7 @@ try:
 except (UnboundLocalError, IOError, RuntimeError) as err:
     testbench.log_error(err)
 else:
-    testbench.log_info("Instrument ID = {}.".format(translation_table))
+    testbench.log_info("Instrument ID = {}.".format(id_instr))
     testbench.log_info("Variable type of Instrument ID is {} because of query().".format(type(id_instr)))
     testbench.log_info("Temperature = {}.".format(temperature))
     testbench.log_info("Variable type of Temperature is {} because of query_data().".format(type(temperature)))
