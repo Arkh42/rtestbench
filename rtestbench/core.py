@@ -465,11 +465,11 @@ class ToolFactory(object):
 
         try:
             new_tool = self._build_specific_tool()
-            logging.debug("A specific/dedicated tool interface has been created.")
+            logging.info("A specific/dedicated tool interface has been created for {}.".format(new_tool._info))
         except (NotImplementedError, ValueError) as err_msg:
             logging.warning("No specific/dedicated tool interface is available for the following reason: {}.".format(err_msg))
             new_tool = self._build_generic_tool()
-            logging.debug("A generic tool interface has been created.")
+            logging.info("A generic tool interface has been created for {}.".format(new_tool._info))
         
         try:
             new_tool.connect_virtual_interface(new_tool_interface)
@@ -486,6 +486,8 @@ class ToolFactory(object):
             raise AttributeError("The interface type is not recognized in {}.".format(address))
         except ValueError:
             raise ValueError("Something is wrong in the address {}.".format(address))
+        except visa.VisaIOError as err:
+            raise IOError("The tool cannot be reached @ {}; origin comes from: {}".format(address, err.description))
         else:
             return new_tool_interface
     
@@ -657,9 +659,9 @@ class RTestBenchManager(object):
             new_tool = factory.get_tool(address)
         except (AttributeError, ValueError, IOError, RuntimeError) as error_msg:
             self.logger.error(error_msg)
-            raise ValueError('Impossible to attach the tool to R-testbench')
+            raise ValueError('Impossible to attach the tool to R-testbench!')
         else:
-            self.logger.info('New tool attached to R-testbench: {}'.format(new_tool))
+            self.logger.info('New tool attached to R-testbench: {}.'.format(new_tool))
             self._attached_tools.append(new_tool)
             return new_tool
 
