@@ -3,7 +3,7 @@
 
 import logging
 
-from rtestbench import constants
+import rtestbench.constants as const 
 from rtestbench.core import ToolInfo
 from rtestbench.tools.electrometer import Electrometer
 
@@ -61,6 +61,43 @@ KEYSIGHT_B298X_TRIGGER_SOURCE_EXTERNAL7 = ("EXT7")
 KEYSIGHT_B298X_TRIGGER_SOURCE_TRIGGER_IN = ("TIN")
 KEYSIGHT_B298X_TRIGGER_SOURCES = KEYSIGHT_B298X_TRIGGER_SOURCE_AUTO + KEYSIGHT_B298X_TRIGGER_SOURCE_BUS + KEYSIGHT_B298X_TRIGGER_SOURCE_TIMER + KEYSIGHT_B298X_TRIGGER_SOURCE_INTERNAL1 + KEYSIGHT_B298X_TRIGGER_SOURCE_INTERNAL2 + KEYSIGHT_B298X_TRIGGER_SOURCE_LAN + KEYSIGHT_B298X_TRIGGER_SOURCE_EXTERNAL1 + KEYSIGHT_B298X_TRIGGER_SOURCE_EXTERNAL2 + KEYSIGHT_B298X_TRIGGER_SOURCE_EXTERNAL3 + KEYSIGHT_B298X_TRIGGER_SOURCE_EXTERNAL4 + KEYSIGHT_B298X_TRIGGER_SOURCE_EXTERNAL5 + KEYSIGHT_B298X_TRIGGER_SOURCE_EXTERNAL6 + KEYSIGHT_B298X_TRIGGER_SOURCE_EXTERNAL7 + KEYSIGHT_B298X_TRIGGER_SOURCE_TRIGGER_IN
 
+KEYSIGHT_B2985_TEMPERATURE_SENSOR_THERMOCOUPLE = ("TC")
+KEYSIGHT_B2985_TEMPERATURE_SENSOR_HUMIDITY = ("HSENsor")
+KEYSIGHT_B2985_TEMPERATURE_SENSORS = KEYSIGHT_B2985_TEMPERATURE_SENSOR_THERMOCOUPLE + KEYSIGHT_B2985_TEMPERATURE_SENSOR_HUMIDITY
+
+KEYSIGHT_B2987_TEMPERATURE_SENSOR_THERMOCOUPLE = KEYSIGHT_B2985_TEMPERATURE_SENSOR_THERMOCOUPLE
+KEYSIGHT_B2987_TEMPERATURE_SENSOR_HUMIDITY = KEYSIGHT_B2985_TEMPERATURE_SENSOR_HUMIDITY
+KEYSIGHT_B2987_TEMPERATURE_SENSORS = KEYSIGHT_B2985_TEMPERATURE_SENSORS
+
+KEYSIGHT_B2985_TEMPERATURE_UNIT_CELSIUS = ('C')
+KEYSIGHT_B2985_TEMPERATURE_UNIT_FAHRENHEIT = ('F')
+KEYSIGHT_B2985_TEMPERATURE_UNIT_KELVIN = ('K')
+KEYSIGHT_B2985_TEMPERATURE_UNITS = KEYSIGHT_B2985_TEMPERATURE_UNIT_CELSIUS + KEYSIGHT_B2985_TEMPERATURE_UNIT_FAHRENHEIT + KEYSIGHT_B2985_TEMPERATURE_UNIT_KELVIN
+
+KEYSIGHT_B2987_TEMPERATURE_UNIT_CELSIUS = KEYSIGHT_B2985_TEMPERATURE_UNIT_CELSIUS
+KEYSIGHT_B2987_TEMPERATURE_UNIT_FAHRENHEIT = KEYSIGHT_B2985_TEMPERATURE_UNIT_FAHRENHEIT
+KEYSIGHT_B2987_TEMPERATURE_UNIT_KELVIN = KEYSIGHT_B2985_TEMPERATURE_UNIT_KELVIN
+KEYSIGHT_B2987_TEMPERATURE_UNITS = KEYSIGHT_B2985_TEMPERATURE_UNITS
+
+KEYSIGHT_B2985_OUTPUT_SOURCE_OFFCONDITION_NORMAL = ("NORMal")
+KEYSIGHT_B2985_OUTPUT_SOURCE_OFFCONDITION_HIGHZ = ("HIZ")
+KEYSIGHT_B2985_OUTPUT_SOURCE_OFFCONDITION_ZERO = ("ZERO")
+KEYSIGHT_B2985_OUTPUT_SOURCE_OFFCONDITIONS = KEYSIGHT_B2985_OUTPUT_SOURCE_OFFCONDITION_NORMAL + KEYSIGHT_B2985_OUTPUT_SOURCE_OFFCONDITION_HIGHZ + KEYSIGHT_B2985_OUTPUT_SOURCE_OFFCONDITION_ZERO
+
+KEYSIGHT_B2987_OUTPUT_SOURCE_OFFCONDITION_NORMAL = KEYSIGHT_B2985_OUTPUT_SOURCE_OFFCONDITION_NORMAL
+KEYSIGHT_B2987_OUTPUT_SOURCE_OFFCONDITION_HIGHZ = KEYSIGHT_B2985_OUTPUT_SOURCE_OFFCONDITION_HIGHZ
+KEYSIGHT_B2987_OUTPUT_SOURCE_OFFCONDITION_ZERO = KEYSIGHT_B2985_OUTPUT_SOURCE_OFFCONDITION_ZERO
+KEYSIGHT_B2987_OUTPUT_SOURCE_OFFCONDITIONS = KEYSIGHT_B2985_OUTPUT_SOURCE_OFFCONDITIONS
+
+KEYSIGHT_B2985_OUTPUT_SOURCE_LOW_STATE_COMMON = ("COMMon")
+KEYSIGHT_B2985_OUTPUT_SOURCE_LOW_STATE_FLOAT = ("FLOat")
+KEYSIGHT_B2985_OUTPUT_SOURCE_LOW_STATES = KEYSIGHT_B2985_OUTPUT_SOURCE_LOW_STATE_COMMON + KEYSIGHT_B2985_OUTPUT_SOURCE_LOW_STATE_FLOAT
+
+KEYSIGHT_B2987_OUTPUT_SOURCE_LOW_STATE_COMMON = KEYSIGHT_B2985_OUTPUT_SOURCE_LOW_STATE_COMMON
+KEYSIGHT_B2987_OUTPUT_SOURCE_LOW_STATE_FLOAT = KEYSIGHT_B2985_OUTPUT_SOURCE_LOW_STATE_FLOAT
+KEYSIGHT_B2987_OUTPUT_SOURCE_LOW_STATES = KEYSIGHT_B2985_OUTPUT_SOURCE_LOW_STATES
+
+
 
 class B298X(Electrometer):
     """Interface common to all electrometers from the Keysight B298X series."""
@@ -69,7 +106,7 @@ class B298X(Electrometer):
         Electrometer.__init__(self, info)
 
         # Generic properties
-        self._properties.transfer_formats = constants.RTB_TRANSFERT_FORMATS
+        self._properties.transfer_formats = const.RTB_TRANSFERT_FORMATS
 
         self._properties.bin_data_endianness = "big"
         self._properties.bin_data_header = "ieee"
@@ -100,7 +137,7 @@ class B298X(Electrometer):
             logging.error(err)
             raise RuntimeError("Cannot sets the data transfer format as {} for the tool {}.".format(tsf_format, self._info))
 
-        if tsf_format in constants.RTB_TRANSFERT_FORMAT_TEXT:
+        if tsf_format in const.RTB_TRANSFERT_FORMAT_TEXT:
             try:
                 self.send(":FORMat:DATA ASCii")
                 self._properties.text_data_converter = data_type
@@ -109,15 +146,15 @@ class B298X(Electrometer):
                 raise RuntimeError("Cannot sets the data transfer format as ASCII for the tool {}.".format(self._info))
             except ValueError:
                 raise
-        elif tsf_format in constants.RTB_TRANSFERT_FORMAT_BIN:
-            if data_type in constants.RTB_BIN_DATA_TYPES_FLOAT:
+        elif tsf_format in const.RTB_TRANSFERT_FORMAT_BIN:
+            if data_type in const.RTB_BIN_DATA_TYPES_FLOAT:
                 try:
                     self.send(":FORMat:DATA REAL,32")
                     self._properties.bin_data_type = data_type
                 except IOError as err:
                     logging.error(err)
                     raise RuntimeError("Cannot sets the data transfer format as bin32 for the tool {}.".format(self._info))
-            elif data_type in constants.RTB_BIN_DATA_TYPES_DOUBLE:
+            elif data_type in const.RTB_BIN_DATA_TYPES_DOUBLE:
                 try:
                     self.send(":FORMat:DATA REAL,64")
                     self._properties.bin_data_type = data_type
@@ -126,8 +163,8 @@ class B298X(Electrometer):
                     raise RuntimeError("Cannot sets the data transfer format as bin64 for the tool {}.".format(self._info))
             else:
                 raise NotImplementedError("The data_type argument must be in {} or in {} to use binary data for the tool {}.".format(
-                    constants.RTB_BIN_DATA_TYPES_FLOAT,
-                    constants.RTB_BIN_DATA_TYPES_DOUBLE,
+                    const.RTB_BIN_DATA_TYPES_FLOAT,
+                    const.RTB_BIN_DATA_TYPES_DOUBLE,
                     self._info
                 ))
 
@@ -433,6 +470,7 @@ class B2981(B298X):
     def __init__(self, info: ToolInfo):
         B298X.__init__(self, info)
 
+
     # Measurement type interface
     def set_meas_data_type(self, data_type: str):
         if data_type in KEYSIGHT_B2981_MEAS_DATA_TYPES:
@@ -519,8 +557,90 @@ class B2985(B298X):
             raise ValueError("The data_type argument must be in {}.".format(KEYSIGHT_B2985_DISPLAY_YDATA_TYPES))
 
 
+    # Output source
+    def enable_output_source(self):
+        try:
+            self.send(":OUTPut:STATe ON")
+        except IOError as err:
+            logging.error(err)
+            raise RuntimeError("Cannot enable the output source of {}.".format(self._info))
+    def disable_output_source(self):
+        try:
+            self.send(":OUTPut:STATe OFF")
+        except IOError as err:
+            logging.error(err)
+            raise RuntimeError("Cannot enable the output source of {}.".format(self._info))
+
+    def set_output_source_off_condition(self, condition:str):
+        if condition in KEYSIGHT_B2985_OUTPUT_SOURCE_OFFCONDITIONS:
+            try:
+                self.send(":OUTPut:OFF:MODE {}".format(condition))
+            except IOError as err:
+                logging.error(err)
+                raise RuntimeError("Cannot set the output source off confition of {}.".format(self._info))
+        else:
+            raise ValueError("The condition argument must be in {}.".format(KEYSIGHT_B2985_OUTPUT_SOURCE_OFFCONDITIONS))
+    def get_output_source_off_condition(self):
+        try:
+            return self.query(":OUTPut:OFF:MODE?")
+        except IOError as err:
+            logging.error(err)
+            raise RuntimeError("Cannot get the output source off confition from {}.".format(self._info))
+
+    def set_output_source_low_state(self, state:str):
+        if state in KEYSIGHT_B2985_OUTPUT_SOURCE_LOW_STATES:
+            try:
+                self.send(":OUTPut:LOW {}".format(state))
+            except IOError as err:
+                logging.error(err)
+                raise RuntimeError("Cannot set the output source low state of {}.".format(self._info))
+        else:
+            raise ValueError("The state argument must be in {}.".format(KEYSIGHT_B2985_OUTPUT_SOURCE_LOW_STATES))
+    def get_output_source_low_state(self):
+        try:
+            return self.query(":OUTPut:LOW?")
+        except IOError as err:
+            logging.error(err)
+            raise RuntimeError("Cannot get the output source low state from {}.".format(self._info))
+
+
+    # Temperature sensing
+    def set_temperature_sensor(self, sensor: str):
+        if sensor in KEYSIGHT_B2985_TEMPERATURE_SENSORS:
+            try:
+                self.send(":SYSTem:TEMPerature:SELect {}".format(sensor))
+            except IOError as err:
+                logging.error(err)
+                raise RuntimeError("Cannot set the temperature sensor of {}.".format(self._info))
+        else:
+            raise ValueError("The sensor argument must be in {}.".format(KEYSIGHT_B2985_TEMPERATURE_SENSORS))
+    def get_temperature_sensor(self):
+        try:
+            return self.query(":SYSTem:TEMPerature:SELect?")
+        except IOError as err:
+            logging.error(err)
+            raise RuntimeError("Cannot get the temperature sensor from {}.".format(self._info))
+
+    def set_temperature_unit(self, unit: str):
+        if sensor in KEYSIGHT_B2985_TEMPERATURE_UNITS:
+            try:
+                self.send(":SYSTem:TEMPerature:UNIT {}".format(unit))
+            except IOError as err:
+                logging.error(err)
+                raise RuntimeError("Cannot set the temperature unit of {}.".format(self._info))
+        else:
+            raise ValueError("The unit argument must be in {}.".format(KEYSIGHT_B2985_TEMPERATURE_UNITS))
+    def get_temperature_unit(self):
+        try:
+            return self.query(":SYSTem:TEMPerature:UNIT?")
+        except IOError as err:
+            logging.error(err)
+            raise RuntimeError("Cannot get the temperature unit from {}.".format(self._info))
+
+
+
 class B2987(B2985):
     """Interface specific to the Keysight B2987 electrometer."""
 
     def __init__(self, info: ToolInfo):
-        B2987.__init__(self, info)
+        B2985.__init__(self, info)
