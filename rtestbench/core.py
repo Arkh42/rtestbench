@@ -469,11 +469,11 @@ class ToolFactory(object):
             raise
 
         try:
-            new_tool = self._build_specific_tool()
+            new_tool = self._build_specific_tool(tool_info)
             logging.info("A specific/dedicated tool interface has been created for {}.".format(new_tool._info))
         except (NotImplementedError, ValueError) as err_msg:
             logging.warning("No specific/dedicated tool interface is available for the following reason: {}.".format(err_msg))
-            new_tool = self._build_generic_tool()
+            new_tool = self._build_generic_tool(tool_info)
             logging.info("A generic tool interface has been created for {}.".format(new_tool._info))
         
         try:
