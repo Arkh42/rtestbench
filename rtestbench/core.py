@@ -624,7 +624,7 @@ class RTestBenchManager(object):
         if enable_log:
             self.logger.debug('Closing all connected resources...')
         for device in self._attached_tools:
-            device.detach_visa_resource()
+            device.disconnect_virtual_interface()
             if enable_log:
                 self.logger.info('Resource detached from R-testbench: {}'.format(device))
         self._attached_tools.clear()
