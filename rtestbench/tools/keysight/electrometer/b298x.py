@@ -472,7 +472,7 @@ class B2981(B298X):
 
 
     # Measurement type interface
-    def set_meas_data_type(self, data_type: str):
+    def set_meas_data_types(self, data_type: list):
         if data_type in KEYSIGHT_B2981_MEAS_DATA_TYPES:
             try:
                 self.send(":FORMat:ELEMents:SENSe {}".format(','.join(data_type)))
@@ -522,7 +522,7 @@ class B2985(B298X):
         B298X.__init__(self, info)
     
     # Measurement type interface
-    def set_meas_data_type(self, data_type: str):
+    def set_meas_data_types(self, data_type: list):
         if data_type in KEYSIGHT_B2985_MEAS_DATA_TYPES:
             try:
                 self.send(":FORMat:ELEMents:SENSe {}".format(','.join(data_type)))
