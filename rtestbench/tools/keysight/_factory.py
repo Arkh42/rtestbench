@@ -11,10 +11,10 @@ def get_keysight_tool(tool_info):
         ValueError: The model is not known from the system.
     """
 
-    if tool_info.family == "electrometer":
+    try:
         return get_keysight_electrometer(tool_info)
-    else:
-        raise ValueError("Unknow Keysight family of instruments/tools.")
+    except ValueError: # When other families are added, update this part of the code.
+        raise ValueError("Unknown Keysight family of instruments/tools.")
 
 
 def get_keysight_electrometer(tool_info):
