@@ -92,4 +92,6 @@ def test_electrometer_interface(fakeElectrometerWithoutInterface):
     with pytest.raises(NotImplementedError):
         fakeElectrometerWithoutInterface.initiate_measurement()
     with pytest.raises(NotImplementedError):
-        fakeElectrometerWithoutInterface.fetch_data()
+        fakeElectrometerWithoutInterface.fetch_data("data")
+    with pytest.raises(NotImplementedError):
+        fakeElectrometerWithoutInterface.fetch_all_data()

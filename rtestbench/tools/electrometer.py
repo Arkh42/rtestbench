@@ -89,5 +89,7 @@ class Electrometer(Tool):
     # Measurement actions interface
     def initiate_measurement(self):
         raise NotImplementedError("This function must be implemented in daughter classes.")
-    def fetch_data(self):
+    def fetch_data(self, meas_data_type):
+        raise NotImplementedError("This function must be implemented in daughter classes.")
+    def fetch_all_data(self):
         raise NotImplementedError("This function must be implemented in daughter classes.")
