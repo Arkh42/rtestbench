@@ -379,17 +379,17 @@ class Tool(object):
                     if transfer_format in ("text", "ascii"):
                         return self._virtual_interface.query_ascii_values(
                             request,
-                            container=self._properties.data_container,
                             converter=self._properties.text_data_converter,
                             separator=self._properties.text_data_separator,
+                            container=self._properties.data_container
                         )
                     elif transfer_format in ("bin", "binary"):
                         return self._virtual_interface.query_binary_values(
                             request,
                             datatype=self._properties.bin_data_type,
+                            is_big_endian=True if self._properties.bin_data_endianness == "big" else False,
                             container=self._properties.data_container,
-                            header_fmt=self._properties.bin_data_header,
-                            is_big_endian=True if self._properties.bin_data_endianness == "big" else False
+                            header_fmt=self._properties.bin_data_header
                         )
                     else:
                         raise NotImplementedError("Unsupported transfer format {} is currently activated.".format(transfer_format))
