@@ -408,7 +408,7 @@ class Tool(object):
             self._properties.timeout = time_ms
             self._virtual_interface.timeout = self._properties.timeout
         except:
-            self._properties.timeout = self._virtual_interface.timeout
+            self._properties.timeout = current_timeout
             raise
 
 
@@ -505,11 +505,11 @@ class ToolFactory(object):
 
         try:
             full_id = tool_interface.query('*IDN?')
-        except visa.VisaIOError:
-            raise IOError("No response: impossible to identify the tool {}".format(tool_interface))
+        except visa.VisaIOError as err:
+            raise IOError("No response: impossible to identify the tool {}. Origin comes from: {}".format(tool_interface, err.description))
         else:
             return full_id
-    
+
     def _parse_tool_id(self, full_id: str) -> ToolInfo:
         """Parses the identifation string of the tool to create the corresponding ToolInfo.
 
@@ -567,6 +567,7 @@ class RTestBenchManager(object):
 
         self._VERBOSE = verbose
         self._attached_tools = list()
+        self._visa_rm = None
         self.logger = _logger.make_logger('rtestbench', self._VERBOSE)
         self.chat = _chat.TerminalChat()
 

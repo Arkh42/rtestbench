@@ -9,6 +9,7 @@ import numpy as np
 
 import rtestbench
 from rtestbench import constants
+from rtestbench import _chat as chat
 from rtestbench.core import RTestBenchManager
 from rtestbench.core import Tool
 from rtestbench.core import ToolFactory
@@ -37,6 +38,13 @@ def toolFactory():
     """Returns a ToolFactory object with pyvisa-sim to enable a simulated resource."""
 
     manager = visa.ResourceManager(visa_library='@sim')
+    return ToolFactory(tool_manager=manager)
+
+@pytest.fixture
+def toolFactoryCustom():
+    """Returns a ToolFactory object with custom pyvisa-sim to simulated specific devices."""
+
+    manager = visa.ResourceManager(visa_library='./rtestbench/tests/pyvisasim_devices.yaml@sim')
     return ToolFactory(tool_manager=manager)
 
 @pytest.fixture
@@ -350,7 +358,7 @@ def test_toolProperties_updateproperties(toolProperties_empty):
 def test_toolFactory_attributes(toolFactory):
     assert hasattr(toolFactory, "_tool_manager")
 
-def test_toolFactory_findtool(toolFactory):
+def test_toolFactory_findtool(toolFactory, toolFactoryCustom):
     # Correct address
     fake_tool_interface = toolFactory._find_tool("ASRL1::INSTR")
     assert isinstance(fake_tool_interface, visa.Resource)
@@ -361,7 +369,7 @@ def test_toolFactory_findtool(toolFactory):
     
     # Error in address format
     with pytest.raises(ValueError):
-        fake_tool_interface = toolFactory._find_tool("ASRL1:INSTR") 
+        fake_tool_interface = toolFactory._find_tool("ASRL1:INSTR")
 
 def test_toolFactory_identifytool(toolFactory):
     # Tool device that can be reached
@@ -405,7 +413,7 @@ def test_toolFactory_buildgenerictool(toolFactory, fakeTool):
     assert isinstance(new_tool, Tool)
     assert new_tool._info == fakeTool._info
 
-def test_toolFactory_get_tool(toolFactory):
+def test_toolFactory_get_tool(toolFactory, toolFactoryCustom):
     # Incorrect interface
     with pytest.raises(AttributeError):
         test_tool = toolFactory.get_tool("toto::INSTR")
@@ -421,6 +429,17 @@ def test_toolFactory_get_tool(toolFactory):
     # Tool that answers but cannot be parsed
     with pytest.raises(ValueError):
         test_tool = toolFactory.get_tool("ASRL1::INSTR")
+    
+    # Correct specific tool
+    test_tool = toolFactoryCustom.get_tool("ASRL2985::INSTR") # DOES NOT WORK for USB or TCP/IP devices
+    assert isinstance(test_tool, rtestbench.tools.keysight.electrometer.b298x.B2985)
+    assert test_tool._info.manufacturer == "Keysight Technologies"
+    assert test_tool._info.model == "B2985A"
+
+    # Generic tool
+    test_tool = toolFactoryCustom.get_tool("ASRL0::INSTR") # DOES NOT WORK for USB or TCP/IP devices
+    assert isinstance(test_tool, rtestbench.core.Tool)
+    assert test_tool._info.manufacturer == "Generic Manufacturer"
 
 
 # --------
@@ -477,15 +496,15 @@ def test_tool_send(fakeToolWithoutInterface, fakeTool):
     fakeTool.send('command')
 
     # DOES NOT WORK - Change write termination character to generate visa.VisaIOError
-    # fakeTool._virtual_interface.write_termination = '\r'
+    # fakeTool._virtual_interface.set_visa_attribute(visa.constants.VI_ATTR_TERMCHAR, 0x00)
     # with pytest.raises(IOError):
-    #     answer = fakeTool.send("command")
+        # fakeTool.send('command')
 
     # Close virtual interface to generate visa.InvalidSession
     fakeTool._virtual_interface.close()
     with pytest.raises(RuntimeError):
         fakeTool.send('command')
-    
+
 def test_tool_query(fakeToolWithoutInterface, fakeTool):
     # No virtual interface
     with pytest.raises(UnboundLocalError):
@@ -534,22 +553,24 @@ def test_tool_querydata(fakeToolWithoutInterface, fakeTool):
     with pytest.raises(IOError):
         answer = fakeTool.query_data('request')
 
+    # Close virtual interface to generate visa.InvalidSession
+    fakeTool._virtual_interface.close()
+    with pytest.raises(RuntimeError):
+        fakeTool.query_data('request')
+
     # Unsupported transfer formats
     fakeTool._properties._transfer_formats = "toto" # for test purpose only
     fakeTool._properties.activated_transfer_format = "toto"
     with pytest.raises(NotImplementedError):
         data = fakeTool.query_data('request')
 
-    # Close virtual interface to generate visa.InvalidSession
-    fakeTool._virtual_interface.close()
-    with pytest.raises(RuntimeError):
-        fakeTool.query_data('request')
-
-
 def test_tool_set_timeout(fakeTool):
     fakeTool.set_timeout(42)
     assert fakeTool._properties.timeout == 42
     assert fakeTool._virtual_interface.timeout == 42
+
+    with pytest.raises(TypeError):
+        fakeTool.set_timeout("toto")
 
 def test_tool_set_data_transfer_format(fakeTool):
     with pytest.raises(NotImplementedError):
@@ -593,6 +614,15 @@ def rtb_simulated_visaRM():
 
     return rtb
 
+@pytest.fixture
+def rtb_simulated_devices():
+    """Returns a non-verbose RTestBench with a simulated Keysight B2985A defined with YAML file for PyVISA-sim."""
+
+    rtb = RTestBenchManager(verbose=False, visa_library='pyvisasim_devices@sim')
+    logging.disable(logging.CRITICAL)
+
+    return rtb
+
 
 # Constructor
 def test_initialize(rtb_simulated_visaRM):
@@ -601,12 +631,24 @@ def test_initialize(rtb_simulated_visaRM):
     assert hasattr(rtb_simulated_visaRM, "chat")
     assert hasattr(rtb_simulated_visaRM, "logger")
 
+def test_init_bad_visalib():
+    with pytest.raises(OSError):
+        rtb = RTestBenchManager(verbose=False, visa_library='toto')
+
 
 # Destructor and related close functions
 def test_close_visa_rm(rtb_simulated_visaRM):
     assert rtb_simulated_visaRM._visa_rm is not None
     rtb_simulated_visaRM._close_visa_rm()
     assert rtb_simulated_visaRM._visa_rm is None
+
+
+# Verbosity
+def test_verbosity(capsys):
+    rtb = RTestBenchManager(verbose=True, visa_library='@sim')
+    assert capsys.readouterr().out == chat._create_welcome_message() + '\n' + chat._create_ready_message() + '\n'
+    rtb.__del__()
+    assert capsys.readouterr().out == chat._create_goodbye_message() + '\n'
 
 
 # Information about tools
