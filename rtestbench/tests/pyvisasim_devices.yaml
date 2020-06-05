@@ -1,0 +1,27 @@
+spec: "1.0"
+
+devices:
+  GENERIC INSTRUMENT:
+    eom:
+      ASRL INSTR:
+        q: "\r\n"
+        r: "\n"
+    error: "ERROR"
+    dialogues:
+      - q: "*IDN?"
+        r: "Generic Manufacturer,Gen,SN....,V1.0"
+  KEYSIGHT B2985A:
+    eom:
+      ASRL INSTR:
+        q: "\r\n"
+        r: "\n"
+    error: "ERROR"
+    dialogues:
+      - q: "*IDN?"
+        r: "Keysight Technologies,B2985A,SN....,V1.0"
+
+resources:
+  ASRL0::INSTR:
+    device: GENERIC INSTRUMENT
+  ASRL2985::INSTR:
+    device: KEYSIGHT B2985A
