@@ -102,6 +102,23 @@ You can also contact me by [email](mailto:aquenon@hotmail.be).
 [![Issues closed](https://img.shields.io/github/issues-closed-raw/Arkh42/rtestbench)](https://github.com/Arkh42/rtestbench/issues?q=is%3Aissue+is%3Aclosed)
 
 
+### Supported OS
+
+The following operating systems have been tested.
+
+| Distributions		| Versions 	| Tests					|
+| :------------		| :------: 	| :----					|
+| Windows 10   		|			| User (alpha test) 	|
+| Windows Server	| 2019		| CI (GitHub)			|
+| Linux Ubuntu		| 18.04  	| CI (GitHub)			|
+|					| 16.04		| CI (GitHub, Travis)	|
+| macOS   			| 10.15		| CI (GitHub)			|
+
+
+### Supported Python versions
+
+Currently, R-testbench supports Python 3.6, 3.7 and 3.8.
+
 
 ### List of supported devices
 
