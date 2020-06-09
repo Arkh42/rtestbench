@@ -10,6 +10,14 @@ devices:
     dialogues:
       - q: "*IDN?"
         r: "Generic Manufacturer,Gen,SN....,V1.0"
+  WRONG INSTRUMENT:
+    eom:
+      ASRL INSTR:
+        q: "\r\n"
+        r: "\n"
+    error: "ERROR"
+    dialogues:
+      - q: "*IDN?"
   KEYSIGHT B2985A:
     eom:
       ASRL INSTR:
@@ -23,5 +31,7 @@ devices:
 resources:
   ASRL0::INSTR:
     device: GENERIC INSTRUMENT
+  ASRL1::INSTR:
+    device: WRONG INSTRUMENT
   ASRL2985::INSTR:
     device: KEYSIGHT B2985A
