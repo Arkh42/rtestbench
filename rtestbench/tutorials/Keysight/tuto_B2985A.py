@@ -1,125 +1,121 @@
 
-# R-testbench toolkit
-import rtestbench
-
 import sys
 
+import rtestbench
+from rtestbench.tools.keysight.electrometer import b298x
 
 
 # Step 1 - create the software remote test bench
-rtb = rtestbench.RTestBench()
-
+testbench = rtestbench.Manager()
 
 # Step 2 - attach the Keysight B2985A to the test bench
-ADDR_INSTR = 'USB0::0x0957::0x9318::MY54321248::0::INSTR'
+ADDR_INSTR = "address"
 
 try:
-    instr = rtb.attach_resource(ADDR_INSTR)
-except ValueError as error_msg:
-    rtb.log_critical(error_msg)
-    sys.exit('Cannot continue without an instrument... Abort!')
-else:
-    rtb.log_info('Instrument found. Continue script...')
-    
+    electrometer = testbench.attach_tool(ADDR_INSTR)
+except ValueError as err:
+    testbench.log_error(err)
+    testbench.log_critical("Cannot continue without the electrometer... Abort!")
+    sys.exit()
 
-# Step 3 - lock the device
+# Step 3 - configure the data transfer format
 try:
-    instr.lock()
-except RuntimeError as error_msg:
-    rtb.log_error(error_msg)
-    rtb.log_warning('Instrument is not locked!')
+    # electrometer.set_data_transfer_format(tsf_format="text", data_type="fixed-point") # ascii
+    # electrometer.set_data_transfer_format(tsf_format="binary", data_type="float") # bin 32
+    electrometer.set_data_transfer_format(tsf_format="binary", data_type="double") # bin 64
+except RuntimeError as err:
+    testbench.log_error(err)
+    testbench.log_critical("Electrometer data transfer format is not properly configured!")
 
-
-# [Optional] - enable/disable the display to show/hide the operations
+# Step 4 - lock the device
 try:
-    instr.enable_display()
-except RuntimeError as error_msg:
-    rtb.log_error(error_msg)
-    rtb.log_warning("Instrument's display is not enabled!")
-# try:
-#     instr.disable_display()
-# except RuntimeError as error_msg:
-#     rtb.log_warning("Instrument's display is not disabled!")
+    electrometer.lock()
+except RuntimeError as err:
+    testbench.log_error(err)
+    testbench.log_warning("Electrometer is not locked!")
 
+# Step 5 - configure display
+try:
+    electrometer.set_display(True)
+    electrometer.set_view_mode(b298x.KEYSIGHT_B298X_VIEW_MODE_ROLL)
+except RuntimeError as err:
+    testbench.log_error(err)
+    testbench.log_warning("Electrometer's display mode is not fully configured!")
 
-# Step 4 - configure the view
-meas_data_type = ('I', 'Q', 'V', 'R')
-view_mode = ('meter', 'graph', 'hist', 'roll')
-subview_mode = ('range', 'trigger', 'source', 'roll', 'hist')
 
 x_scale = 10e-6
 x_offset = 0
-y_scale = 500E-15
+y_scale = 10E-9
 y_offset = 0
 
 try:
-    instr.config_display_view(view_mode[3])
-    instr.config_display_ydata_type(meas_data_type[0])
-    instr.config_xscale(x_scale)
-    instr.config_xoffset(x_offset)
-    instr.config_yscale(y_scale)
-    instr.config_yoffset(y_offset)
-except RuntimeError as error_msg:
-    rtb.log_error(error_msg)
-    rtb.log_warning("Instrument's display options are not fully configured!")
+    electrometer.set_display_xdata_type(b298x.KEYSIGHT_B298X_MEAS_DATA_TYPE_TIME)
+    electrometer.set_xscale(x_scale)
+    electrometer.set_xoffset(x_offset)
+    electrometer.set_display_ydata_type(b298x.KEYSIGHT_B298X_MEAS_DATA_TYPE_CURRENT)
+    electrometer.set_yscale(y_scale)
+    electrometer.set_yoffset(y_offset)
+except RuntimeError as err:
+    testbench.log_error(err)
+    testbench.log_warning("Electrometer's display panel is not fully configured!")
 
-
-# Step 5 - configure the measurements
-T_unit = ('celsius', 'kelvin', 'fahrenheit')
+# Step 6 - configure the measurements
+try:
+    electrometer.set_temperature_sensor(b298x.KEYSIGHT_B2985_TEMPERATURE_SENSOR_THERMOCOUPLE)
+    electrometer.set_temperature_unit(b298x.KEYSIGHT_B2985_TEMPERATURE_UNIT_CELSIUS)
+except RuntimeError as err:
+    testbench.log_error(err)
+    testbench.log_warning("Electrometer's temperature sensing is not fully configured!")
 
 try:
-    instr.config_temperature_sensor('thermocouple')
-    instr.config_temperature_unit(T_unit[0])
-    instr.enable_autorange()
-    instr.config_aperture_time_min()
-    instr.config_output_source_off_cond('default')
-    instr.disable_output_source()
-except RuntimeError as error_msg:
-    rtb.log_error(error_msg)
-    rtb.log_warning("Instrument's measurements options are not fully configured!")
-
-
-# Step 6 - run the measurements
-n_meas_points = 100
-temperature = None
-time = None
-current = None
-data = None
+    electrometer.disable_output_source()
+    electrometer.set_output_source_off_condition(b298x.KEYSIGHT_B2985_OUTPUT_SOURCE_OFFCONDITION_NORMAL)
+except RuntimeError as err:
+    testbench.log_error(err)
+    testbench.log_warning("Electrometer's output source is not fully configured!")
 
 try:
-    instr.timeout = 60e3 # 60 s before throwing Timeout error
-    instr.config_result_data_type(['t', 'I'])
-    instr.config_trigger_count(n_meas_points)
-    instr.config_trigger_timer_min()
-    instr.enable_amperemeter()
-    temperature = instr.meas_temperature()
-    instr.init_meas()
-    current = instr.fetch_data('I')
-    time = instr.fetch_data('t')
-except RuntimeError as error_msg:
-    rtb.log_error(error_msg)
-    rtb.log_critical("An error occured during measurements run!")
+    electrometer.set_meas_data_types([
+        b298x.KEYSIGHT_B298X_MEAS_DATA_TYPE_TIME,
+        b298x.KEYSIGHT_B298X_MEAS_DATA_TYPE_CURRENT,
+        b298x.KEYSIGHT_B298X_MEAS_DATA_TYPE_TEMPERATURE
+    ])
+    electrometer.set_autorange(True)
+    electrometer.set_aperture_time_min()
+except RuntimeError as err:
+    testbench.log_error(err)
+    testbench.log_warning("Electrometer's measurement conditions are not fully configured!")
+
+try:
+    electrometer.set_trigger_source(b298x.KEYSIGHT_B298X_TRIGGER_SOURCE_TIMER)
+    electrometer.set_trigger_count(10)
+    electrometer.set_trigger_timer_min()
+except RuntimeError as err:
+    testbench.log_error(err)
+    testbench.log_warning("Electrometer's trigger method is not fully configured!")
+
+# Step 7 - run measurements
+try:
+    electrometer.enable_amperemeter()
+    electrometer.initiate_measurement()
+    current = electrometer.fetch_data(b298x.KEYSIGHT_B298X_MEAS_DATA_TYPE_CURRENT)
+    time = electrometer.fetch_data(b298x.KEYSIGHT_B298X_MEAS_DATA_TYPE_TIME)
+    temperature = electrometer.fetch_data(b298x.KEYSIGHT_B298X_MEAS_DATA_TYPE_TEMPERATURE)
+except RuntimeError as err:
+    testbench.log_error(err)
+    testbench.log_critical("Something went wrong during measurement!")
 else:
-    # Temperature of the system
-    if temperature is not None:
-        rtb.log_info('Temperature @beginning of measurements run: {} °C.'.format(temperature))
-    # Data integrity
-    rtb.log_info('Checking data integrity...')
-    if time.shape == current.shape:
-        rtb.log_info('Checking data integrity...dimensions OK.')
-    else:
-        rtb.log_warning('Checking data integrity...dimensions mismatch.')
-    # Saving data
-    if time is not None:
-        print('t =', time)
-    if current is not None:
-        print('I =', current)
+    print("t =", time)
+    print("I =", current)
+    print("TEMP =", temperature)
 finally:
-    instr.disable_amperemeter()
+    electrometer.disable_amperemeter()
 
-
-# Step 7 - unlock the device before the end of the script
+# Step 8 - unlock the device before the end of the script
 try:
-    instr.unlock()
+    electrometer.unlock()
 except RuntimeError as error_msg:
-    rtb.log_warning('Instrument is not locked!')
+    testbench.log_warning("Instrument is not unlocked!")
+
+# Step 9 - close everything properly
+testbench.close()
