@@ -10,35 +10,49 @@ To make the evolution and the history easier to read and to understand, the proj
 Please read them carefully before contributing.
 
 
+Commit messages
+---------------
 
-Organizing commits
-------------------
+The first rule is _keep it as short and simple as possible_.
+
+Summarize the main objective of the commit in one line.
+If a longer description is necessary, leave a blanck between the summary line and the description.
+Synthesize! You may explain the solution to fix an issue, a specific reason to provide a feature that was not available before, and so on.
 
 
-All commits must have a commit message containing short but understandable information about the code update.
+### Types of commits
 
-Commit messages are organized with three categories of contributions:
-- NEW, for any added new feature (i.e., that was not existing before this commit),
-- BUG FIX, with a reference to the fixed bug and the idea/concept/solution used to fix it,
-- CHANGE, for any previously existing feature as well as the reason for the change.
+Commits can be made for different goals, e.g., organizing the repository or fix a bug.
+To enhance the readability of the commit messages, they are organized in several categories.
 
-If the commit message is *inline* (one feature added/changed or one bug fixed), then it must be written as
+All commit summary line should start if one of the keyword listed in the table below, sorted alphabetically.
+
+| KEYWORD	| Description						| Required information 												|
+| :-----:	| :---------- 						| :------------------- 												|
+| `CHANGE`	| Modifies an existing feature.		| Reason for the change.											|
+| `FIX`		| Fixes a bug or an opened issue.	| Reference to issue, if any. Idea/concept/solution used to fix it.	|
+| `NEW`		| Adds a new feature.				| Description of the proposed feature.												|
+| `REPO`	| Organizes the repository. 		| Category of organization concerned by the commit.					|
+
+
+### Template for commit message
+
+A typical commit message is:
 ```
-CATEGORY: message
-```
-If the commit message is multiline, then it must be written as
-```
-Summary (main purpose of the commit)
+KEYWORD one-word goal: summary.
 
-CATEGORY 1:
-- message 1
-- message 2
-
-CATEGORY 2:
-- message i
-- message j
-- message k
+Long description 
+(if necessary).
 ```
+
+
+### Examples
+
+A one-line commit for adding a license:
+```
+REPO license: OSL v3.0
+```
+
 
 
 Contacts
