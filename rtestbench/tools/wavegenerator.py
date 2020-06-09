@@ -1,5 +1,5 @@
 
-from rtestbench import Tool
+from rtestbench.core import Tool
 
 
 class WaveGenerator(Tool):
