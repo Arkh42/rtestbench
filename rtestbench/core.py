@@ -638,8 +638,16 @@ class RTestBenchManager(object):
         return self._visa_rm.list_resources()
     
     def print_available_tools(self):
-        available_tools = self.detect_tools()
+        available_tools = []
 
+        try:
+            available_tools = self.detect_tools()
+        except visa.VisaIOError as err:
+            if err.error_code == visa.constants.VI_ERROR_RSRC_NFOUND:
+                pass # available tools is empty
+            else:
+                raise IOError(err.description)
+        
         if available_tools:
             print('Available tools:', available_tools)
         else:
