@@ -358,7 +358,7 @@ def test_toolProperties_updateproperties(toolProperties_empty):
 def test_toolFactory_attributes(toolFactory):
     assert hasattr(toolFactory, "_tool_manager")
 
-def test_toolFactory_findtool(toolFactory, toolFactoryCustom):
+def test_toolFactory_findtool(toolFactory):
     # Correct address
     fake_tool_interface = toolFactory._find_tool("ASRL1::INSTR")
     assert isinstance(fake_tool_interface, visa.Resource)
@@ -371,16 +371,16 @@ def test_toolFactory_findtool(toolFactory, toolFactoryCustom):
     with pytest.raises(ValueError):
         fake_tool_interface = toolFactory._find_tool("ASRL1:INSTR")
 
-def test_toolFactory_identifytool(toolFactory):
+def test_toolFactory_identifytool(toolFactory, toolFactoryCustom):
     # Tool device that can be reached
     fake_tool_interface = toolFactory._find_tool("ASRL1::INSTR")
     tool_id = toolFactory._identify_tool(fake_tool_interface)
     assert isinstance(tool_id, str)
 
-    # Tool device that cannot be reached
-    fake_tool_interface = toolFactory._find_tool("TCPIP0::localhost::inst0::INSTR")
+    # Tool device that cannot be reached (no answer)
+    fake_tool_interface = toolFactoryCustom._find_tool("ASRL1::INSTR")
     with pytest.raises(IOError):
-        tool_id = toolFactory._identify_tool(fake_tool_interface)
+        tool_id = toolFactoryCustom._identify_tool(fake_tool_interface)
 
 def test_toolFactory_parsetoolid(toolFactory):
     # Failing parsing
@@ -440,7 +440,6 @@ def test_toolFactory_get_tool(toolFactory, toolFactoryCustom):
     test_tool = toolFactoryCustom.get_tool("ASRL0::INSTR") # DOES NOT WORK for USB or TCP/IP devices
     assert isinstance(test_tool, rtestbench.core.Tool)
     assert test_tool._info.manufacturer == "Generic Manufacturer"
-
 
 # --------
 
@@ -618,7 +617,16 @@ def rtb_simulated_visaRM():
 def rtb_simulated_devices():
     """Returns a non-verbose RTestBench with a simulated Keysight B2985A defined with YAML file for PyVISA-sim."""
 
-    rtb = RTestBenchManager(verbose=False, visa_library='pyvisasim_devices@sim')
+    rtb = RTestBenchManager(verbose=False, visa_library='./rtestbench/tests/pyvisasim_devices.yaml@sim')
+    logging.disable(logging.CRITICAL)
+
+    return rtb
+
+@pytest.fixture
+def rtb_no_device():
+    """Returns a non-verbose RTestBench without any available device."""
+
+    rtb = RTestBenchManager(verbose=False, visa_library='./rtestbench/tests/pyvisasim_no_device.yaml@sim')
     logging.disable(logging.CRITICAL)
 
     return rtb
@@ -637,10 +645,26 @@ def test_init_bad_visalib():
 
 
 # Destructor and related close functions
+def test_close(rtb_simulated_devices):
+    rtb_simulated_devices.attach_tool("ASRL0::INSTR")
+    assert len(rtb_simulated_devices._attached_tools) != 0
+    assert rtb_simulated_devices._visa_rm is not None
+
+    rtb_simulated_devices.close()
+    assert len(rtb_simulated_devices._attached_tools) == 0
+    assert rtb_simulated_devices._visa_rm is None
+
 def test_close_visa_rm(rtb_simulated_visaRM):
     assert rtb_simulated_visaRM._visa_rm is not None
     rtb_simulated_visaRM._close_visa_rm()
     assert rtb_simulated_visaRM._visa_rm is None
+
+def test_close_all_tools(rtb_simulated_devices):
+    rtb_simulated_devices.attach_tool("ASRL0::INSTR")
+    assert len(rtb_simulated_devices._attached_tools) != 0
+
+    rtb_simulated_devices.close_all_tools()
+    assert len(rtb_simulated_devices._attached_tools) == 0
 
 
 # Verbosity
@@ -657,13 +681,16 @@ def test_detect_tools(rtb_simulated_visaRM):
     assert detected_tools
     assert isinstance(detected_tools, tuple)
 
-def test_print_available_tools(capsys, rtb_simulated_visaRM):
+def test_print_available_tools(capsys, rtb_simulated_visaRM, rtb_no_device):
     rtb_simulated_visaRM.print_available_tools()
     assert "ASRL1::INSTR" in capsys.readouterr().out
 
+    rtb_no_device.print_available_tools()
+    assert capsys.readouterr().out == "No available tools.\n"
+
 
 # Tools management
-def test_attach_tool(rtb_simulated_visaRM):
+def test_attach_tool(rtb_simulated_visaRM, rtb_simulated_devices):
     # Incorrect interface
     with pytest.raises(ValueError):
         test_tool = rtb_simulated_visaRM.attach_tool("toto::INSTR")
@@ -679,3 +706,7 @@ def test_attach_tool(rtb_simulated_visaRM):
     # Tool that answers but cannot be parsed
     with pytest.raises(ValueError):
         test_tool = rtb_simulated_visaRM.attach_tool("ASRL1::INSTR")
+    
+    test_tool = rtb_simulated_devices.attach_tool("ASRL0::INSTR")
+    assert isinstance(test_tool, rtestbench.core.Tool)
+    assert len(rtb_simulated_devices._attached_tools) == 1
