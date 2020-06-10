@@ -24,11 +24,17 @@ author = 'Alexandre Quenon'
 
 # -- General configuration ---------------------------------------------------
 
-# Add any Sphinx extension module names here, as strings. They can be
-# extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
-# ones.
+# Add any Sphinx extension module names here, as strings.
 extensions = [
+	'recommonmark',
+	'sphinx_rtd_theme'
 ]
+
+# The file extensions of source files.
+source_suffix = {
+    '.rst': 'restructuredtext',
+    '.md': 'markdown',
+}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -59,8 +65,7 @@ html_theme_options = {
 	'display_version': True,
 	'logo_only': False,
 	'prev_next_buttons_location': 'both',
-	'style_external_links': False,
-	'vcs_pageview_mode': 'blob'
+	'style_external_links': False
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
