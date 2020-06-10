@@ -34,15 +34,15 @@ All commit summary line should start if one of the keyword listed in the table b
 +----------+---------------------------------+-------------------------------------------------------------------+
 | KEYWORD  | Description                     | Required information                                              |
 +==========+=================================+===================================================================+
-| `CHANGE` | Modifies an existing feature.   | Reason for the change.                                            |
+|  CHANGE  | Modifies an existing feature.   | Reason for the change.                                            |
 +----------+---------------------------------+-------------------------------------------------------------------+
-| `DOC`    | Modifies the documentation.     | Part of the documentation that is created or updated.             |
+|  DOC     | Modifies the documentation.     | Part of the documentation that is created or updated.             |
 +----------+---------------------------------+-------------------------------------------------------------------+
-| `FIX`    | Fixes a bug or an opened issue. | Reference to issue, if any. Idea/concept/solution used to fix it. |
+|  FIX     | Fixes a bug or an opened issue. | Reference to issue, if any. Idea/concept/solution used to fix it. |
 +----------+---------------------------------+-------------------------------------------------------------------+
-| `NEW`    | Adds a new feature.             | Description of the proposed feature.                              |
+|  NEW     | Adds a new feature.             | Description of the proposed feature.                              |
 +----------+---------------------------------+-------------------------------------------------------------------+
-| `REPO`   | Organizes the repository.       | Category of organization concerned by the commit.                 |
+|  REPO    | Organizes the repository.       | Category of organization concerned by the commit.                 |
 +----------+---------------------------------+-------------------------------------------------------------------+
 
 
