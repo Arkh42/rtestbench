@@ -17,7 +17,7 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'rtestbench\x1b[D\x1b[D\x1b[D\x1b[D\x1b[D\x1b[D\x1b[D\x1b[D\x1b[D\x1b[D\x1b[R-testbench'
+project = 'R-testbench'
 copyright = '2020, Alexandre Quenon'
 author = 'Alexandre Quenon'
 
@@ -39,14 +39,32 @@ templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 
+# -- Options for internationalization ----------------------------------------
+
+
+
 # -- Options for HTML output -------------------------------------------------
 
-# The theme to use for HTML and HTML Help pages.  See the documentation for
-# a list of builtin themes.
-#
-html_theme = 'alabaster'
+# The theme to use for HTML and HTML Help pages.
+html_theme = 'sphinx_rtd_theme'
+
+html_theme_options = {
+	# Toc options
+	'collapse_navigation': True,
+	'sticky_navigation': True,
+	'navigation_depth': 4,
+    'includehidden': True,
+    'titles_only': False,
+	# Appearance options
+	'display_version': True,
+	'logo_only': False,
+	'prev_next_buttons_location': 'both',
+	'style_external_links': False,
+	'vcs_pageview_mode': 'blob'
+}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+
