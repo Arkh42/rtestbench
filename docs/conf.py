@@ -36,6 +36,9 @@ source_suffix = {
     '.md': 'markdown',
 }
 
+# The “master” document, that contains the root toctree directive
+master_doc = 'index'
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
