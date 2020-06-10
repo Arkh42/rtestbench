@@ -1,4 +1,6 @@
 
+.. _contributing-label:
+
 ***************************
 Contributing to R-testbench
 ***************************

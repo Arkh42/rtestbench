@@ -1,20 +1,29 @@
-.. rtestbench[D[D[D[D[D[D[D[D[D[D[R-testbench documentation master file, created by
-   sphinx-quickstart on Wed Jun 10 09:13:37 2020.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
 
-Welcome to rtestbench[D[D[D[D[D[D[D[D[D[D[R-testbench's documentation!
-=================================================================================
+###########
+R-testbench
+###########
+
+
+
+**R-testbench** is a toolkit written in Python that allows the user to create a software remote test bench to control an actual electronic test bench remotely.
+It relies on the `VISA`_ protocol.
+The implementation is built on top of `PyVISA`_.
+
+.. _VISA: http://www.ni.com/visa/
+.. _PyVISA: https://pyvisa.readthedocs.io/en/latest/
+
+
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+	:caption: Compatibility
+	:maxdepth: 3
+	
+	compatibility/supported_os
+	compatibility/supported_python
+	compatibility/implemented_devices
 
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+.. toctree::
+	:caption: Contributing
+	:maxdepth: 1
+	
+	contributing
