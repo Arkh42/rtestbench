@@ -4,10 +4,21 @@ R-testbench
 
 
 <p align="center">
-<a href="https://travis-ci.org/github/Arkh42/rtestbench"><img alt="Build Status" src="https://travis-ci.org/Arkh42/rtestbench.svg?branch=master"></a>
-<a href="https://github.com/Arkh42/rtestbench/actions"><img alt="Actions Status" src="https://github.com/Arkh42/rtestbench/workflows/Continuous%20Integration%20(pip)/badge.svg?branch=master"></a>
-<a href="https://codecov.io/gh/Arkh42/rtestbench"><img alt="Coverage Status" src="https://codecov.io/gh/Arkh42/rtestbench/branch/master/graph/badge.svg"></a>
-<a href="https://github.com/Arkh42/rtestbench/blob/master/LICENSE.md"><img alt="License: OSL" src="https://img.shields.io/github/license/Arkh42/rtestbench"></a>
+	<a href="https://travis-ci.org/github/Arkh42/rtestbench">
+		<img alt="Build Status" src="https://travis-ci.org/Arkh42/rtestbench.svg?branch=master">
+	</a>
+	<a href='https://rtestbench.readthedocs.io/en/latest/?badge=latest'>
+		<img src='https://readthedocs.org/projects/rtestbench/badge/?version=latest' alt='Documentation Status' />
+	</a>
+	<a href="https://github.com/Arkh42/rtestbench/actions">
+		<img alt="Actions Status" src="https://github.com/Arkh42/rtestbench/workflows/Continuous%20Integration%20(pip)/badge.svg?branch=master">
+	</a>
+	<a href="https://codecov.io/gh/Arkh42/rtestbench">
+		<img alt="Coverage Status" src="https://codecov.io/gh/Arkh42/rtestbench/branch/master/graph/badge.svg">
+	</a>
+	<a href="https://github.com/Arkh42/rtestbench/blob/master/LICENSE.md">
+		<img alt="License: OSL" src="https://img.shields.io/github/license/Arkh42/rtestbench">
+	</a>
 </p>
 
 ---
