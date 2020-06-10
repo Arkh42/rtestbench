@@ -15,6 +15,13 @@ The implementation is built on top of `PyVISA`_.
 
 
 .. toctree::
+	:caption: User Guide
+	:maxdepth: 2
+	
+	userguide/installing
+	userguide/quick_start
+
+.. toctree::
 	:caption: Compatibility
 	:maxdepth: 3
 	
