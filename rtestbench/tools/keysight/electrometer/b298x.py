@@ -123,7 +123,7 @@ class B298X(Electrometer):
             activated_view_mode=None,
             activated_subview_mode=None,
             activated_display_ydata_type=KEYSIGHT_B298X_MEAS_DATA_TYPE_CURRENT,
-            activated_meas_data_type=KEYSIGHT_B298X_MEAS_DATA_TYPE_CURRENT
+            activated_meas_data_types=KEYSIGHT_B298X_MEAS_DATA_TYPE_CURRENT
         )
 
 
@@ -173,8 +173,8 @@ class B298X(Electrometer):
         """Requests a remote lock of the tool's I/O interface."""
 
         try:
-            lock_status = self.query_data(":SYSTem:LOCK:REQuest?")
-            if lock_status[0] != 1.0:
+            lock_status = self.query(":SYSTem:LOCK:REQuest?")
+            if lock_status != "1":
                 logging.warning("{} cannot be locked!".format(self._info))
         except IOError:
             logging.warning("{} cannot be locked!".format(self._info))
@@ -307,7 +307,7 @@ class B298X(Electrometer):
 
     def set_yscale(self, scale: float):
         try:
-            self.send(":DISPlay:VIEW:ROLL:Y:PDIVision:{} {}".format(self._properties.activated_meas_data_type, scale))
+            self.send(":DISPlay:VIEW:ROLL:Y:PDIVision:{} {}".format(self._properties.activated_display_ydata_type, scale))
         except IOError as err:
             logging.error(err)
             raise RuntimeError("Cannot set the Y-axis scale on {}.".format(self._info))
@@ -321,7 +321,7 @@ class B298X(Electrometer):
     
     def set_yoffset(self, offset: float):
         try:
-            self.send(":DISPlay:VIEW:ROLL:Y:OFFSet:{} {}".format(self._properties.activated_meas_data_type, offset))
+            self.send(":DISPlay:VIEW:ROLL:Y:OFFSet:{} {}".format(self._properties.activated_display_ydata_type, offset))
         except IOError as err:
             logging.error(err)
             raise RuntimeError("Cannot set the Y-axis offset on {}.".format(self._info))
@@ -330,7 +330,7 @@ class B298X(Electrometer):
     # Range interface
     def set_range(self, value: float):
         try:
-            self.send(":SENSe:{}:RANGe:UPPer {}".format(self._properties.activated_meas_data_type, value))
+            self.send(":SENSe:{}:RANGe:UPPer {}".format(self._properties.activated_display_ydata_type, value))
         except IOError as err:
             logging.error(err)
             raise RuntimeError("Cannot set the range to {} on {}.".format(value, self._info))
@@ -344,9 +344,9 @@ class B298X(Electrometer):
     def set_autorange(self, switch: bool):
         try:
             if switch:
-                self.send(":SENSe:{}:RANGe:AUTO ON".format(self._properties.activated_meas_data_type))
+                self.send(":SENSe:{}:RANGe:AUTO ON".format(self._properties.activated_display_ydata_type))
             else:
-                self.send(":SENSe:{}:RANGe:AUTO OFF".format(self._properties.activated_meas_data_type))
+                self.send(":SENSe:{}:RANGe:AUTO OFF".format(self._properties.activated_display_ydata_type))
         except IOError as err:
             logging.error(err)
             raise RuntimeError("Cannot modify autorange configuration on {}.".format(self._info))
@@ -360,7 +360,7 @@ class B298X(Electrometer):
     # Aperture (integration) time interface
     def set_aperture_time(self, value: float):
         try:
-            self.send(":SENSe:{}:APERture {}".format(self._properties.activated_meas_data_type, value))
+            self.send(":SENSe:{}:APERture {}".format(self._properties.activated_display_ydata_type, value))
         except IOError as err:
             logging.error(err)
             raise RuntimeError("Cannot set the aperture/integration time to {} on {}.".format(value, self._info))
@@ -456,7 +456,14 @@ class B298X(Electrometer):
             logging.log(err)
             raise RuntimeError("Cannot initiate measurement with {}.".format(self._info))
 
-    def fetch_data(self):
+    def fetch_data(self, meas_data_type):
+        try:
+            return self.query_data(":FETCh:ARRay:{}?".format(meas_data_type))
+        except IOError as err:
+            logging.error(err)
+            raise RuntimeError("Cannot fetch data from {}.".format(self._info))
+    
+    def fetch_all_data(self):
         try:
             return self.query_data(":FETCh:ARRay?")
         except IOError as err:
@@ -472,17 +479,17 @@ class B2981(B298X):
 
 
     # Measurement type interface
-    def set_meas_data_types(self, data_type: list):
-        if data_type in KEYSIGHT_B2981_MEAS_DATA_TYPES:
+    def set_meas_data_types(self, data_types: list):
+        if all(data_type in KEYSIGHT_B2981_MEAS_DATA_TYPES for data_type in data_types):
             try:
-                self.send(":FORMat:ELEMents:SENSe {}".format(','.join(data_type)))
+                self.send(":FORMat:ELEMents:SENSe {}".format(','.join(data_types)))
             except IOError as err:
                 logging.error(err)
                 raise RuntimeError("Cannot set the measurement data type.")
             else:
-                self._properties.activated_meas_data_type = data_type
+                self._properties.activated_meas_data_types = data_types
         else:
-            raise ValueError("The data_type argument must be in {}.".format(KEYSIGHT_B2981_MEAS_DATA_TYPES))
+            raise ValueError("The data_types argument must be in {}.".format(KEYSIGHT_B2981_MEAS_DATA_TYPES))
 
 
     def set_display_xdata_type(self, data_type: str):
@@ -522,17 +529,17 @@ class B2985(B298X):
         B298X.__init__(self, info)
     
     # Measurement type interface
-    def set_meas_data_types(self, data_type: list):
-        if data_type in KEYSIGHT_B2985_MEAS_DATA_TYPES:
+    def set_meas_data_types(self, data_types: list):
+        if all(data_type in KEYSIGHT_B2985_MEAS_DATA_TYPES for data_type in data_types):
             try:
-                self.send(":FORMat:ELEMents:SENSe {}".format(','.join(data_type)))
+                self.send(":FORMat:ELEMents:SENSe {}".format(','.join(data_types)))
             except IOError as err:
                 logging.error(err)
                 raise RuntimeError("Cannot set the measurement data type.")
             else:
-                self._properties.activated_meas_data_type = data_type
+                self._properties.activated_meas_data_types = data_types
         else:
-            raise ValueError("The data_type argument must be in {}.".format(KEYSIGHT_B2985_MEAS_DATA_TYPES))
+            raise ValueError("The data_types argument must be in {}.".format(KEYSIGHT_B2985_MEAS_DATA_TYPES))
 
     def set_display_xdata_type(self, data_type: str):
         if data_type in KEYSIGHT_B2985_DISPLAY_XDATA_TYPES:
