@@ -752,3 +752,21 @@ def test_log_data(tmp_path, rtb_quiet):
     del test_data
     
     assert len(list(d.iterdir())) == 4
+
+def test_save_data(tmp_path, rtb_quiet):
+    d = tmp_path
+    f_log = d / "log_data_file"
+    f_save = d / "save_data_file"
+
+    fake_data_x = np.ones(100)
+    fake_data_y = np.zeros(100)
+
+    rtb_quiet.save_data('csv', str(f_save), ('x', fake_data_x), ('y', fake_data_y))
+    test_save_data = pd.read_csv(d / "save_data_file.csv")
+    assert np.array_equal(fake_data_x, test_save_data['x'].to_numpy())
+    assert np.array_equal(fake_data_y, test_save_data['y'].to_numpy())
+
+    rtb_quiet.log_data('csv', str(f_log), ('x', fake_data_x), ('y', fake_data_y))
+    test_log_data = pd.read_csv(d / "log_data_file.csv")
+    assert np.array_equal(test_log_data['x'].to_numpy(), test_save_data['x'].to_numpy())
+    assert np.array_equal(test_log_data['y'].to_numpy(), test_save_data['y'].to_numpy())

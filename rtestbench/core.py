@@ -717,7 +717,7 @@ class RTestBenchManager(object):
 
     # Data management
     def save_data(self, file_type: str, path: str, *args):
-        self.log_data(file_type, path, args)
+        self.log_data(file_type, path, *args)
 
     def log_data(self, file_type: str, path: str, *args):
         """Log data into a file.
