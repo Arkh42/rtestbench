@@ -9,6 +9,19 @@ import numpy as np
 import pandas as pd
 import visa
 
+try:
+    import tables
+except ImportError:
+    _HAS_TABLES = False
+else:
+    _HAS_TABLES = True
+try:
+    import feather
+except ImportError:
+    _HAS_FEATHER = False
+else:
+    _HAS_FEATHER = True
+
 from rtestbench import constants
 from rtestbench import _chat
 from rtestbench import _logger
@@ -727,8 +740,19 @@ class RTestBenchManager(object):
         elif file_type == 'pickle':
             data_to_log.to_pickle(path + '.pkl')
         elif file_type == 'feather':
-            raise NotImplementedError('Not supported because needs dependencies.') # data_to_log.to_feather(path + '.feather')
-        elif file_type == 'hdf5':
-            raise NotImplementedError('Not supported because needs dependencies.') # data_to_log.to_hdf(path + '.h5', key='data', format='fixed')
+            if _HAS_FEATHER:
+                data_to_log.to_feather(path + '.feather')
+            else:
+                raise ImportError("The feather-format package seems to be missing. Cannot save data as feather files.")
+        elif file_type == 'hdf5_fixed':
+            if _HAS_TABLES:
+                data_to_log.to_hdf(path + '.h5', key='data', format='fixed')
+            else:
+                raise ImportError("The PyTables package seems to be missing. Cannot save data as HDF5 files.")
+        elif file_type == 'hdf5_table':
+            if _HAS_TABLES:
+                data_to_log.to_hdf(path + '.h5', key='data', format='table')
+            else:
+                raise ImportError("The PyTables package seems to be missing. Cannot save data as HDF5 files.")
         else:
             self.log_warning("Unknown file_type {} passed to the log_data() function. Ignored.".format(file_type))

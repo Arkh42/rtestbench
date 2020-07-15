@@ -6,6 +6,7 @@ import pytest
 
 import visa
 import numpy as np
+import pandas as pd
 
 import rtestbench
 from rtestbench import constants
@@ -710,3 +711,44 @@ def test_attach_tool(rtb_simulated_visaRM, rtb_simulated_devices):
     test_tool = rtb_simulated_devices.attach_tool("ASRL0::INSTR")
     assert isinstance(test_tool, rtestbench.core.Tool)
     assert len(rtb_simulated_devices._attached_tools) == 1
+
+
+# Data management
+def test_log_data(tmp_path, rtb_quiet):
+    d = tmp_path
+    f = d / "data_file"
+
+    fake_data_x = np.ones(100)
+    fake_data_y = np.zeros(100)
+
+    rtb_quiet.log_data('csv', str(f), ('x', fake_data_x), ('y', fake_data_y))
+    test_data = pd.read_csv(d / "data_file.csv")
+    assert np.array_equal(fake_data_x, test_data['x'].to_numpy())
+    assert np.array_equal(fake_data_y, test_data['y'].to_numpy())
+    del test_data
+
+    rtb_quiet.log_data('pickle', str(f), ('x', fake_data_x), ('y', fake_data_y))
+    test_data = pd.read_pickle(d / "data_file.pkl")
+    assert np.array_equal(fake_data_x, test_data['x'].to_numpy())
+    assert np.array_equal(fake_data_y, test_data['y'].to_numpy())
+    del test_data
+
+    rtb_quiet.log_data('feather', str(f), ('x', fake_data_x), ('y', fake_data_y))
+    test_data = pd.read_feather(d / "data_file.feather")
+    assert np.array_equal(fake_data_x, test_data['x'].to_numpy())
+    assert np.array_equal(fake_data_y, test_data['y'].to_numpy())
+    del test_data
+
+    rtb_quiet.log_data('hdf5_fixed', str(f), ('x', fake_data_x), ('y', fake_data_y))
+    test_data = pd.read_hdf(d / "data_file.h5")
+    assert np.array_equal(fake_data_x, test_data['x'].to_numpy())
+    assert np.array_equal(fake_data_y, test_data['y'].to_numpy())
+    del test_data
+
+    rtb_quiet.log_data('hdf5_table', str(f), ('x', fake_data_x), ('y', fake_data_y))
+    test_data = pd.read_hdf(d / "data_file.h5")
+    assert np.array_equal(fake_data_x, test_data['x'].to_numpy())
+    assert np.array_equal(fake_data_y, test_data['y'].to_numpy())
+    del test_data
+    
+    assert len(list(d.iterdir())) == 4
