@@ -727,8 +727,8 @@ class RTestBenchManager(object):
         elif file_type == 'pickle':
             data_to_log.to_pickle(path + '.pkl')
         elif file_type == 'feather':
-            raise NotImplemented('Not supported because needs dependencies.') # data_to_log.to_feather(path + '.feather')
+            raise NotImplementedError('Not supported because needs dependencies.') # data_to_log.to_feather(path + '.feather')
         elif file_type == 'hdf5':
-            raise NotImplemented('Not supported because needs dependencies.') # data_to_log.to_hdf(path + '.h5', key='data', format='fixed')
+            raise NotImplementedError('Not supported because needs dependencies.') # data_to_log.to_hdf(path + '.h5', key='data', format='fixed')
         else:
             self.log_warning("Unknown file_type {} passed to the log_data() function. Ignored.".format(file_type))
