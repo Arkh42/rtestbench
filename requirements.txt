@@ -9,8 +9,3 @@ pandas >= 0.25.0
 
 # Plotting and graphing
 matplotlib >= 3.0.3
-
-
-# Optional dependencies for data files
-pytables [hdf5] >= 3.5.2
-feather-format [feather] >= 0.4.1
