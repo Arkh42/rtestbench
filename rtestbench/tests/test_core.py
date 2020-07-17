@@ -740,18 +740,18 @@ def test_log_data(tmp_path, rtb_quiet):
     del test_data
 
     rtb_quiet.log_data('hdf5_fixed', str(f), ('x', fake_data_x), ('y', fake_data_y))
-    test_data = pd.read_hdf(d / "data_file.h5")
+    test_data = pd.read_hdf(d / "data_file.fixed.h5")
     assert np.array_equal(fake_data_x, test_data['x'].to_numpy())
     assert np.array_equal(fake_data_y, test_data['y'].to_numpy())
     del test_data
 
     rtb_quiet.log_data('hdf5_table', str(f), ('x', fake_data_x), ('y', fake_data_y))
-    test_data = pd.read_hdf(d / "data_file.h5")
+    test_data = pd.read_hdf(d / "data_file.table.h5")
     assert np.array_equal(fake_data_x, test_data['x'].to_numpy())
     assert np.array_equal(fake_data_y, test_data['y'].to_numpy())
     del test_data
     
-    assert len(list(d.iterdir())) == 4
+    assert len(list(d.iterdir())) == 5
 
 def test_save_data(tmp_path, rtb_quiet):
     d = tmp_path
