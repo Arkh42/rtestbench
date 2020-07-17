@@ -17,7 +17,7 @@ setup(
         'matplotlib >=3.0.3',
     ],
     extras_require={
-        'hdf5': ['pytables >= 3.5.2'],
+        'hdf5': ['tables >= 3.5.2'],
         'feather': ['feather-format >= 0.4.1'],
     },
     author="Alexandre Quenon",
