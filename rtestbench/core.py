@@ -746,12 +746,12 @@ class RTestBenchManager(object):
                 raise ImportError("The feather-format package seems to be missing. Cannot save data as feather files.")
         elif file_type == 'hdf5_fixed':
             if _HAS_TABLES:
-                data_to_log.to_hdf(path + '.h5', key='data', format='fixed')
+                data_to_log.to_hdf(path + '.fixed.h5', key='data', format='fixed')
             else:
                 raise ImportError("The PyTables package seems to be missing. Cannot save data as HDF5 files.")
         elif file_type == 'hdf5_table':
             if _HAS_TABLES:
-                data_to_log.to_hdf(path + '.h5', key='data', format='table')
+                data_to_log.to_hdf(path + '.table.h5', key='data', format='table')
             else:
                 raise ImportError("The PyTables package seems to be missing. Cannot save data as HDF5 files.")
         else:
