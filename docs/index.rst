@@ -34,3 +34,9 @@ The implementation is built on top of `PyVISA`_.
 	:maxdepth: 1
 	
 	contributing
+
+.. toctree::
+	:caption: Publications
+	:maxdepth: 2
+	
+	publications/conferences
