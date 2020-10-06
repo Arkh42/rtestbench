@@ -35,7 +35,8 @@ _Contents:_
 **[Installation](#installation)** |
 **[Quick start](#quick-start)** |
 **[Current status](#current-status)** |
-**[Organization of the package](#organization-of-the-package)**
+**[Organization of the package](#organization-of-the-package)** |
+**[Citation](#citation)**
 
 ---
 
@@ -165,3 +166,42 @@ Current utilities are:
 - `_chat`, a message shaper for communication between app and user;
 - `_logger`, a logger configurator for the application;
 - `_meta`, a meta-data interface.
+
+
+
+Citation
+--------
+
+
+If you use this work in the frame of scientific publication, please cite the following article:
+
+> A. Quenon, E. Daubie, V. Moeyaert, and F. C. Dualibe, “R-testbench: a Python library for instruments remote control and electronic test bench automation,” in Sensors and Electronic Instrumentation Advances: Proceedings of the 6th International Conference on Sensors and Electronic Instrumentation Advances (SEIA’ 2020) and the 2nd IFSA Frequency & Time Conference (IFTC’ 2020), Porto, Portugal, Sep. 2020, pp. 47–50.
+
+
+BibTeX entry:
+
+    @inproceedings{quenon_r-testbench_2020,
+	    author = {Quenon, Alexandre and Daubie, Evelyne and Moeyaert, Véronique and Dualibe, Fortunato Carlos},
+	    title = {R-testbench: a {Python} library for instruments remote control and electronic test bench automation},
+	    address = {Porto, Portugal},
+	    booktitle = {Sensors and {Electronic} {Instrumentation} {Advances}: {Proceedings} of the 6th {International} {Conference} on {Sensors} and {Electronic} {Instrumentation} {Advances} ({SEIA}' 2020) and the 2nd {IFSA} {Frequency} \& {Time} {Conference} ({IFTC}' 2020)},
+	    isbn = {978-84-09-23483-7},
+	    pages = {47--50},
+	    publisher = {IFSA},
+	    month = sep,
+	    year = {2020}
+	}
+
+BibLaTeX entry:
+
+	@inproceedings{quenon_r-testbench_2020,
+	    author = {Quenon, Alexandre and Daubie, Evelyne and Moeyaert, Véronique and Dualibe, Fortunato Carlos},
+	    title = {R-testbench: a Python library for instruments remote control and electronic test bench automation},
+	    eventtitle = {Sixth International Conference on Sensors and Electronic Instrumentation Advances ({SEIA}' 2020)},
+	    location = {Porto, Portugal},
+	    booktitle = {Sensors and Electronic Instrumentation Advances: Proceedings of the 6th International Conference on Sensors and Electronic Instrumentation Advances ({SEIA}' 2020) and the 2nd {IFSA} Frequency \& Time Conference ({IFTC}' 2020)},
+	    isbn = {978-84-09-23483-7},
+	    pages = {47--50},
+	    publisher = {{IFSA}},
+	    date = {2020-09-23}
+	}
