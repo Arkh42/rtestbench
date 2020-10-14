@@ -1,7 +1,8 @@
 # VISA library
 pyvisa >= 1.9
 pyvisa-py >= 0.3
-pyvisa-sim >= 0.3
+#pyvisa-sim >= 0.3
+git+git://github.com/pyvisa/pyvisa-sim@drop-py2#egg=pyvisa_sim
 
 # Scientific computation
 numpy >= 1.13.0
