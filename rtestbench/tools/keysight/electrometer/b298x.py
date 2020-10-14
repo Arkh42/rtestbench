@@ -127,6 +127,19 @@ class B298X(Electrometer):
         )
 
 
+    # Generic commands
+    def query_number_data(self):
+        """Queries the number of data available in the buffer."""
+
+        try:
+            number_data = self.query(":SYSTem:DATA:QUANtity?")
+        except IOError as err:
+            logging.warning("{} cannot send the number of data available!".format(self._info))
+        else:
+            logging.debug("{} is going to send data: {} expected.".format(self._info, number_data))
+            return number_data
+
+
     # Common SCPI commands
     def set_data_transfer_format(self, tsf_format: str, data_type: str):
         """Sets the data transfer format of the tool."""
@@ -146,6 +159,8 @@ class B298X(Electrometer):
                 raise RuntimeError("Cannot sets the data transfer format as ASCII for the tool {}.".format(self._info))
             except ValueError:
                 raise
+            else:
+                logging.debug("The data transfer format is now ASCII.")
         elif tsf_format in const.RTB_TRANSFERT_FORMAT_BIN:
             if data_type in const.RTB_BIN_DATA_TYPES_FLOAT:
                 try:
@@ -154,6 +169,8 @@ class B298X(Electrometer):
                 except IOError as err:
                     logging.error(err)
                     raise RuntimeError("Cannot sets the data transfer format as bin32 for the tool {}.".format(self._info))
+                else:
+                    logging.debug("The data transfer format is now binary (32 bits).")
             elif data_type in const.RTB_BIN_DATA_TYPES_DOUBLE:
                 try:
                     self.send(":FORMat:DATA REAL,64")
@@ -161,6 +178,8 @@ class B298X(Electrometer):
                 except IOError as err:
                     logging.error(err)
                     raise RuntimeError("Cannot sets the data transfer format as bin64 for the tool {}.".format(self._info))
+                else:
+                    logging.debug("The data transfer format is now binary (64 bits).")
             else:
                 raise NotImplementedError("The data_type argument must be in {} or in {} to use binary data for the tool {}.".format(
                     const.RTB_BIN_DATA_TYPES_FLOAT,

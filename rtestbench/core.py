@@ -371,7 +371,14 @@ class Tool(object):
             except visa.VisaIOError as err:
                 raise IOError("Cannot get an answer from the request {}; origin comes from {}.".format(request, err.description))
     
-    def query_data(self, request):
+    def query_number_data(self):
+        """Queries the number of data available in the buffer.
+        
+        This function must be implemented to use query_data() in binary values."""
+        
+        raise NotImplementedError("This function must be implemented by daughter classes.")
+
+    def query_data(self, request, number_data="auto"):
         """Sends an SCPI request which expects data from the tool.
         
         Returns:
@@ -397,13 +404,17 @@ class Tool(object):
                             container=self._properties.data_container
                         )
                     elif transfer_format in ("bin", "binary"):
-                        return self._virtual_interface.query_binary_values(
-                            request,
-                            datatype=self._properties.bin_data_type,
-                            is_big_endian=True if self._properties.bin_data_endianness == "big" else False,
-                            container=self._properties.data_container,
-                            header_fmt=self._properties.bin_data_header
-                        )
+                        if number_data == "auto":
+                            number_data = int(self.query_number_data())
+                        else:
+                            return self._virtual_interface.query_binary_values(
+                                request,
+                                datatype=self._properties.bin_data_type,
+                                is_big_endian=True if self._properties.bin_data_endianness == "big" else False,
+                                container=self._properties.data_container,
+                                header_fmt=self._properties.bin_data_header,
+                                data_points=number_data
+                            )
                     else:
                         raise NotImplementedError("Unsupported transfer format {} is currently activated.".format(transfer_format))
                 except visa.InvalidSession as err:

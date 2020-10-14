@@ -542,16 +542,20 @@ def test_tool_querydata(fakeToolWithoutInterface, fakeTool):
     fakeTool._properties.activated_transfer_format = "ascii"
     data = fakeTool.query_data('request')
 
+    with pytest.raises(NotImplementedError): # default number_data="auto" is not implemented
+        fakeTool._properties.activated_transfer_format = "bin"
+        data = fakeTool.query_data('request')
+    
     fakeTool._properties.activated_transfer_format = "bin"
-    data = fakeTool.query_data('request')
+    data = fakeTool.query_data('request', number_data=1)
 
     fakeTool._properties.activated_transfer_format = "binary"
-    data = fakeTool.query_data('request')
+    data = fakeTool.query_data('request', number_data=1)
 
     # Change read termination character to generate visa.VisaIOError
     fakeTool._virtual_interface.read_termination = '\r'
     with pytest.raises(IOError):
-        answer = fakeTool.query_data('request')
+        answer = fakeTool.query_data('request', number_data=1)
 
     # Close virtual interface to generate visa.InvalidSession
     fakeTool._virtual_interface.close()
