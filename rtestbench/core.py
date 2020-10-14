@@ -7,7 +7,7 @@ rtestbench relies on PyVISA, NumPy and pandas.
 import logging
 import numpy as np
 import pandas as pd
-import visa
+import pyvisa as visa
 
 try:
     import tables
