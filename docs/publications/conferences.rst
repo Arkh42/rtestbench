@@ -12,7 +12,7 @@ If you are interested in this topics, you can find below a list the authors' pub
 Authors' publications
 =====================
 
-Currently, the authors of R-testbench published one conference article.
+Currently, the authors of R-testbench published one conference article related to the software.
 
 	A. Quenon, E. Daubie, V. Moeyaert, and F. C. Dualibe, “R-testbench: a Python library for instruments remote control and electronic test bench automation,” in Sensors and Electronic Instrumentation Advances: Proceedings of the 6th International Conference on Sensors and Electronic Instrumentation Advances (SEIA’ 2020) and the 2nd IFSA Frequency & Time Conference (IFTC’ 2020), Porto, Portugal, Sep. 2020, pp. 47–50.
 

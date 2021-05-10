@@ -39,4 +39,5 @@ The implementation is built on top of `PyVISA`_.
 	:caption: Publications
 	:maxdepth: 2
 	
+	publications/journals
 	publications/conferences

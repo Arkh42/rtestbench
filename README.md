@@ -175,12 +175,48 @@ Citation
 
 If you use this work in the frame of scientific publication, please cite the following article:
 
+> A. Quenon, E. Daubie, V. Moeyaert, and F. Dualibe, “R-testbench: a Journey in Open Source Programming for Remote Instrumentation with Python,” Sensors and Transducers, vol. 245, no. 6, pp. 90–98, Oct. 2020.
+
+BibTeX entry:
+
+	@article{quenon_r-testbench_2020-2,
+		title = {R-testbench: a {Journey} in {Open} {Source} {Programming} for {Remote} {Instrumentation} with {Python}},
+		volume = {245},
+		copyright = {All rights reserved},
+		issn = {1726-5479},
+		language = {english},
+		number = {6},
+		journal = {Sensors and Transducers},
+		author = {Quenon, Alexandre and Daubie, Evelyne and Moeyaert, Véronique and Dualibe, Fortunato},
+		month = oct,
+		year = {2020},
+		pages = {90--98}
+	}
+
+BibLaTeX entry:
+
+	@article{quenon_r-testbench_2020-2,
+		title = {R-testbench: a Journey in Open Source Programming for Remote Instrumentation with Python},
+		volume = {245},
+		rights = {All rights reserved},
+		issn = {1726-5479},
+		shorttitle = {R-testbench},
+		pages = {90--98},
+		number = {6},
+		journaltitle = {Sensors and Transducers},
+		author = {Quenon, Alexandre and Daubie, Evelyne and Moeyaert, Véronique and Dualibe, Fortunato},
+		date = {2020-10-30}
+	}
+
+
+Another article on R-testbench is:
+
 > A. Quenon, E. Daubie, V. Moeyaert, and F. C. Dualibe, “R-testbench: a Python library for instruments remote control and electronic test bench automation,” in Sensors and Electronic Instrumentation Advances: Proceedings of the 6th International Conference on Sensors and Electronic Instrumentation Advances (SEIA’ 2020) and the 2nd IFSA Frequency & Time Conference (IFTC’ 2020), Porto, Portugal, Sep. 2020, pp. 47–50.
 
 
 BibTeX entry:
 
-    @inproceedings{quenon_r-testbench_2020,
+    @inproceedings{quenon_r-testbench_2020-1,
 	    author = {Quenon, Alexandre and Daubie, Evelyne and Moeyaert, Véronique and Dualibe, Fortunato Carlos},
 	    title = {R-testbench: a {Python} library for instruments remote control and electronic test bench automation},
 	    address = {Porto, Portugal},
@@ -194,7 +230,7 @@ BibTeX entry:
 
 BibLaTeX entry:
 
-	@inproceedings{quenon_r-testbench_2020,
+	@inproceedings{quenon_r-testbench_2020-1,
 	    author = {Quenon, Alexandre and Daubie, Evelyne and Moeyaert, Véronique and Dualibe, Fortunato Carlos},
 	    title = {R-testbench: a Python library for instruments remote control and electronic test bench automation},
 	    eventtitle = {Sixth International Conference on Sensors and Electronic Instrumentation Advances ({SEIA}' 2020)},
