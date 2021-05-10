@@ -6,7 +6,7 @@ Journals related to R-testbench
 
 
 R-testbench is an open source tool for remote instrumentation.
-If you are interested in this topics, you can find below a list the authors' publications7, as well as related scientific journals.
+If you are interested in this topics, you can find below a list the authors' publications, as well as related scientific journals.
 
 
 Authors' publications
