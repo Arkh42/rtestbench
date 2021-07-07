@@ -470,6 +470,7 @@ class Tool(object):
 ###########
 
 from rtestbench.tools.keysight._factory import get_keysight_tool
+from rtestbench.tools.rigol._factory import get_rigol_tool
 
 
 class ToolFactory(object):
@@ -558,6 +559,11 @@ class ToolFactory(object):
         if tool_info.manufacturer == "Keysight Technologies":
             try:
                 return get_keysight_tool(tool_info)
+            except ValueError:
+                raise
+        elif tool_info.manufacturer == "Rigol Technologies":
+            try:
+                return get_rigol_tool(tool_info)
             except ValueError:
                 raise
         else:
